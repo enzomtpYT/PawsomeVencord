@@ -16,7 +16,7 @@
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
 */
 
-import definePlugin, { Patch, PluginAuthor, PluginDef } from "@utils/types";
+import definePlugin, { PluginAuthor } from "@utils/types";
 
 import { PluginInfo } from "./constants";
 import { replacedUserPanelComponent } from "./patches";

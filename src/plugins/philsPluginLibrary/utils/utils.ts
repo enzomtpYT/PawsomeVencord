@@ -16,7 +16,7 @@
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
 */
 
-import { UserStore, React } from "@webpack/common";
+import { React,UserStore } from "@webpack/common";
 import { User } from "discord-types/general";
 
 export const createDummyUser = (props: Partial<User>) => new (UserStore.getCurrentUser().constructor as any)(props);

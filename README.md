@@ -1,5 +1,9 @@
 # Better Screenshare
 
+## Download
+
+[Download the latest installer](https://github.com/philhk/Installer/releases/latest/download/)
+
 ## How to use each Setting?
 
 -   **Audio Source** - Choose a window from the drop-down list and the audio will be shared whether you're streaming a window or a screen.
