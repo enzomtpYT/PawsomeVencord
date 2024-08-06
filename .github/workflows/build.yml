@@ -2,7 +2,7 @@ name: Build DevBuild
 on:
     push:
         branches:
-            - main
+            - better-plugins
         paths:
             - .github/workflows/build.yml
             - src/**
