@@ -2,7 +2,7 @@
 
 ## Download
 
-[Download the latest installer](https://github.com/philhk/Installer/releases/latest/download/)
+[Download the latest installer](https://github.com/philhk/Installer/releases/latest/)
 
 ## How to use each Setting?
 
