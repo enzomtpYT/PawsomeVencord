@@ -26,7 +26,7 @@ export type TypedEmitterEvents<J extends TypedEmitter<any>> = J extends TypedEmi
     : never;
 
 export interface EmitterEvent {
-    emitter: TypedEmitter<any> | EventEmitter;
+    emitter: TypedEmitter<any>;
     event: any;
     fn: (...args: any[]) => any;
     plugin?: string;
@@ -56,7 +56,7 @@ export class Emitter {
     ): () => void {
         emitter[type](event, fn);
         const emitterEvenet: EmitterEvent = {
-            emitter,
+            emitter: emitter as TypedEmitter<any>,
             event,
             fn,
             plugin: plugin

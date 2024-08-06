@@ -20,7 +20,7 @@ import { Flex } from "@components/Flex";
 import { React } from "@webpack/common";
 import { Settings } from "Vencord";
 
-import { SettingsModalCard, SettingsModalCardItem } from "../../philsPluginLibrary";
+import { findChildren, SettingsModalCard, SettingsModalCardItem } from "../../philsPluginLibrary";
 import Plugin from "..";
 import { AudioSourceSelect, OpenScreenshareSettingsButton } from "../components";
 import { PluginInfo } from "../constants";
@@ -72,14 +72,15 @@ export function replacedScreenshareModalSettingsContentType(oldType: (...args: a
 export function replacedScreenshareModalComponent(oldComponent: (...args: any[]) => any, thisContext: any, functionArguments: any) {
     const oldComponentResult = Reflect.apply(oldComponent, thisContext, functionArguments);
 
-    const content = oldComponentResult.props.children.props.children[2].props.children[1].props.children[2].props.children.props.children;
-    const oldContentType = content.type;
+    const { children, parent } = findChildren(oldComponentResult, (c) => c.props.selectedFPS);
+    const oldContentType = children.type;
 
-    content.type = function () {
+    children.type = function () {
         return replacedScreenshareModalSettingsContentType(oldContentType, this, arguments);
     };
 
-    const [submitBtn, cancelBtn] = oldComponentResult.props.children.props.children[2].props.children[2].props.children;
+    const { children: buttonsChildren } = findChildren(oldComponentResult, (c) => c.props.justify && c.props.children.length === 3);
+    const [submitBtn] = buttonsChildren.props.children;
 
     submitBtn.props.onClick = () => {
         const { screensharePatcher, screenshareAudioPatcher } = Plugin;

@@ -16,43 +16,35 @@
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
 */
 
-import { Patch, PluginAuthor, PluginDef } from "@utils/types";
+import definePlugin, { Patch, PluginAuthor, PluginDef } from "@utils/types";
 
 import { PluginInfo } from "./constants";
 import { replacedUserPanelComponent } from "./patches";
 
-export default new class Plugin implements PluginDef {
-    readonly name: string;
-    readonly description: string;
-    readonly authors: PluginAuthor[];
-    readonly patches: Omit<Patch, "plugin">[];
-
-    readonly replacedUserPanelComponent: typeof replacedUserPanelComponent;
-
-    constructor() {
-        this.name = PluginInfo.PLUGIN_NAME;
-        this.description = PluginInfo.DESCRIPTION;
-        this.authors = PluginInfo.AUTHORS as PluginAuthor[];
-        this.patches = [{
-            find: "Messages.ACCOUNT_A11Y_LABEL",
-            replacement: {
-                match: /((?:.*)(?<=function) .{0,8}(?={).)(.{0,1000}ACCOUNT_PANEL.{0,1000}\)]}\))(})/,
-                replace: "$1return $self.replacedUserPanelComponent(function(){$2}, this, arguments)$3"
-            }
-        }, {
-            find: "Unknown frame rate",
-            replacement: [{
-                match: /(switch\((.{0,10})\).{0,1000})(throw Error\(.{0,100}?Unknown resolution.{0,100}?\))(?=})/,
-                replace: "$1return $2"
-            },
-            {
-                match: /(switch\((.{0,10})\).{0,1000})(throw Error\(.{0,100}?Unknown frame rate.{0,100}?\))(?=})/,
-                replace: "$1return $2"
-            }]
-        }];
-        this.replacedUserPanelComponent = replacedUserPanelComponent;
-    }
-};
+export default definePlugin({
+    name: PluginInfo.PLUGIN_NAME,
+    description: PluginInfo.DESCRIPTION,
+    authors: PluginInfo.AUTHORS as PluginAuthor[],
+    dependencies: ["PhilsPluginLibrary"],
+    patches: [{
+        find: "Messages.ACCOUNT_A11Y_LABEL",
+        replacement: {
+            match: /((?:.*)(?<=function) .{0,8}?(?={).)(.{0,1000}ACCOUNT_PANEL.{0,1000}\)]}\))(})/,
+            replace: "$1return $self.replacedUserPanelComponent(function(){$2}, this, arguments)$3"
+        }
+    }, {
+        find: "Unknown frame rate",
+        replacement: [{
+            match: /(switch\((.{0,10})\).{0,1000})(throw Error\(.{0,100}?Unknown resolution.{0,100}?\))(?=})/,
+            replace: "$1return $2"
+        },
+        {
+            match: /(switch\((.{0,10})\).{0,1000})(throw Error\(.{0,100}?Unknown frame rate.{0,100}?\))(?=})/,
+            replace: "$1return $2"
+        }]
+    }],
+    replacedUserPanelComponent,
+});
 
 export * from "./components";
 export * from "./discordModules";
