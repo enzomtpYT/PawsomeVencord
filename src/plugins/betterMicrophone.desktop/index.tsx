@@ -16,7 +16,8 @@
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
 */
 
-import definePlugin, { PluginAuthor } from "@utils/types";
+import { Devs } from "@utils/constants";
+import definePlugin from "@utils/types";
 
 import { addSettingsPanelButton, Emitter, MicrophoneSettingsIcon, removeSettingsPanelButton } from "../philsPluginLibrary";
 import { PluginInfo } from "./constants";
@@ -25,9 +26,9 @@ import { MicrophonePatcher } from "./patchers";
 import { initMicrophoneStore } from "./stores";
 
 export default definePlugin({
-    name: PluginInfo.PLUGIN_NAME,
-    description: PluginInfo.DESCRIPTION,
-    authors: [PluginInfo.AUTHOR, ...Object.values(PluginInfo.CONTRIBUTORS)] as PluginAuthor[],
+    name: "BetterMicrophone",
+    description: "This plugin allows you to further customize your microphone.",
+    authors: [Devs.philhk],
     dependencies: ["PhilsPluginLibrary"],
     start(): void {
         initMicrophoneStore();

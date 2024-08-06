@@ -16,15 +16,15 @@
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
 */
 
-import definePlugin, { PluginAuthor } from "@utils/types";
+import { Devs } from "@utils/constants";
+import definePlugin from "@utils/types";
 
-import { PluginInfo } from "./constants";
 import { replacedUserPanelComponent } from "./patches";
 
 export default definePlugin({
-    name: PluginInfo.PLUGIN_NAME,
-    description: PluginInfo.DESCRIPTION,
-    authors: PluginInfo.AUTHORS as PluginAuthor[],
+    name: "PhilsPluginLibrary",
+    description: "A library for phil's plugins",
+    authors: [Devs.philhk],
     dependencies: ["PhilsPluginLibrary"],
     patches: [{
         find: "Messages.ACCOUNT_A11Y_LABEL",

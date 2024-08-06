@@ -17,7 +17,8 @@
 */
 
 import { definePluginSettings } from "@api/Settings";
-import definePlugin, { OptionType, PluginAuthor } from "@utils/types";
+import { Devs } from "@utils/constants";
+import definePlugin, { OptionType } from "@utils/types";
 
 import { addSettingsPanelButton, Emitter, removeSettingsPanelButton, ScreenshareSettingsIcon } from "../philsPluginLibrary";
 import { PluginInfo } from "./constants";
@@ -27,9 +28,9 @@ import { replacedScreenshareModalComponent } from "./patches";
 import { initScreenshareAudioStore, initScreenshareStore } from "./stores";
 
 export default definePlugin({
-    name: PluginInfo.PLUGIN_NAME,
-    description: PluginInfo.DESCRIPTION,
-    authors: [PluginInfo.AUTHOR, ...Object.values(PluginInfo.CONTRIBUTORS)] as PluginAuthor[],
+    name: "BetterScreenshare",
+    description: "This plugin allows you to further customize your screen sharing.",
+    authors: [Devs.philhk],
     dependencies: ["PhilsPluginLibrary"],
     patches: [
         {
