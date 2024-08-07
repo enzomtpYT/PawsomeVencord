@@ -25,7 +25,6 @@ export default definePlugin({
     name: "PhilsPluginLibrary",
     description: "A library for phil's plugins",
     authors: [Devs.philhk],
-    dependencies: ["PhilsPluginLibrary"],
     patches: [{
         find: "Messages.ACCOUNT_A11Y_LABEL",
         replacement: {
