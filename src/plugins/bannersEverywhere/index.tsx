@@ -71,7 +71,7 @@ export default definePlugin({
             },
         },
         {
-            find: "role:\"listitem\",innerRef",
+            find: "role:\"listitem\"",
             replacement:
             {
                 // We cant access the user id here, so we take the banner property we set earlier
