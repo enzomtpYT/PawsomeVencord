@@ -4,22 +4,21 @@
 
 - Not to mention that this fork is pretty much only being maintained by 2 people LOL
 
+![](https://img.shields.io/github/package-json/v/enzomtpYT/PawsomeVencord?style=for-the-badge&logo=github&logoColor=d3869b&label=&color=1d2021&labelColor=282828)
+
 The cutest Discord client mod
 
-| ![image](https://github.com/Vendicated/Vencord/assets/45497981/706722b1-32de-4d99-bee9-93993b504334) |
-| :--------------------------------------------------------------------------------------------------: |
-|   A screenshot of vencord showcasing the [vencord-theme](https://github.com/synqat/vencord-theme)    |
+![](https://github.com/user-attachments/assets/3fac98c0-c411-4d2a-97a3-13b7da8687a2)
 
 ## Features
 
--   Super easy to install (Download Installer, open, click install button, done)
--   100+ plugins built in: [See a list](https://vencord.dev/plugins) (This list does not represent the current plugin list, it will only show the native vencord plugins)
-    -   Some highlights: SpotifyControls, MessageLogger, Experiments, GameActivityToggle, Translate, NoTrack, QuickReply, Free Emotes/Stickers, PermissionsViewer, CustomCommands, ShowHiddenChannels, PronounDB
+-   Easy to install
+-   [100+ built in plugins](https://vencord.dev/plugins) (This list does not represent the current plugin list, it will only show the native vencord plugins)
 -   Fairly lightweight despite the many inbuilt plugins
 -   Excellent Browser Support: Run Vencord in your Browser via extension or UserScript
--   Works on any Discord branch: Stable, Canary or PTB all work (though for the best experience I recommend stable!)
+-   Works on any Discord branch: Stable, Canary or PTB all work
 -   Custom CSS and Themes: Inbuilt css editor with support to import any css files (including BetterDiscord themes)
--   Privacy friendly, blocks Discord analytics & crash reporting out of the box and has no telemetry
+-   Privacy friendly: blocks Discord analytics & crash reporting out of the box and has no telemetry
 -   Maintained very actively, broken plugins are usually fixed within 12 hours (sometimes longer due to being a fork, and discord actively changing their app)
 -   Settings sync: Keep your plugins and their settings synchronised between devices / apps (optional)
 
