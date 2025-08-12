@@ -17,12 +17,11 @@
 */
 
 import { definePluginSettings } from "@api/Settings";
-import { makeRange } from "@components/PluginSettings/components";
 import { Devs } from "@utils/constants";
-import definePlugin, { OptionType } from "@utils/types";
+import definePlugin, { makeRange, OptionType } from "@utils/types";
 import { findByPropsLazy } from "@webpack";
 import { Button, ChannelStore, GuildStore, RelationshipStore, SelectedChannelStore, UserStore } from "@webpack/common";
-import type { Channel, Message, User } from "discord-types/general";
+import type { Channel, Message, User } from "@vencord/discord-types";
 import { ReactNode } from "react";
 import { Webpack } from "Vencord";
 

@@ -23,6 +23,6 @@ lerna-debug.log*
 src/userplugins
 
 ExtensionCache/
-settings/
+/settings
 .vscode/settings.json
 src/plugins/betterCamera.desktop
