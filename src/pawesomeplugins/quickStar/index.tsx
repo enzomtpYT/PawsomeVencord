@@ -25,7 +25,7 @@ import { closeModal, Modals, ModalSize, openModal } from "@utils/modal";
 import definePlugin from "@utils/types";
 import { findByPropsLazy, findComponentByCodeLazy } from "@webpack";
 import { ChannelStore, Flex, Forms, Menu, PermissionsBits, PermissionStore, UserStore } from "@webpack/common";
-import { Guild, ReactionEmoji } from "discord-types/general";
+import { Guild, ReactionEmoji } from "@vencord/discord-types";
 
 const EmojiPicker = findComponentByCodeLazy(".useEmojiSelectHandler)");
 

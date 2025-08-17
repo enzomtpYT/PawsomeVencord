@@ -9,6 +9,7 @@ export * from "./GuildRoleStore";
 export * from "./GuildStore";
 export * from "./MessageStore";
 export * from "./RelationshipStore";
+export * from "./StreamerModeStore";
 export * from "./SelectedChannelStore";
 export * from "./SelectedGuildStore";
 export * from "./StickersStore";

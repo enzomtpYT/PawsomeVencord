@@ -10,8 +10,8 @@ import { definePluginSettings } from "@api/Settings";
 import { Devs } from "@utils/constants";
 import definePlugin, { OptionType } from "@utils/types";
 import { Menu, React, SelectedChannelStore, UserStore } from "@webpack/common";
-import { PresenceUpdate, VoiceState } from "@webpack/types";
-import type { Channel, User } from "discord-types/general";
+import { PresenceUpdate, VoiceState } from "@vencord/discord-types";
+import type { Channel, User } from "@vencord/discord-types";
 
 import { PlatformIndicator } from "../../plugins/platformIndicators";
 import { NotificationsOffIcon } from "./components/NotificationsOffIcon";
@@ -59,7 +59,9 @@ const getRichBody = (user: User, text: string | React.ReactNode) => <div
     <div style={{ position: "relative" }}>
         <img src={user.getAvatarURL(void 0, 80, true)}
             style={{ width: "80px", height: "80px", borderRadius: "15%" }} alt={`${user.username}'s avatar`} />
-        <PlatformIndicator user={user} style={{ position: "absolute", top: "-8px", right: "-10px" }} />
+        <div style={{ position: "absolute", top: "-8px", right: "-10px" }}>
+            <PlatformIndicator user={user} />
+        </div>
     </div>
     <span>{text}</span>
 </div>;

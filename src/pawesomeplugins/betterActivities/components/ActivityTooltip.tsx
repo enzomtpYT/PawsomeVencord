@@ -6,7 +6,7 @@
 
 import { classNameFactory } from "@api/Styles";
 import ErrorBoundary from "@components/ErrorBoundary";
-import { User } from "discord-types/general";
+import { User } from "@vencord/discord-types";
 
 import { ActivityView } from "../index";
 import { Activity, Application } from "../types";

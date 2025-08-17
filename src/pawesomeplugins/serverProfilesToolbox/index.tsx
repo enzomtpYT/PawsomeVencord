@@ -16,7 +16,7 @@ import {
     UserStore
 } from "@webpack/common";
 import { copyToClipboard } from "@utils/clipboard";
-import { GuildMember } from "discord-types/general";
+import { GuildMember } from "@vencord/discord-types";
 
 const SummaryItem = findComponentByCodeLazy("borderType", "showBorder", "hideDivider");
 

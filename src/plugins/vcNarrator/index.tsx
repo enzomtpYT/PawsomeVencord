@@ -27,7 +27,7 @@ import { Button, ChannelStore, Forms, GuildMemberStore, SelectedChannelStore, Se
 import { ReactElement } from "react";
 
 import { getCurrentVoice, settings } from "./settings";
-import { VoiceState } from "@webpack/types";
+import { VoiceState } from "@vencord/discord-types";
 
 const VoiceStateStore = findStoreLazy("VoiceStateStore");
 

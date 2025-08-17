@@ -14,7 +14,7 @@ import { Queue } from "@utils/Queue";
 import { useAwaiter } from "@utils/react";
 import definePlugin, { OptionType } from "@utils/types";
 import { useEffect, UserProfileStore, useStateFromStores } from "@webpack/common";
-import { User } from "discord-types/general";
+import { User } from "@vencord/discord-types";
 
 const settings = definePluginSettings({
     animate: {

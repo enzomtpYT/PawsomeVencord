@@ -28,8 +28,6 @@ import definePlugin, { OptionType } from "@utils/types";
 import { User } from "@vencord/discord-types";
 import { filters, findStoreLazy, mapMangledModuleLazy } from "@webpack";
 import { PresenceStore, Tooltip, UserStore } from "@webpack/common";
-import { User } from "discord-types/general";
-import { CSSProperties } from "react";
 
 export interface Session {
     sessionId: string;

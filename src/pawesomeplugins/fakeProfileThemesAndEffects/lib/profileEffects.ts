@@ -5,7 +5,7 @@
  */
 
 import { findByCodeLazy, findStoreLazy } from "@webpack";
-import type { FluxStore } from "@webpack/types";
+import type { FluxStore } from "@vencord/discord-types";
 import type { SnakeCasedProperties } from "type-fest";
 
 export const ProfileEffectStore: FluxStore & {
@@ -19,7 +19,7 @@ export const ProfileEffectStore: FluxStore & {
 } = findStoreLazy("ProfileEffectStore");
 
 export const ProfileEffectRecord: {
-    new (profileEffectProperties: ProfileEffectProperties): ProfileEffectRecordInstance;
+    new(profileEffectProperties: ProfileEffectProperties): ProfileEffectRecordInstance;
     fromServer: (profileEffectFromServer: SnakeCasedProperties<ProfileEffectProperties>) => ProfileEffectRecordInstance;
 } = findByCodeLazy(",this.type=", ".PROFILE_EFFECT");
 

@@ -9,7 +9,7 @@ import { proxyLazy } from "@utils/lazy";
 import { LazyComponent } from "@utils/react";
 import { saveFile } from "@utils/web";
 import { findByCode, findByCodeLazy, findByProps, findByPropsLazy } from "@webpack";
-import type { User } from "discord-types/general";
+import type { User } from "@vencord/discord-types";
 
 import settings from "./settings";
 

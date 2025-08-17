@@ -24,3 +24,16 @@ export const enum MessageTypes {
     CHANNEL_ICON_CHANGE = 5,
     CHANNEL_PINNED_MESSAGE = 6,
 }
+
+export const enum RelationshipType {
+    FRIEND = 1,
+    BLOCKED = 2,
+    INCOMING_REQUEST = 3,
+    OUTGOING_REQUEST = 4,
+}
+
+export const enum StreamingTreatment {
+    NORMAL = 0,
+    NO_CONTENT = 1,
+    IGNORE = 2
+}

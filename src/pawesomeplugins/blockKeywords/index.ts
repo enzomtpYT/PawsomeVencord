@@ -1,7 +1,7 @@
 import definePlugin, { OptionType } from "@utils/types";
 import { Settings, definePluginSettings } from "@api/Settings";
 import { Devs } from "@utils/constants";
-import { MessageJSON } from "discord-types/general";
+import { MessageJSON } from "@vencord/discord-types";
 
 var blockedKeywords: Array<RegExp>;
 

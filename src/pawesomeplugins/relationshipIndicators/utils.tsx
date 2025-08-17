@@ -6,11 +6,11 @@
 
 import { BadgeUserArgs, ProfileBadge } from "@api/Badges";
 import { RelationshipStore, UserStore } from "@webpack/common";
-import { User } from "discord-types/general";
+import { User } from "@vencord/discord-types";
 
 import { BlockedIcon, FriendIcon } from "./icons";
 
-const shouldShowIndicator = (user?: User|null) => {
+const shouldShowIndicator = (user?: User | null) => {
     return user && !user.bot && (RelationshipStore.isFriend(user.id) || RelationshipStore.isBlocked(user.id));
 };
 
@@ -32,7 +32,7 @@ export const RelationshipIndicator = ({ user, wantMargin = true, wantTopMargin =
                 gap: 2
             }}
         >
-            {RelationshipStore.isFriend(user.id)? <FriendIcon /> : <BlockedIcon />}
+            {RelationshipStore.isFriend(user.id) ? <FriendIcon /> : <BlockedIcon />}
         </span>
     );
 };
@@ -47,6 +47,6 @@ export function getBadges({ userId }: BadgeUserArgs): ProfileBadge[] {
                 <RelationshipIndicator user={user} />
             </span>
         ),
-        key: `vc-${RelationshipStore.isFriend(userId)?"friend":"blocked"}-indicator`,
+        key: `vc-${RelationshipStore.isFriend(userId) ? "friend" : "blocked"}-indicator`,
     }];
 }

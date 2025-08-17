@@ -7,14 +7,14 @@
 import { Flex } from "@components/Flex";
 import { Margins } from "@utils/margins";
 import { classes } from "@utils/misc";
-import { closeModal, ModalCloseButton,ModalContent, ModalHeader, ModalRoot, openModal } from "@utils/modal";
+import { closeModal, ModalCloseButton, ModalContent, ModalHeader, ModalRoot, openModal } from "@utils/modal";
 import { LazyComponent } from "@utils/react";
 import { find, findByPropsLazy } from "@webpack";
 import { Button, Clickable, Forms, GuildStore, PermissionsBits, PermissionStore, Popout, SearchableSelect, showToast, Text, TextInput, Toasts, useMemo, UserStore, useState } from "@webpack/common";
-import { Guild } from "discord-types/general";
+import { Guild } from "@vencord/discord-types";
 import { HtmlHTMLAttributes } from "react";
 
-import { cl, getEmojiUrl,SoundEvent } from "../utils";
+import { cl, getEmojiUrl, SoundEvent } from "../utils";
 
 export function openCloneSoundModal(item) {
     const key = openModal(props =>
@@ -184,10 +184,10 @@ export function CloneSoundModal({ item, closeModal }: { item: SoundEvent, closeM
                     return;
                 });
             }}
-            disabled={(!(selectedGuild && soundName && isEmojiValid)) || loadingButton}
-            size={Button.Sizes.MEDIUM}
-            style={{ width: "100%" }}
-            className={Margins.bottom16}>Add to Server</Button>
+                disabled={(!(selectedGuild && soundName && isEmojiValid)) || loadingButton}
+                size={Button.Sizes.MEDIUM}
+                style={{ width: "100%" }}
+                className={Margins.bottom16}>Add to Server</Button>
         </ModalContent>
     </>;
 }

@@ -20,7 +20,7 @@ import { definePluginSettings } from "@api/Settings";
 import { Devs } from "@utils/constants";
 import definePlugin, { OptionType } from "@utils/types";
 import { FluxDispatcher } from "@webpack/common";
-import Message from "discord-types/general/Message";
+import Message from "@vencord/discord-types/Message";
 
 const EMBED_SUPPRESSED = 1 << 2;
 

@@ -19,7 +19,7 @@ import {
     Text, TextArea, TextInput, Tooltip,
     UserStore
 } from "@webpack/common";
-import { Guild, User } from "discord-types/general";
+import { Guild, User } from "@vencord/discord-types";
 
 interface IUserExtra {
     isOwner?: boolean;

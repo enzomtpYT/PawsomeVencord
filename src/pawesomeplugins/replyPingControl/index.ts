@@ -8,7 +8,7 @@ import { definePluginSettings } from "@api/Settings";
 import { Devs } from "@utils/constants";
 import definePlugin, { OptionType } from "@utils/types";
 import { MessageStore, UserStore } from "@webpack/common";
-import { MessageJSON } from "discord-types/general";
+import { MessageJSON } from "@vencord/discord-types";
 
 export const settings = definePluginSettings({
     alwaysPingOnReply: {

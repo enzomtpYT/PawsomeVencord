@@ -7,7 +7,7 @@
 import { definePluginSettings } from "@api/Settings";
 import { Devs } from "@utils/constants";
 import definePlugin, { OptionType } from "@utils/types";
-import { User } from "discord-types/general";
+import { User } from "@vencord/discord-types";
 
 const enum RelationshipType {
     FRIEND = 1,

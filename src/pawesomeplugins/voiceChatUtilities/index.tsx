@@ -9,7 +9,7 @@ import { Devs } from "@utils/constants";
 import definePlugin from "@utils/types";
 import { findStoreLazy } from "@webpack";
 import { GuildChannelStore, Menu, React, RestAPI, UserStore } from "@webpack/common";
-import type { Channel } from "discord-types/general";
+import type { Channel } from "@vencord/discord-types";
 
 const VoiceStateStore = findStoreLazy("VoiceStateStore");
 

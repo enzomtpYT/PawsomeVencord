@@ -35,10 +35,18 @@ export default ErrorBoundary.wrap(function NotificationComponent({
     dismissOnClick,
     index,
     onClick,
-    onClose
+    onClose,
+    attachments
 }: NotificationData & { index?: number; }) {
     const [isHover, setIsHover] = useState(false);
     const [elapsed, setElapsed] = useState(0);
+
+    let renderBody: boolean = true;
+    let footer: boolean = false;
+
+    if (attachments > 0) footer = true;
+
+    if (body === "") renderBody = false;
 
     // Precompute appearance settings.
     const AppearanceSettings = {
@@ -115,15 +123,22 @@ export default ErrorBoundary.wrap(function NotificationComponent({
                         </button>
                     </div>
                     <div>
-                        {richBody ?? <p className="toastnotifications-notification-p">{body}</p>}
+                        {renderBody ? (
+                            richBody ?? (
+                                <p className="toastnotifications-notification-p">
+                                    {body.length > 500 ? body.slice(0, 500) + "..." : body}
+                                </p>
+                            )
+                        ) : null}
+                        {PluginSettings.store.renderImages && image && <img className="toastnotifications-notification-img" src={image} alt="ToastNotification Image" />}
+                        {footer && <p className="toastnotifications-notification-footer">{`${attachments} attachment${attachments > 1 ? "s" : ""} ${attachments > 1 ? "were" : "was"} sent.`}</p>}
                     </div>
                 </div>
             </div>
-            {image && <img className="toastnotifications-notification-img" src={image} alt="ToastNotification Image" />}
             {AppearanceSettings.timeout !== 0 && !permanent && (
                 <div
                     className="toastnotifications-notification-progressbar"
-                    style={{ width: `${(1 - timeoutProgress) * 100}%`, backgroundColor: "var(--brand-experiment)" }}
+                    style={{ width: `${(1 - timeoutProgress) * 100}%`, backgroundColor: "var(--toastnotifications-progressbar-color)" }}
                 />
             )}
         </button>

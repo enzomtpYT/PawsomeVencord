@@ -5,7 +5,7 @@
  */
 
 import { DataStore } from "@api/index";
-import { Channel } from "discord-types/general";
+import { Channel } from "@vencord/discord-types";
 
 import { isChannelCurrent, reloadChannel, sha256 } from "./utils";
 

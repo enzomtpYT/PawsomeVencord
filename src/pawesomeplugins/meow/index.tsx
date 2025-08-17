@@ -11,11 +11,18 @@ import { definePluginSettings } from "@api/Settings";
 import definePlugin, { OptionType } from "@utils/types";
 const randmeow = [
     "meow", "mrrp", "prr", "nya", "miau", "mreow", "rawr",
-        "meoow", "mrrrp", "prrrr", "nyaaa", "miauu", "mreowww", "rawrr",
-        "meoww", "mrp", "prrr", "nyan", "miuu", "mrew",
-        "meeow", "merp", "purr", "nyaan", "miauuu", "mraow",
-        "moew", "mrrrrp", "nyaa", "miaau", "mreoow",
-        "meooow", "nyaaaa", "miauuuu", "mreeow"
+    "meoow", "mrrrp", "prrrr", "nyaaa", "miauu", "mreowww", "rawrr",
+    "meoww", "mrp", "prrr", "nyan", "miuu", "mrew",
+    "meeow", "merp", "purr", "nyaan", "miauuu", "mraow",
+    "moew", "mrrrrp", "nyaa", "miaau", "mreoow",
+    "meooow", "nyaaaa", "miauuuu", "mreeow",
+    "mrow", "mrrow", "miao", "meowmeow", "nyanyanya", "prrp",
+    "miaow", "mrreow", "nyaw", "mrowl", "purrr",
+    "meowww", "mrrrow", "miaou", "miaw", "mrawr", "mewmew",
+    "meep", "mrow", "nya~", "miau~", "purrrr", "mrowww",
+    "mrow-mrow", "miauws", "mreowwww", "prrrow", "miau-miau",
+    "nyaaah", "meowmeowmeow", "mrp-mrp", "nya-nya",
+    "mrewr", "purrmrow", "meowl", "nyawr", "miaul", "prrmeow"
 ];
 
 const settings = definePluginSettings({
@@ -31,7 +38,8 @@ async function handleButtonClick() {
     var selectedmeow = randmeow[Math.floor(Math.random() * randmeow.length)];
     const currentChannel = getCurrentChannel();
     if (currentChannel) {
-        sendMessage(currentChannel.id, { content: selectedmeow });
+        // Pass an explicit empty extra object to satisfy web sendMessage expectations
+        sendMessage(currentChannel.id, { content: selectedmeow }, false, {});
     }
 }
 

@@ -4,7 +4,7 @@
  * SPDX-License-Identifier: GPL-3.0-or-later
  */
 
-import { User } from "discord-types/general";
+import { User } from "@vencord/discord-types";
 import { CSSProperties, ImgHTMLAttributes } from "react";
 
 export interface Timestamp {
@@ -21,7 +21,7 @@ export interface Activity {
         animated: boolean;
         id: string;
         name: string;
-    }
+    };
     state?: string;
     flags?: number;
     sync_id?: string;

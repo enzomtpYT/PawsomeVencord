@@ -24,7 +24,7 @@ import { Devs } from "@utils/constants";
 import definePlugin from "@utils/types";
 import { findComponentByCodeLazy } from "@webpack";
 import { PresenceStore, React, Tooltip, useEffect, useMemo, useState, useStateFromStores } from "@webpack/common";
-import { User } from "discord-types/general";
+import { User } from "@vencord/discord-types";
 
 import ActivityTooltip from "./components/ActivityTooltip";
 import { Caret } from "./components/Caret";
