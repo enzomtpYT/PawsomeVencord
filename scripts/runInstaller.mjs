@@ -25,8 +25,8 @@ import { Readable } from "stream";
 import { finished } from "stream/promises";
 import { fileURLToPath } from "url";
 
-const BASE_URL = "https://github.com/Equicord/Equilotl/releases/latest/download/";
-const INSTALLER_PATH_DARWIN = "Equilotl.app/Contents/MacOS/Equilotl";
+const BASE_URL = "https://github.com/enzomtpYT/PawsomeVencordInstaller/releases/latest/download/";
+const INSTALLER_PATH_DARWIN = "PawsomeVencordInstaller.app/Contents/MacOS/PawsomeVencordInstaller";
 
 const BASE_DIR = join(dirname(fileURLToPath(import.meta.url)), "..");
 const FILE_DIR = join(BASE_DIR, "dist", "Installer");
@@ -35,11 +35,11 @@ const ETAG_FILE = join(FILE_DIR, "etag.txt");
 function getFilename() {
     switch (process.platform) {
         case "win32":
-            return "EquilotlCli.exe";
+            return "PawsomeVencordInstallerCli.exe";
         case "darwin":
-            return "Equilotl.MacOS.zip";
+            return "PawsomeVencordInstaller.MacOS.zip";
         case "linux":
-            return "EquilotlCli-linux";
+            return "PawsomeVencordInstallerCli-linux";
         default:
             throw new Error("Unsupported platform: " + process.platform);
     }
@@ -53,7 +53,7 @@ async function ensureBinary() {
 
     const downloadName = join(FILE_DIR, filename);
     const outputFile = process.platform === "darwin"
-        ? join(FILE_DIR, "Equilotl")
+        ? join(FILE_DIR, "PawsomeVencordInstaller")
         : downloadName;
 
     const etag = existsSync(outputFile) && existsSync(ETAG_FILE)
@@ -62,7 +62,7 @@ async function ensureBinary() {
 
     const res = await fetch(BASE_URL + filename, {
         headers: {
-            "User-Agent": "Equicord (https://github.com/Equicord/Equicord)",
+            "User-Agent": "PawsomeVencord (https://github.com/enzomtpYT/PawsomeVencord)",
             "If-None-Match": etag
         }
     });
@@ -96,7 +96,7 @@ async function ensureBinary() {
                 execSync(cmd);
             } catch { }
         };
-        logAndRun(`sudo spctl --add '${outputFile}' --label "Equilotl"`);
+        logAndRun(`sudo spctl --add '${outputFile}' --label "PawsomeVencordInstaller"`);
         logAndRun(`sudo xattr -d com.apple.quarantine '${outputFile}'`);
     } else {
         // WHY DOES NODE FETCH RETURN A WEB STREAM OH MY GOD

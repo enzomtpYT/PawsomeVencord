@@ -349,4 +349,4 @@ export function isEquicordDonor(userId: string): boolean {
     return GuildMemberStore.getMember(GUILD_ID, userId)?.roles.includes(DONOR_ROLE_ID) || !!donorBadges;
 }
 
-export default wrapTab(EquicordSettings, "Equicord Settings");
+export default wrapTab(EquicordSettings, "PawsomeVencord Settings");

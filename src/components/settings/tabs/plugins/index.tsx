@@ -198,7 +198,7 @@ function ExcludedPluginsList({ search }: { search: string; }) {
         vesktop: "Vesktop & Equibop apps",
         equibop: "Vesktop & Equibop apps",
         web: "Vesktop & Equibop apps as well as the Web version of Discord",
-        dev: "Developer version of Equicord"
+        dev: "Developer version of PawsomeVencord"
     };
 
     return (
@@ -317,7 +317,7 @@ export default function PluginSettings() {
 
         if (isRequired) {
             const tooltipText = p.required || !depMap[p.name]
-                ? "This plugin is required for Equicord to function."
+                ? "This plugin is required for PawsomeVencord to function."
                 : makeDependencyList(depMap[p.name]?.filter(d => settings.plugins[d].enabled));
 
             requiredPlugins.push(

@@ -80,31 +80,31 @@ export default definePlugin({
         return [
             {
                 section: SectionTypes.HEADER,
-                label: "Equicord",
+                label: "PawsomeVencord",
                 className: "vc-settings-header"
             },
             {
-                section: "EquicordSettings",
-                label: "Equicord",
+                section: "PawsomeVencordSettings",
+                label: "PawsomeVencord",
                 element: VencordTab,
                 className: "vc-settings"
             },
             {
-                section: "EquicordPlugins",
+                section: "PawsomeVencordPlugins",
                 label: "Plugins",
                 searchableTitles: ["Plugins"],
                 element: PluginsTab,
                 className: "vc-plugins"
             },
             {
-                section: "EquicordThemes",
+                section: "PawsomeVencordThemes",
                 label: "Themes",
                 searchableTitles: ["Themes"],
                 element: ThemesTab,
                 className: "vc-themes"
             },
             !IS_UPDATER_DISABLED && {
-                section: "EquicordUpdater",
+                section: "PawsomeVencordUpdater",
                 label: "Updater",
                 searchableTitles: ["Updater"],
                 element: UpdaterTab,
@@ -125,7 +125,7 @@ export default definePlugin({
                 className: "vc-backup-restore"
             },
             IS_DEV && {
-                section: "EquicordPatchHelper",
+                section: "PawsomeVencordPatchHelper",
                 label: "Patch Helper",
                 searchableTitles: ["Patch Helper"],
                 element: PatchHelperTab,
@@ -194,7 +194,7 @@ export default definePlugin({
     options: {
         settingsLocation: {
             type: OptionType.SELECT,
-            description: "Where to put the Equicord settings section",
+            description: "Where to put the PawsomeVencord settings section",
             options: [
                 { label: "At the very top", value: "top" },
                 { label: "Above the Nitro section", value: "aboveNitro", default: true },
@@ -237,7 +237,7 @@ export default definePlugin({
     getInfoRows() {
         const { electronVersion, chromiumVersion, getVersionInfo } = this;
 
-        const rows = [`Equicord ${shortGitHash()}${getVersionInfo()}`];
+        const rows = [`PawsomeVencord ${shortGitHash()}${getVersionInfo()}`];
 
         if (electronVersion) rows.push(`Electron ${electronVersion}`);
         if (chromiumVersion) rows.push(`Chromium ${chromiumVersion}`);

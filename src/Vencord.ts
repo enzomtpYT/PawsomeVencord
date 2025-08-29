@@ -131,7 +131,7 @@ async function runUpdateCheck() {
             await update();
             if (Settings.autoUpdateNotification) {
                 notify({
-                    title: "Equicord has been updated!",
+                    title: "PawsomeVencord has been updated!",
                     body: "Click here to restart",
                     onClick: relaunch
                 });
@@ -140,7 +140,7 @@ async function runUpdateCheck() {
         }
 
         notify({
-            title: "A Equicord update is available!",
+            title: "A PawsomeVencord update is available!",
             body: "Click here to view the update",
             onClick: openUpdaterModal!
         });
