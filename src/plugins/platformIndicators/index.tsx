@@ -145,7 +145,7 @@ interface PlatformIndicatorProps {
     isMemberList?: boolean;
 }
 
-const PlatformIndicator = ({ user, isProfile, isMessage, isMemberList }: PlatformIndicatorProps) => {
+export const PlatformIndicator = ({ user, isProfile, isMessage, isMemberList }: PlatformIndicatorProps) => {
     if (user == null || (user.bot && !Settings.plugins.PlatformIndicators.showBots)) return null;
     useEnsureOwnStatus(user);
 
