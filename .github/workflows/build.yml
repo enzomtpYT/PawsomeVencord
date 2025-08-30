@@ -6,8 +6,7 @@ on:
 
 env:
     FORCE_COLOR: true
-    GITHUB_TOKEN: ${{ secrets.ETOKEN }}
-    GH_TOKEN: ${{ secrets.BUILDS_TOKEN }}
+    GITHUB_TOKEN: ${{ secrets.BUILDS_TOKEN }}
     REPO: enzomtpYT/PawsomeBuilds
     USERNAME: GitHub-Actions
 
