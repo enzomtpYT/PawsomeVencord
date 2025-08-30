@@ -123,3 +123,59 @@ export function EquicordDonorModal() {
         </ErrorBoundary>
     ));
 }
+
+export function PawsomeDonorModal() {
+    const modalKey = openModal(props => (
+        <ErrorBoundary noop onError={() => {
+            closeModal(modalKey);
+            VencordNative.native.openExternal("https://github.com/enzomtpYT");
+        }}>
+            <ModalRoot {...props}>
+                <ModalHeader>
+                    <Flex style={{ width: "100%", justifyContent: "center" }}>
+                        <Forms.FormTitle
+                            tag="h2"
+                            style={{
+                                width: "100%",
+                                textAlign: "center",
+                                margin: 0
+                            }}
+                        >
+                            <Heart />
+                            Pawsome Person
+                        </Forms.FormTitle>
+                    </Flex>
+                </ModalHeader>
+                <ModalContent>
+                    <Flex>
+                        <img
+                            role="presentation"
+                            src="https://cdn.discordapp.com/emojis/1026533070955872337.png"
+                            alt=""
+                            style={{ margin: "auto" }}
+                        />
+                        <img
+                            role="presentation"
+                            src="https://cdn.discordapp.com/emojis/1026533090627174460.png"
+                            alt=""
+                            style={{ margin: "auto" }}
+                        />
+                    </Flex>
+                    <div style={{ padding: "1em" }}>
+                        <Forms.FormText>
+                            This Badge is a special perk for Pawsome People
+                        </Forms.FormText>
+                        <Forms.FormText className={Margins.top20}>
+                            If you want a Pawsome badge, dm @enzomtp :3
+                        </Forms.FormText>
+                    </div>
+                </ModalContent>
+                <ModalFooter>
+                    <Flex style={{ width: "100%", justifyContent: "center" }}>
+                        <DonateButton />
+                    </Flex>
+                </ModalFooter>
+            </ModalRoot>
+        </ErrorBoundary>
+    ));
+}

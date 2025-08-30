@@ -114,13 +114,13 @@ function EquicordSettings() {
 
     return (
         <SettingsTab title="Equicord Settings">
-            {(isEquicordDonor(user?.id) || isVencordDonor(user?.id)) ? (
+            {(isEquicordDonor(user?.id) || isVencordDonor(user?.id) || isPawsomeDonor(user?.id)) ? (
                 <SpecialCard
                     title="Donations"
                     subtitle="Thank you for donating!"
                     description={
-                        isEquicordDonor(user?.id) && isVencordDonor(user?.id)
-                            ? "All Vencord users can see your Vencord donor badge, and Equicord users can see your Equicord donor badge. To change your Vencord donor badge, contact @vending.machine. For your Equicord donor badge, make a ticket in Equicord's server."
+                        isEquicordDonor(user?.id) && isVencordDonor(user?.id) && isPawsomeDonor(user?.id)
+                            ? "All Vencord users can see your Vencord donor badge, Equicord users can see your Equicord donor badge and PawsomeVencord users can see your Pawsome badge. To change your Vencord donor badge, contact @vending.machine. For your Equicord donor badge, make a ticket in Equicord's server. For your Pawsome badge, dm @enzomtp :3"
                             : isVencordDonor(user?.id)
                                 ? "All Vencord users can see your badge! You can manage your perks by messaging @vending.machine."
                                 : "All Equicord users can see your badge! You can manage your perks by making a ticket in Equicord's server."
@@ -346,6 +346,11 @@ function isVencordDonor(userId: string): boolean {
 
 export function isEquicordDonor(userId: string): boolean {
     const donorBadges = BadgeAPI.getEquicordDonorBadges(userId);
+    return GuildMemberStore.getMember(GUILD_ID, userId)?.roles.includes(DONOR_ROLE_ID) || !!donorBadges;
+}
+
+export function isPawsomeDonor(userId: string): boolean {
+    const donorBadges = BadgeAPI.getPawsomeDonorBadges(userId);
     return GuildMemberStore.getMember(GUILD_ID, userId)?.roles.includes(DONOR_ROLE_ID) || !!donorBadges;
 }
 

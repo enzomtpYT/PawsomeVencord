@@ -91,8 +91,10 @@ export function _getBadges(args: BadgeUserArgs) {
     }
     const donorBadges = BadgeAPIPlugin.getDonorBadges(args.userId);
     const equicordDonorBadges = BadgeAPIPlugin.getEquicordDonorBadges(args.userId);
+    const pawsomeDonorBadges = BadgeAPIPlugin.getPawsomeDonorBadges(args.userId);
     if (donorBadges) badges.unshift(...donorBadges);
     if (equicordDonorBadges) badges.unshift(...equicordDonorBadges);
+    if (pawsomeDonorBadges) badges.unshift(...pawsomeDonorBadges);
 
     return badges;
 }

@@ -29,7 +29,7 @@ import definePlugin from "@utils/types";
 import { User } from "@vencord/discord-types";
 import { Toasts, UserStore } from "@webpack/common";
 
-import { EquicordDonorModal, VencordDonorModal } from "./modals";
+import { EquicordDonorModal, PawsomeDonorModal, VencordDonorModal } from "./modals";
 
 const CONTRIBUTOR_BADGE = "https://cdn.discordapp.com/emojis/1092089799109775453.png?size=64";
 const EQUICORD_CONTRIBUTOR_BADGE = "https://i.imgur.com/57ATLZu.png";
@@ -67,6 +67,7 @@ const EquicordDonorBadge: ProfileBadge = {
 
 let DonorBadges = {} as Record<string, Array<Record<"tooltip" | "badge", string>>>;
 let EquicordDonorBadges = {} as Record<string, Array<Record<"tooltip" | "badge", string>>>;
+let PawsomeDonorBadges = {} as Record<string, Array<Record<"tooltip" | "badge", string>>>;
 
 async function loadBadges(url: string, noCache = false) {
     const init = {} as RequestInit;
@@ -78,9 +79,11 @@ async function loadBadges(url: string, noCache = false) {
 async function loadAllBadges(noCache = false) {
     const vencordBadges = await loadBadges("https://badges.vencord.dev/badges.json", noCache);
     const equicordBadges = await loadBadges("https://equicord.org/badges.json", noCache);
+    const pawsomeBadges = await loadBadges("https://gist.enzomtp.party/enzomtp/3356a17a7a2a401286720ee8c5dd322c/raw/HEAD/badges.json", noCache);
 
     DonorBadges = vencordBadges;
     EquicordDonorBadges = equicordBadges;
+    PawsomeDonorBadges = pawsomeBadges;
 }
 
 let intervalId: any;
@@ -206,6 +209,23 @@ export default definePlugin({
             },
             onClick() {
                 return EquicordDonorModal();
+            },
+        }));
+    },
+
+    getPawsomeDonorBadges(userId: string) {
+        return PawsomeDonorBadges[userId]?.map(badge => ({
+            image: badge.badge,
+            description: badge.tooltip,
+            position: BadgePosition.START,
+            props: {
+                style: {
+                    borderRadius: "50%",
+                    transform: "scale(0.9)" // The image is a bit too big compared to default badges
+                }
+            },
+            onClick() {
+                return PawsomeDonorModal();
             },
         }));
     }
