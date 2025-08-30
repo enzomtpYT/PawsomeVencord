@@ -8,7 +8,7 @@ env:
     FORCE_COLOR: true
     GITHUB_TOKEN: ${{ secrets.ETOKEN }}
     GH_TOKEN: ${{ secrets.BUILDS_TOKEN }}
-    REPO: Equicord/Equibored
+    REPO: enzomtpYT/PawsomeBuilds
     USERNAME: GitHub-Actions
 
 permissions: write-all
