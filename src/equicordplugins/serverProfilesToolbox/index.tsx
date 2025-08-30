@@ -76,12 +76,12 @@ export default definePlugin({
             const nick = GuildMemberStore.getNick(guildId, currentUser.id);
             const selfMember = GuildMemberStore.getMember(guildId, currentUser.id) as GuildMember & { avatarDecoration: string | undefined; };
             savedProfile.nick = nick ?? "";
-            savedProfile.pronouns = profile.pronouns;
-            savedProfile.bio = profile.bio;
-            savedProfile.themeColors = profile.themeColors;
-            savedProfile.banner = profile.banner;
+            savedProfile.pronouns = profile?.pronouns ?? null;
+            savedProfile.bio = profile?.bio ?? null;
+            savedProfile.themeColors = profile?.themeColors;
+            savedProfile.banner = profile?.banner ?? undefined;
             savedProfile.avatar = selfMember.avatar;
-            savedProfile.profileEffectId = profile.profileEffectId;
+            savedProfile.profileEffectId = profile?.profileEffectId;
             savedProfile.avatarDecoration = selfMember.avatarDecoration;
         };
 
