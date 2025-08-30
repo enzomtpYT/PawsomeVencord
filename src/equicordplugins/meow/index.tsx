@@ -9,9 +9,25 @@ import { Devs } from "@utils/constants";
 import { getCurrentChannel, sendMessage } from "@utils/discord";
 import definePlugin from "@utils/types";
 
+const randmeow = [
+    "meow", "mrrp", "prr", "nya", "miau", "mreow", "rawr",
+    "meoow", "mrrrp", "prrrr", "nyaaa", "miauu", "mreowww", "rawrr",
+    "meoww", "mrp", "prrr", "nyan", "miuu", "mrew",
+    "meeow", "merp", "purr", "nyaan", "miauuu", "mraow",
+    "moew", "mrrrrp", "nyaa", "miaau", "mreoow",
+    "meooow", "nyaaaa", "miauuuu", "mreeow",
+    "mrow", "mrrow", "miao", "meowmeow", "nyanyanya", "prrp",
+    "miaow", "mrreow", "nyaw", "mrowl", "purrr",
+    "meowww", "mrrrow", "miaou", "miaw", "mrawr", "mewmew",
+    "meep", "mrow", "nya~", "miau~", "purrrr", "mrowww",
+    "mrow-mrow", "miauws", "mreowwww", "prrrow", "miau-miau",
+    "nyaaah", "meowmeowmeow", "mrp-mrp", "nya-nya",
+    "mrewr", "purrmrow", "meowl", "nyawr", "miaul", "prrmeow"
+];
+
 async function handleButtonClick() {
     // @ts-expect-error typing issue
-    sendMessage(getCurrentChannel().id, { content: "meow" });
+    sendMessage(getCurrentChannel().id, { content: randmeow[Math.floor(Math.random() * randmeow.length)] });
 }
 
 const ChatBarIcon: ChatBarButtonFactory = ({ isMainChat }) => {
