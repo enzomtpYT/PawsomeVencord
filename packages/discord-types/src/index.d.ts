@@ -7,6 +7,5 @@ export * from "./menu";
 export * from "./stores";
 export * from "./passiveupdatestate";
 export * from "./utils";
-export * from "./voicestate";
 export * from "./presenceupdate";
 export * as Webpack from "../webpack";
