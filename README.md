@@ -8,11 +8,11 @@
 
 PawsomeVencord is a fork of [Equicord](https://github.com/equicord/equicord), with over 300+ plugins.
 
-You can join our [discord server](https://discord.gg/w9jVtzNx4c) for commits, changes, chat or even support.
+You can join our [discord server](https://equicord.org/discord) for commits, changes, chat or even support.
 
 ### Included Plugins
 
-Our included plugins can be found [here](https://equicord.org/plugins)
+Our included plugins can be found [here](https://equicord.org/plugins).
 
 ## Installing / Uninstalling
 
@@ -81,7 +81,7 @@ Thank you to [Equicord](https://github.com/equicord), [Vendicated](https://githu
 
 ## Disclaimer
 
-Discord is trademark of Discord Inc. and solely mentioned for the sake of descriptivity.
+Discord is trademark of Discord Inc., and solely mentioned for the sake of descriptivity.
 Mentioning it does not imply any affiliation with or endorsement by Discord Inc.
 Vencord is not connected to PawsomeVencord and as such, all donation links go to Vendicated's donation link.
 
@@ -92,8 +92,8 @@ Client modifications are against Discord’s Terms of Service.
 
 However, Discord is pretty indifferent about them and there are no known cases of users getting banned for using client mods! So you should generally be fine if you don’t use plugins that implement abusive behaviour. But no worries, all inbuilt plugins are safe to use!
 
-Regardless, if your account is essential to you and getting disabled would be a disaster for you, you should probably not use any client mods (not exclusive to PawsomeVencord), just to be safe
+Regardless, if your account is essential to you and getting disabled would be a disaster for you, you should probably not use any client mods (not exclusive to Equicord), just to be safe
 
-Additionally, make sure not to post screenshots with PawsomeVencord in a server where you might get banned for it
+Additionally, make sure not to post screenshots with Equicord in a server where you might get banned for it
 
 </details>
