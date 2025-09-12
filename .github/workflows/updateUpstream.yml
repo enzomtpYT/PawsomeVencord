@@ -1,0 +1,103 @@
+name: Update Upstream
+
+on:
+    schedule:
+        - cron: "0 0 * * *"
+    workflow_dispatch: {}
+
+permissions:
+    contents: write
+    pull-requests: write
+
+concurrency:
+    group: upstream-sync
+    cancel-in-progress: false
+
+jobs:
+    sync:
+        name: Sync fork with upstream
+        runs-on: ubuntu-latest
+        steps:
+            - name: Checkout repository
+              uses: actions/checkout@v4
+              with:
+                  fetch-depth: 0
+                  persist-credentials: true
+
+            - name: Configure Git user
+              run: |
+                  git config user.name "github-actions[bot]"
+                  git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+
+            - name: Add & fetch upstream
+              run: |
+                  DESIRED_URL="https://github.com/Equicord/Equicord.git"
+                  if git remote get-url upstream >/dev/null 2>&1; then
+                    CURRENT_URL=$(git remote get-url upstream)
+                    if [ "$CURRENT_URL" != "$DESIRED_URL" ]; then
+                      git remote set-url upstream "$DESIRED_URL"
+                      echo "Updated existing upstream remote URL from $CURRENT_URL to $DESIRED_URL"
+                    else
+                      echo "Upstream remote already correctly set to $DESIRED_URL"
+                    fi
+                  else
+                    git remote add upstream "$DESIRED_URL"
+                    echo "Added upstream remote $DESIRED_URL"
+                  fi
+                  git fetch upstream main
+
+            - name: Merge upstream changes
+              env:
+                  TARGET_BRANCH: main
+              run: |
+                  set -u
+                  git checkout "$TARGET_BRANCH"
+                  git fetch origin "$TARGET_BRANCH"
+
+                  LOCAL_SHA=$(git rev-parse HEAD)
+                  UPSTREAM_SHA=$(git rev-parse upstream/main)
+
+                  if [ "$LOCAL_SHA" = "$UPSTREAM_SHA" ]; then
+                    echo "Already up to date."
+                    exit 0
+                  fi
+
+                  echo "Attempting merge of upstream/main into $TARGET_BRANCH"
+
+                  # Try merge without committing to detect conflicts first
+                  if git merge --no-commit --no-ff upstream/main; then
+                    # If no staged changes, nothing to do (fast-forward or identical)
+                    if git diff --cached --quiet; then
+                      echo "No changes after merge (fast-forward or identical)."
+                      # Fast-forward case may have advanced HEAD; push it
+                      if [ "$(git rev-parse HEAD)" != "$LOCAL_SHA" ]; then
+                        git push origin "$TARGET_BRANCH"
+                      fi
+                      exit 0
+                    fi
+
+                    # If MERGE_HEAD exists, it's a real merge commit (not fast-forward)
+                    if git rev-parse -q --verify MERGE_HEAD >/dev/null; then
+                      git commit -m "chore: sync upstream ($(date -u +%Y-%m-%d))"
+                    else
+                      echo "Fast-forward occurred; no merge commit required."
+                    fi
+
+                    git push origin "$TARGET_BRANCH"
+                    echo "Sync complete."
+                  else
+                    echo "::warning::Merge conflict detected; aborting and skipping. Manual intervention required if you want these changes now."
+                    git merge --abort || true
+                    # Reset any partial state
+                    git reset --hard "$LOCAL_SHA"
+                    exit 0
+                  fi
+
+            - name: Summary
+              if: always()
+              run: |
+                  echo "Local HEAD: $(git rev-parse HEAD)" >> $GITHUB_STEP_SUMMARY
+                  if git remote get-url upstream >/dev/null 2>&1; then
+                    echo "Upstream HEAD: $(git rev-parse upstream/main)" >> $GITHUB_STEP_SUMMARY
+                  fi
+                  echo "Sync job finished." >> $GITHUB_STEP_SUMMARY
