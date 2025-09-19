@@ -3,6 +3,10 @@ on:
     push:
         branches:
             - main
+    workflow_run:
+        workflows: ["Update Upstream"]
+        types:
+            - completed
 
 env:
     FORCE_COLOR: true
@@ -39,10 +43,10 @@ jobs:
 
             - name: Generate plugin lists
               run: |
-                pnpm generatePluginJson dist/plugins.json
-                pnpm generateEquicordPluginJson dist/equicordplugins.json
-                pnpm generateVencordPluginJson dist/vencordplugins.json
-                pnpm generateDevsList dist/devs.json
+                  pnpm generatePluginJson dist/plugins.json
+                  pnpm generateEquicordPluginJson dist/equicordplugins.json
+                  pnpm generateVencordPluginJson dist/vencordplugins.json
+                  pnpm generateDevsList dist/devs.json
 
             - name: Collect files to be released
               run: |

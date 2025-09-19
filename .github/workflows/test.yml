@@ -8,6 +8,10 @@ on:
         branches:
             - main
             - dev
+    workflow_run:
+        workflows: ["Update Upstream"]
+        types:
+            - completed
 
 permissions: write-all
 
