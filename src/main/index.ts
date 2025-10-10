@@ -103,7 +103,6 @@ if (!IS_VANILLA && !IS_EXTENSION) {
                     .catch(err => console.error("[PawsomeVencord] Failed to install React Developer Tools", err));
         } catch { }
 
-
         initCsp();
     });
 }
