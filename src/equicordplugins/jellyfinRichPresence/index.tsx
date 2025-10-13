@@ -6,10 +6,12 @@
 
 // alot of the code is from LastFMRichPresence
 import { definePluginSettings } from "@api/Settings";
+import { HeadingSecondary } from "@components/Heading";
+import { Paragraph } from "@components/Paragraph";
 import { Devs, EquicordDevs } from "@utils/constants";
 import { Logger } from "@utils/Logger";
 import definePlugin, { OptionType } from "@utils/types";
-import { ApplicationAssetUtils, FluxDispatcher, Forms, showToast } from "@webpack/common";
+import { ApplicationAssetUtils, FluxDispatcher, showToast } from "@webpack/common";
 
 
 interface ActivityAssets {
@@ -168,8 +170,8 @@ export default definePlugin({
 
     settingsAboutComponent: () => (
         <>
-            <Forms.FormTitle tag="h3">How to get an API key</Forms.FormTitle>
-            <Forms.FormText>
+            <HeadingSecondary>How to get an API key</HeadingSecondary>
+            <Paragraph>
                 Auth token can be found by following these steps:
                 <ol style={{ marginTop: 8, marginBottom: 8, paddingLeft: 20 }}>
                     <li>1. Log into your Jellyfin instance</li>
@@ -186,7 +188,7 @@ export default definePlugin({
                 </ol>
                 <br />
                 You'll also need your User ID, which can be found in the url of your user profile page.
-            </Forms.FormText>
+            </Paragraph>
         </>
     ),
 
@@ -312,7 +314,7 @@ export default definePlugin({
                 break;
         }
 
-        let tmdbData: { url: string; posterPath?: string | null } | null = null;
+        let tmdbData: { url: string; posterPath?: string | null; } | null = null;
         if (settings.store.showTMDBButton) {
             tmdbData = await fetchTmdbData(mediaData.seriesName || mediaData.name);
         }
