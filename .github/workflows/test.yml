@@ -13,8 +13,6 @@ on:
         types:
             - completed
 
-permissions: write-all
-
 jobs:
     Test:
         name: Test
