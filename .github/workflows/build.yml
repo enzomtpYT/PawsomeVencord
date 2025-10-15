@@ -14,7 +14,8 @@ env:
     REPO: enzomtpYT/PawsomeBuilds
     USERNAME: GitHub-Actions
 
-permissions: write-all
+permissions:
+    contents: write
 
 jobs:
     Build:
