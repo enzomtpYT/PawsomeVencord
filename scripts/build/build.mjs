@@ -169,7 +169,7 @@ const buildConfigs = ([
     {
         ...nodeCommonOpts,
         entryPoints: [join(dirname(fileURLToPath(import.meta.url)), "../../src/main/index.ts")],
-        outfile: "dist/equibop/main.js",
+        outfile: "dist/pawtop/main.js",
         footer: { js: "//# sourceURL=file:///VencordDesktopMain\n" + sourceMapFooter("main") },
         sourcemap,
         plugins: [
@@ -186,14 +186,14 @@ const buildConfigs = ([
     {
         ...commonOpts,
         entryPoints: [join(dirname(fileURLToPath(import.meta.url)), "../../src/Vencord.ts")],
-        outfile: "dist/equibop/renderer.js",
+        outfile: "dist/pawtop/renderer.js",
         format: "iife",
         target: ["esnext"],
         footer: { js: "//# sourceURL=file:///VencordDesktopRenderer\n" + sourceMapFooter("renderer") },
         globalName: "Vencord",
         sourcemap,
         plugins: [
-            globPlugins("equibop"),
+            globPlugins("pawtop"),
             ...commonRendererPlugins
         ],
         define: {
@@ -206,7 +206,7 @@ const buildConfigs = ([
     {
         ...nodeCommonOpts,
         entryPoints: [join(dirname(fileURLToPath(import.meta.url)), "../../src/preload.ts")],
-        outfile: "dist/equibop/preload.js",
+        outfile: "dist/pawtop/preload.js",
         footer: { js: "//# sourceURL=file:///VencordPreload\n" + sourceMapFooter("preload") },
         sourcemap,
         define: {
@@ -225,7 +225,7 @@ await Promise.all([
         name: "pawsomevencord",
         main: "patcher.js"
     })),
-    writeFile("dist/equibop/package.json", JSON.stringify({
+    writeFile("dist/pawtop/package.json", JSON.stringify({
         name: "pawsomevencord",
         main: "main.js"
     }))
@@ -233,5 +233,5 @@ await Promise.all([
 
 await Promise.all([
     createPackage("dist/desktop", "dist/desktop.asar"),
-    createPackage("dist/equibop", "dist/equibop.asar"),
+    createPackage("dist/pawtop", "dist/pawtop.asar"),
 ]);

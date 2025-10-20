@@ -62,9 +62,9 @@ jobs:
 
                   # legacy un-asared files
                   cp desktop/* release
-                  for file in equibop/*; do
+                  for file in pawtop/*; do
                     filename=$(basename "$file")
-                    cp "$file" "release/equibop${filename^}"
+                    cp "$file" "release/pawtop${filename^}"
                   done
 
                   find release -size 0 -delete

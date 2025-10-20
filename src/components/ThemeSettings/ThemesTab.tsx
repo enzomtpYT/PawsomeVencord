@@ -587,7 +587,7 @@ export function CspErrorCard() {
             <Paragraph>Some images, styles, or fonts were blocked because they come from disallowed domains.</Paragraph>
             <Paragraph>It is highly recommended to move them to GitHub or Imgur. But you may also allow domains if you fully trust them.</Paragraph>
             <Paragraph>
-                After allowing a domain, you have to fully close (from tray / task manager) and restart {IS_DISCORD_DESKTOP ? "Discord" : IS_EQUIBOP ? "Equibop" : "Vesktop"} to apply the change.
+                After allowing a domain, you have to fully close (from tray / task manager) and restart {IS_DISCORD_DESKTOP ? "Discord" : IS_EQUIBOP ? "Pawtop" : "Vesktop"} to apply the change.
             </Paragraph>
 
             <Heading className={classes(Margins.top16, Margins.bottom8)}>Blocked URLs</Heading>

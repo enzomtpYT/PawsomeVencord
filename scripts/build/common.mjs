@@ -133,7 +133,7 @@ export const makeAllPackagesExternalPlugin = {
 };
 
 /**
- * @type {(kind: "web" | "discordDesktop" | "vesktop" | "equibop") => import("esbuild").Plugin}
+ * @type {(kind: "web" | "discordDesktop" | "vesktop" | "equibop" | "pawtop") => import("esbuild").Plugin}
  */
 export const globPlugins = kind => ({
     name: "glob-plugins",
@@ -173,8 +173,8 @@ export const globPlugins = kind => ({
                             (target === "web" && kind === "discordDesktop") ||
                             (target === "desktop" && kind === "web") ||
                             (target === "discordDesktop" && kind !== "discordDesktop") ||
-                            (target === "vesktop" && kind !== "vesktop" && kind !== "equibop") ||
-                            (target === "equibop" && kind !== "equibop" && kind !== "vesktop");
+                            (target === "vesktop" && kind !== "vesktop" && kind !== "pawtop") ||
+                            (target === "pawtop" && kind !== "pawtop" && kind !== "vesktop");
 
                         if (excluded) {
                             const name = await resolvePluginName(fullDir, file);
