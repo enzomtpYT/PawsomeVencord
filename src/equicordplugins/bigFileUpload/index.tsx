@@ -12,7 +12,7 @@ import { Flex } from "@components/Flex";
 import { FormSwitch } from "@components/FormSwitch";
 import { Heading } from "@components/Heading";
 import { OpenExternalIcon } from "@components/Icons";
-import { Devs } from "@utils/constants";
+import { Devs, EquicordDevs } from "@utils/constants";
 import { insertTextIntoChatInputBox, sendMessage } from "@utils/discord";
 import { Margins } from "@utils/margins";
 import definePlugin, { OptionType, PluginNative } from "@utils/types";
@@ -288,6 +288,7 @@ function SettingsComponent(props: { setValue(v: any): void; }) {
                         { label: "GoFile (Temporary | Unlimited)", value: "GoFile" },
                         { label: "Catbox (Up to 200MB)", value: "Catbox" },
                         { label: "Litterbox (Temporary | Up to 1GB)", value: "Litterbox" },
+                        { label: "Zipline (Self-Hosted | Ask for Access to enzomtp  )", value: "Zipline" },
                         { label: "Custom Uploader", value: "Custom" },
                     ]}
                     className={Margins.bottom16}
@@ -395,6 +396,66 @@ function SettingsComponent(props: { setValue(v: any): void; }) {
                             select={newValue => updateSetting("litterboxTime", newValue)}
                             isSelected={v => v === settings.store.litterboxTime}
                             serialize={v => v}
+                        />
+                    </section>
+                </>
+            )}
+
+            {fileUploader === "Zipline" && (
+                <>
+                    <section>
+                        <Heading>Zipline Authorization Token (required)</Heading>
+                        <Forms.FormText>
+                            Insert your Zipline authorization token. This is required to upload files to your Zipline instance.
+                        </Forms.FormText>
+                        <TextInput
+                            type="text"
+                            value={settings.store.ziplineAuthToken || ""}
+                            placeholder="Insert Authorization Token"
+                            onChange={newValue => updateSetting("ziplineAuthToken", newValue)}
+                            className={Margins.top16}
+                        />
+                    </section>
+
+                    <section>
+                        <Heading>Zipline Server URL (optional)</Heading>
+                        <Forms.FormText>
+                            Insert your custom Zipline server URL. Defaults to https://share.enzomtp.party/api/upload if not provided.
+                        </Forms.FormText>
+                        <TextInput
+                            type="text"
+                            value={settings.store.ziplineServerURL || ""}
+                            placeholder="https://share.enzomtp.party/api/upload"
+                            onChange={newValue => updateSetting("ziplineServerURL", newValue)}
+                            className={Margins.top16}
+                        />
+                    </section>
+
+                    <section>
+                        <Heading>Zipline Folder (optional)</Heading>
+                        <Forms.FormText>
+                            Specify a folder name to organize uploaded files on your Zipline instance.
+                        </Forms.FormText>
+                        <TextInput
+                            type="text"
+                            value={settings.store.ziplineFolder || ""}
+                            placeholder="Folder name (optional)"
+                            onChange={newValue => updateSetting("ziplineFolder", newValue)}
+                            className={Margins.top16}
+                        />
+                    </section>
+
+                    <section>
+                        <Heading>Zipline Delete After (optional)</Heading>
+                        <Forms.FormText>
+                            Specify when the file should be deleted after upload (e.g., "30d" for 30 days, "12h" for 12 hours, "7d" for 7 days). Leave empty for permanent storage.
+                        </Forms.FormText>
+                        <TextInput
+                            type="text"
+                            value={settings.store.ziplineDeleteAfter || ""}
+                            placeholder="e.g., 30d, 12h, 7d (optional)"
+                            onChange={newValue => updateSetting("ziplineDeleteAfter", newValue)}
+                            className={Margins.top16}
                         />
                     </section>
                 </>
@@ -558,6 +619,7 @@ const settings = definePluginSettings({
             { label: "GoFile (Streaming)", value: "GoFile" },
             { label: "Catbox (Up to 200MB)", value: "Catbox", default: true },
             { label: "Litterbox (Temporary | Up to 1GB)", value: "Litterbox" },
+            { label: "Zipline", value: "Zipline" },
             { label: "Custom Uploader", value: "Custom" },
         ],
         description: "Select the file uploader service",
@@ -613,6 +675,30 @@ const settings = definePluginSettings({
             { label: "72 hours", value: "72h" },
         ],
         description: "Duration for files on Litterbox before they are deleted",
+        hidden: true
+    },
+    ziplineAuthToken: {
+        type: OptionType.STRING,
+        default: "",
+        description: "Authorization token for Zipline uploader (required)",
+        hidden: true
+    },
+    ziplineServerURL: {
+        type: OptionType.STRING,
+        default: "https://share.enzomtp.party/api/upload",
+        description: "Server URL for Zipline uploader",
+        hidden: true
+    },
+    ziplineFolder: {
+        type: OptionType.STRING,
+        default: "",
+        description: "Folder for Zipline uploader (optional)",
+        hidden: true
+    },
+    ziplineDeleteAfter: {
+        type: OptionType.STRING,
+        default: "",
+        description: "Delete after duration for Zipline uploader (optional, e.g., 30d, 12h, 7d)",
         hidden: true
     },
     customUploaderName: {
@@ -683,18 +769,36 @@ function handleCSPError(error: unknown, serviceName: string, channelId: string) 
         errorMessage.includes("CSP") ||
         errorMessage.includes("violates the following Content Security Policy directive");
 
-    if (isCSPError) {
-        console.error(`CSP blocking ${serviceName}:`, error);
+    // Some environments report CSP or connectivity problems as a generic fetch failure.
+    const isNetworkFetchFailed = /fetch failed|Failed to fetch|ENOTFOUND|ECONNREFUSED|ERR_NAME_NOT_RESOLVED|ERR_CONNECTION_REFUSED/i.test(errorMessage);
+
+    if (isCSPError || isNetworkFetchFailed) {
+        console.error(`${isCSPError ? "CSP" : "Network"} issue with ${serviceName}`);
+
+        const genericAdvice = "**Try:**\n" +
+            "• Use the **Custom uploader** with a CSP-friendly domain\n" +
+            "• Switch to GoFile which often bypasses CSP\n" +
+            "• Check plugin settings for alternative uploaders\n";
+
+        // Extra hints for self-hosted services like Zipline
+        const ziplineAdvice = serviceName === "Zipline"
+            ? ("\n**Zipline checks:**\n" +
+                "• Verify the Server URL is correct and includes /api/upload\n" +
+                "• Ensure your Authorization token is valid (no 'Bearer ' prefix unless your server requires it)\n" +
+                "• If behind Cloudflare or a reverse proxy, disable browser challenges for API routes\n" +
+                "• Check SSL/TLS cert validity; Electron may reject invalid/self-signed certs\n")
+            : "";
+
         sendBotMessage(channelId, {
-            content: `**${serviceName} blocked by Content Security Policy**\n` +
-                `Discord's security policy is preventing uploads to ${serviceName}.\n\n` +
-                "**Solutions:**\n" +
-                "• Try using the **Custom uploader** with a CSP-compliant service\n" +
-                "• Switch to GoFile which has CSP workarounds\n" +
-                "• Check plugin settings for alternative upload services\n\n" +
-                "-# This is a Discord security restriction, not a plugin issue."
+            content: `**${serviceName} upload failed due to ${isCSPError ? "Content Security Policy" : "network connectivity"}**\n` +
+                (isCSPError
+                    ? `Discord's security policy is preventing uploads to ${serviceName}.\n\n`
+                    : `The request to ${serviceName} failed to connect.\n\n`) +
+                genericAdvice + ziplineAdvice +
+                "\n-# If the issue persists, check the console for full error details."
         });
-        showToast(`${serviceName} blocked by CSP - Try Custom uploader`, Toasts.Type.FAILURE);
+
+        showToast(`${serviceName}: ${isCSPError ? "Blocked by CSP" : "Network/CSP error"}`, Toasts.Type.FAILURE);
         return true;
     }
     return false;
@@ -851,6 +955,55 @@ async function uploadFileToLitterboxWithStreaming(file: File, channelId: string)
 }
 
 /**
+ * Zipline upload
+ */
+async function uploadFileToZiplineWithStreaming(file: File, channelId: string) {
+    console.log(`[Zipline] Starting upload for ${file.name} (${(file.size / 1024 / 1024).toFixed(1)}MB)`);
+
+    const authToken = settings.store.ziplineAuthToken;
+    const serverURL = settings.store.ziplineServerURL || "https://share.enzomtp.party/api/upload";
+    const folder = settings.store.ziplineFolder;
+    const deleteAfter = settings.store.ziplineDeleteAfter;
+
+    if (!authToken || authToken.trim() === "") {
+        throw new Error("Zipline authorization token is required");
+    }
+
+    try {
+        console.log("[Zipline] Converting file to ArrayBuffer...");
+        const arrayBuffer = await file.arrayBuffer();
+        console.log(`[Zipline] ArrayBuffer conversion completed (${arrayBuffer.byteLength} bytes)`);
+        console.log(`[Zipline] Uploading ${file.name} (${(file.size / 1024 / 1024).toFixed(1)}MB) to ${serverURL}`);
+
+        const uploadResult = await Native.uploadFileToZiplineNative(
+            serverURL,
+            arrayBuffer,
+            file.name,
+            file.type,
+            authToken,
+            folder,
+            deleteAfter
+        );
+
+        if (uploadResult.startsWith("https://") || uploadResult.startsWith("http://")) {
+            let finalUrl = uploadResult;
+
+            if (settings.store.autoFormat === "Yes") {
+                finalUrl = `[${file.name}](${finalUrl})`;
+            }
+
+            setTimeout(() => sendTextToChat(`${finalUrl} `), 10);
+            showToast(`${file.name} Successfully Uploaded to Zipline!`, Toasts.Type.SUCCESS);
+            UploadManager.clearAll(channelId, DraftType.SlashCommand);
+        } else {
+            throw new Error(`Zipline upload failed: ${uploadResult}`);
+        }
+    } catch (nativeError) {
+        throw new Error(`Zipline streaming upload failed: ${getErrorMessage(nativeError)}`);
+    }
+}
+
+/**
  * Custom upload
  */
 async function uploadFileCustomWithStreaming(file: File, channelId: string) {
@@ -935,9 +1088,11 @@ function getCompatibleUploaders(fileSize: number, primaryUploader: string): stri
     const uploaderOrder: string[] = [];
 
     if (sizeMB > 1024) {
-        // Files larger than 1GB - only GoFile and Custom can handle these
+        // Files larger than 1GB - only GoFile, Zipline, and Custom can handle these
         if (primaryUploader === "GoFile") {
             uploaderOrder.push("GoFile");
+        } else if (primaryUploader === "Zipline") {
+            uploaderOrder.push("Zipline");
         } else if (primaryUploader === "Custom") {
             uploaderOrder.push("Custom");
         }
@@ -945,15 +1100,20 @@ function getCompatibleUploaders(fileSize: number, primaryUploader: string): stri
         if (primaryUploader !== "GoFile") {
             uploaderOrder.push("GoFile");
         }
+        if (primaryUploader !== "Zipline") {
+            uploaderOrder.push("Zipline");
+        }
         if (primaryUploader !== "Custom") {
             uploaderOrder.push("Custom");
         }
     } else if (sizeMB > 200) {
-        // Files 200MB-1GB - Litterbox, GoFile, and Custom can handle these
+        // Files 200MB-1GB - Litterbox, GoFile, Zipline, and Custom can handle these
         if (primaryUploader === "Litterbox") {
             uploaderOrder.push("Litterbox");
         } else if (primaryUploader === "GoFile") {
             uploaderOrder.push("GoFile");
+        } else if (primaryUploader === "Zipline") {
+            uploaderOrder.push("Zipline");
         } else if (primaryUploader === "Custom") {
             uploaderOrder.push("Custom");
         }
@@ -964,6 +1124,9 @@ function getCompatibleUploaders(fileSize: number, primaryUploader: string): stri
         if (primaryUploader !== "GoFile") {
             uploaderOrder.push("GoFile");
         }
+        if (primaryUploader !== "Zipline") {
+            uploaderOrder.push("Zipline");
+        }
         if (primaryUploader !== "Custom") {
             uploaderOrder.push("Custom");
         }
@@ -971,7 +1134,7 @@ function getCompatibleUploaders(fileSize: number, primaryUploader: string): stri
         // Files under 200MB - all services can handle these
         uploaderOrder.push(primaryUploader);
 
-        const fallbackOrder = ["Catbox", "Litterbox", "GoFile", "Custom"];
+        const fallbackOrder = ["Catbox", "Litterbox", "GoFile", "Zipline", "Custom"];
         for (const uploader of fallbackOrder) {
             if (uploader !== primaryUploader) {
                 uploaderOrder.push(uploader);
@@ -1061,6 +1224,8 @@ async function uploadFile(file: File, channelId: string) {
                         return uploadFileToCatboxWithStreaming(file, channelId);
                     case "Litterbox":
                         return uploadFileToLitterboxWithStreaming(file, channelId);
+                    case "Zipline":
+                        return uploadFileToZiplineWithStreaming(file, channelId);
                     case "Custom":
                         return uploadFileCustomWithStreaming(file, channelId);
                     default:
@@ -1106,7 +1271,7 @@ async function uploadFile(file: File, channelId: string) {
             if (i === uploaderOrder.length - 1) {
                 console.error("[BigFileUpload] All uploaders failed. Last error:", lastError);
 
-                const allUploaders = ["Catbox", "Litterbox", "GoFile", "Custom"];
+                const allUploaders = ["Catbox", "Litterbox", "GoFile", "Zipline", "Custom"];
                 const skippedUploaders = allUploaders.filter(u => !uploaderOrder.includes(u));
 
                 let skipMessage = "";
@@ -1193,7 +1358,7 @@ const ctxMenuPatch: NavContextMenuPatchCallback = (children, props) => {
 export default definePlugin({
     name: "BigFileUpload",
     description: "Bypass Discord's upload limit by uploading files using the 'Upload a Big File' button or /fileupload and they'll get uploaded as links into chat via file uploaders.",
-    authors: [Devs.ScattrdBlade],
+    authors: [Devs.ScattrdBlade, EquicordDevs.enzomtp],
     settings,
     dependencies: ["CommandsAPI"],
     contextMenus: {
