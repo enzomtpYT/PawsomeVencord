@@ -38,7 +38,7 @@ export function ChatPluginCard({ url, description }: { url: string, description:
     if (excludedPlugin || !p) {
         const toolTipText = !p
             ? `${pluginName} is only available on the ${ExcludedReasons[ExcludedPlugins[pluginName]]}`
-            : "This plugin is not on this version of Equicord. Try updating!";
+            : "This plugin is not on this version of PawsomeVencord. Try updating!";
 
         const card = (
             <AddonCard
@@ -63,7 +63,7 @@ export function ChatPluginCard({ url, description }: { url: string, description:
 
     if (required) {
         const tooltipText = p.required || !dependents.length
-            ? "This plugin is required for Equicord to function."
+            ? "This plugin is required for PawsomeVencord to function."
             : <PluginDependencyList deps={dependents} />;
 
         return (

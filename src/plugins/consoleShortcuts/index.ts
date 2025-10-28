@@ -181,8 +181,8 @@ function makeShortcuts() {
             });
         },
         switchBranch: (branch: string) => {
-            if (!IS_VESKTOP && !IS_EQUIBOP) throw new Error("This function only works on vesktop, equibop and pawtop.");
-            const target = IS_VESKTOP ? Vesktop : Equibop;
+            if (!IS_VESKTOP && !IS_PAWTOP) throw new Error("This function only works on vesktop, equibop and pawtop.");
+            const target = IS_VESKTOP ? Vesktop : Pawtop;
             if (target.Settings.store.discordBranch === branch) throw new Error(`Already on ${branch}.`);
             target.Settings.store.discordBranch = branch;
             VesktopNative.app.relaunch();

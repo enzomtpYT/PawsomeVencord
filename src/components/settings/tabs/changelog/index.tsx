@@ -131,7 +131,7 @@ function UpdateLogCard({
                         <Button
                             size={Button.Sizes.NONE}
                             color={Button.Colors.TRANSPARENT}
-                            look={Button.Looks.LINK}
+                            look={Button.Looks.FILLED}
                             className="vc-changelog-delete-button"
                             style={{
                                 padding: "4px",
@@ -492,7 +492,7 @@ function ChangelogContent() {
     return (
         <>
             <Paragraph className={Margins.bottom16}>
-                View the most recent changes to Equicord. This fetches commits
+                View the most recent changes to PawsomeVencord. This fetches commits
                 directly from the repository to show you what's new.
             </Paragraph>
 

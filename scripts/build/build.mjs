@@ -128,7 +128,7 @@ const buildConfigs = ([
             ...defines,
             IS_DISCORD_DESKTOP: "true",
             IS_VESKTOP: "false",
-            IS_EQUIBOP: "false"
+            IS_PAWTOP: "false"
         }
     },
     {
@@ -148,7 +148,7 @@ const buildConfigs = ([
             ...defines,
             IS_DISCORD_DESKTOP: "true",
             IS_VESKTOP: "false",
-            IS_EQUIBOP: "false"
+            IS_PAWTOP: "false"
         }
     },
     {
@@ -161,7 +161,7 @@ const buildConfigs = ([
             ...defines,
             IS_DISCORD_DESKTOP: "true",
             IS_VESKTOP: "false",
-            IS_EQUIBOP: "false"
+            IS_PAWTOP: "false"
         }
     },
 
@@ -180,7 +180,7 @@ const buildConfigs = ([
             ...defines,
             IS_DISCORD_DESKTOP: "false",
             IS_VESKTOP: "false",
-            IS_EQUIBOP: "true"
+            IS_PAWTOP: "true"
         }
     },
     {
@@ -200,7 +200,7 @@ const buildConfigs = ([
             ...defines,
             IS_DISCORD_DESKTOP: "false",
             IS_VESKTOP: "false",
-            IS_EQUIBOP: "true"
+            IS_PAWTOP: "true"
         }
     },
     {
@@ -213,7 +213,7 @@ const buildConfigs = ([
             ...defines,
             IS_DISCORD_DESKTOP: "false",
             IS_VESKTOP: "false",
-            IS_EQUIBOP: "true"
+            IS_PAWTOP: "true"
         }
     }
 ]);

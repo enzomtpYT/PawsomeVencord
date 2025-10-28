@@ -76,6 +76,13 @@ export default definePlugin({
                 match: /(?<=function\((\i),(\i),\i\)\{)(?=let \i=Object.values\(\i\.\i\).+?(\(0,\i\.openUserSettings\))\()/,
                 replace: (_, settingsPanel, section, openUserSettings) => `${openUserSettings}(${settingsPanel},{section:${section}});return;`
             }
+        },
+        {
+            find: "2025-09-user-settings-redesign-1",
+            replacement: {
+                match: /enabled:![01],showLegacyOpen:/g,
+                replace: "enabled:false,showLegacyOpen:"
+            }
         }
     ],
 
@@ -269,7 +276,7 @@ export default definePlugin({
         if (IS_DEV) version = "Dev";
         if (IS_WEB) version = "Web";
         if (IS_VESKTOP) version = `Vesktop v${VesktopNative.app.getVersion()}`;
-        if (IS_EQUIBOP) version = `Pawtop v${VesktopNative.app.getVersion()}`;
+        if (IS_PAWTOP) version = `Pawtop v${VesktopNative.app.getVersion()}`;
         if (IS_STANDALONE) version = "Standalone";
 
         return support && version ? ` (${version})` : version;

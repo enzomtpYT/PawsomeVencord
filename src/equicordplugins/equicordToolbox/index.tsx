@@ -135,7 +135,7 @@ function VencordPopoutButton({ buttonClass }: { buttonClass: string; }) {
                     ref={buttonRef}
                     className={`vc-toolbox-btn ${buttonClass}`}
                     onClick={() => setShow(v => !v)}
-                    tooltip={isShown ? null : "Equicord Toolbox"}
+                    tooltip={isShown ? null : "PawsomeVencord Toolbox"}
                     icon={() => VencordPopoutIcon()}
                     selected={isShown}
                 />
@@ -144,10 +144,10 @@ function VencordPopoutButton({ buttonClass }: { buttonClass: string; }) {
     );
 }
 
-migratePluginSettings("EquicordToolbox", "VencordToolbox");
+migratePluginSettings("PawsomeVencord", "EquicordToolbox", "VencordToolbox");
 export default definePlugin({
-    name: "EquicordToolbox",
-    description: "Adds a button next to the inbox button in the channel header that houses Equicord quick actions",
+    name: "PawsomeVencordToolbox",
+    description: "Adds a button next to the inbox button in the channel header that houses PawsomeVencord quick actions",
     authors: [Devs.Ven, Devs.AutumnVN],
 
     patches: [
