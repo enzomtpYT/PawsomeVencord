@@ -129,19 +129,18 @@ export function PawsomeDonorModal() {
         }}>
             <ModalRoot {...props}>
                 <ModalHeader>
-                    <Flex style={{ width: "100%", justifyContent: "center" }}>
-                        <Forms.FormTitle
-                            tag="h2"
-                            style={{
-                                width: "100%",
-                                textAlign: "center",
-                                margin: 0
-                            }}
-                        >
+                    <HeadingPrimary
+                        style={{
+                            width: "100%",
+                            textAlign: "center",
+                            margin: 0
+                        }}
+                    >
+                        <Flex style={{ justifyContent: "center", alignItems: "center", gap: "0.5em" }}>
                             <Heart />
                             Pawsome Person
-                        </Forms.FormTitle>
-                    </Flex>
+                        </Flex>
+                    </HeadingPrimary>
                 </ModalHeader>
                 <ModalContent>
                     <Flex>
@@ -159,12 +158,12 @@ export function PawsomeDonorModal() {
                         />
                     </Flex>
                     <div style={{ padding: "1em" }}>
-                        <Forms.FormText>
+                        <Paragraph>
                             This Badge is a special perk for Pawsome People
-                        </Forms.FormText>
-                        <Forms.FormText className={Margins.top20}>
+                        </Paragraph>
+                        <Paragraph className={Margins.top20}>
                             If you want a Pawsome badge, dm @enzomtp :3
-                        </Forms.FormText>
+                        </Paragraph>
                     </div>
                 </ModalContent>
                 <ModalFooter>

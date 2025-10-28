@@ -32,11 +32,11 @@ export const SettingsPanelButton = (props: SettingsPanelButtonProps) => {
         <Button
             size={Button.Sizes.SMALL}
             className={classes(panelClasses.button, panelClasses.buttonColor)}
-            innerClassName={classes(panelClasses.buttonContents)}
-            wrapperClassName={classes(panelClasses.button)}
             {...props}
         >
-            {props.icon && <props.icon className={classes(panelClasses.buttonIcon)} />}
+            <div className={classes(panelClasses.buttonContents)}>
+                {props.icon && <props.icon className={classes(panelClasses.buttonIcon)} />}
+            </div>
         </Button>
     );
 };

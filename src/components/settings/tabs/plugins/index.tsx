@@ -109,6 +109,7 @@ export const ExcludedReasons: Record<"web" | "discordDesktop" | "vesktop" | "equ
     discordDesktop: "Discord Desktop app",
     vesktop: "Vesktop & Pawtop apps",
     pawtop: "Vesktop & Pawtop apps",
+    equibop: "Equibop app",
     web: "Vesktop & Pawtop apps as well as the Web version of Discord",
     dev: "Developer version of PawsomeVencord"
 };

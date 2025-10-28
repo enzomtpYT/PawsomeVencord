@@ -26,16 +26,15 @@ export function IconWithTooltip({ text, icon, onClick, isDisabled }) {
             <div style={{ display: "flex" }}>
                 <Button
                     aria-label={text}
-                    look={Button.Looks.BLANK}
+                    look={Button.Looks.LINK}
                     onMouseEnter={onMouseEnter}
                     onMouseLeave={onMouseLeave}
                     onClick={onClick}
                     size=""
-                    innerClassName={ButtonWrapperClasses.button}
                     disabled={disabled}
                     style={{ paddingRight: "13px" }}
                 >
-                    {icon}
+                    <div className={ButtonWrapperClasses.button}>{icon}</div>
                 </Button>
             </div>
         )}
