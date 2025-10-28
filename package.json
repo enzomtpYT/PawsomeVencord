@@ -1,5 +1,5 @@
 {
-    "name": "equicord",
+    "name": "pawsomevencord",
     "private": "true",
     "version": "1.13.4",
     "description": "The other cutest Discord client mod",
@@ -12,7 +12,7 @@
         "url": "git+https://github.com/enzomtpYT/PawsomeVencord.git"
     },
     "license": "GPL-3.0-or-later",
-    "author": "Equicord",
+    "author": "PawsomeVencord",
     "scripts": {
         "build": "node --require=./scripts/suppressExperimentalWarnings.js scripts/build/build.mjs",
         "buildStandalone": "pnpm build --standalone",

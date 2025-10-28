@@ -49,7 +49,7 @@ function patchLatest() {
 
         if (!existsSync(app) || statSync(app).isDirectory()) return;
 
-        console.info("[Equicord] Detected Host Update. Repatching...");
+        console.info("[PawsomeVencord] Detected Host Update. Repatching...");
 
         renameSync(app, _app);
         mkdirSync(app);
@@ -59,7 +59,7 @@ function patchLatest() {
         }));
         writeFileSync(join(app, "index.js"), `require(${JSON.stringify(join(__dirname, "patcher.js"))});`);
     } catch (err) {
-        console.error("[Equicord] Failed to repatch latest host update", err);
+        console.error("[PawsomeVencord] Failed to repatch latest host update", err);
     }
 }
 

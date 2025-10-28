@@ -41,7 +41,7 @@ declare global {
     export var IS_ANTI_CRASH_TEST: boolean;
     export var IS_DISCORD_DESKTOP: boolean;
     export var IS_VESKTOP: boolean;
-    export var IS_EQUIBOP: boolean;
+    export var IS_PAWTOP: boolean;
     export var VERSION: string;
     export var BUILD_TIMESTAMP: number;
 
@@ -64,7 +64,7 @@ declare global {
      */
     export var DiscordNative: any;
     export var Vesktop: any;
-    export var Equibop: any;
+    export var Pawtop: any;
     export var VesktopNative: any;
 
     interface Window extends Record<PropertyKey, any> { }

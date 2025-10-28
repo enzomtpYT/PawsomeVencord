@@ -492,7 +492,7 @@ function ChangelogContent() {
     return (
         <>
             <Paragraph className={Margins.bottom16}>
-                View the most recent changes to Equicord. This fetches commits
+                View the most recent changes to PawsomeVencord. This fetches commits
                 directly from the repository to show you what's new.
             </Paragraph>
 

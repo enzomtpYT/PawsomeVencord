@@ -50,7 +50,7 @@ export default definePlugin({
     description: "arRPCBun integration",
     authors: [EquicordDevs.creations],
     reporterTestable: ReporterTestable.None,
-    enabledByDefault: IS_EQUIBOP,
+    enabledByDefault: IS_PAWTOP,
     settings,
 
     commands: [
@@ -62,18 +62,18 @@ export default definePlugin({
                 return result;
             },
             execute: () => {
-                const arrpcStatus = IS_EQUIBOP ? VesktopNative.arrpc?.getStatus?.() : null;
+                const arrpcStatus = IS_PAWTOP ? VesktopNative.arrpc?.getStatus?.() : null;
 
                 let content = "";
 
-                if (IS_EQUIBOP) {
+                if (IS_PAWTOP) {
                     const version = VesktopNative.app.getVersion();
                     const gitHash = VesktopNative.app.getGitHash?.();
                     const shortHash = gitHash?.slice(0, 7);
 
-                    content += `Equibop: v${version}`;
+                    content += `Pawtop: v${version}`;
                     if (shortHash) {
-                        content += ` • [${shortHash}](<https://github.com/Equicord/Equibop/commit/${gitHash}>)`;
+                        content += ` • [${shortHash}](<https://github.com/enzomtpYT/Pawtop/commit/${gitHash}>)`;
                     }
                     content += "\n";
                 }
@@ -147,13 +147,13 @@ export default definePlugin({
 
     async start() {
         // only works on 3.0.8+
-        if (IS_EQUIBOP) {
+        if (IS_PAWTOP) {
             const version = VesktopNative.app.getVersion();
             const [major, minor, patch] = version.split(".").map(Number);
 
             if (major < 3 || (major === 3 && minor === 0 && patch < 8) && !settings.store.oldVerNotice) {
-                logger.error(`Equibop ${version} is too old. Requires 3.0.8+ for arRPCBun fix.`);
-                showNotice(`arRPCBun requires Equibop 3.0.8+. You have ${version}. Update Equibop to use this plugin.`, "OK", () => {
+                logger.error(`Pawtop ${version} is too old. Requires 3.0.8+ for arRPCBun fix.`);
+                showNotice(`arRPCBun requires Pawtop 3.0.8+. You have ${version}. Update Pawtop to use this plugin.`, "OK", () => {
                     settings.store.oldVerNotice = true;
                     popNotice();
                 });
@@ -168,13 +168,13 @@ export default definePlugin({
             Vencord.Plugins.stopPlugin(webRPC);
         }
 
-        // get arRPC status from Equibop if available, otherwise use defaults
-        const arrpcStatus = IS_EQUIBOP ? VesktopNative.arrpc?.getStatus?.() : null;
+        // get arRPC status from Pawtop if available, otherwise use defaults
+        const arrpcStatus = IS_PAWTOP ? VesktopNative.arrpc?.getStatus?.() : null;
 
-        // if on Equibop and arRPC is disabled AND not running, warn user
-        if (IS_EQUIBOP && !arrpcStatus?.enabled && !arrpcStatus?.running && !settings.store.oneTimeNotice) {
-            logger.warn("Equibop's built-in arRPC is disabled and not running");
-            showNotice("arRPC is not running. Enable it in Equibop settings, or run your own arRPCBun server.", "OK", () => {
+        // if on Pawtop and arRPC is disabled AND not running, warn user
+        if (IS_PAWTOP && !arrpcStatus?.enabled && !arrpcStatus?.running && !settings.store.oneTimeNotice) {
+            logger.warn("Pawtop's built-in arRPC is disabled and not running");
+            showNotice("arRPC is not running. Enable it in Pawtop settings, or run your own arRPCBun server.", "OK", () => {
                 settings.store.oneTimeNotice = true;
                 popNotice();
             });

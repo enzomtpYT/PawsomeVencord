@@ -378,7 +378,7 @@ const exportEmojis = async () => {
     const exportData = await exportEmojisToJson();
     const data = new TextEncoder().encode(exportData);
 
-    if (IS_WEB || IS_EQUIBOP || IS_VESKTOP) {
+    if (IS_WEB || IS_PAWTOP || IS_VESKTOP) {
         const file = new File([data], fileName, { type: "application/json" });
         const a = document.createElement("a");
         a.href = URL.createObjectURL(file);
@@ -413,7 +413,7 @@ async function exportEmojisToJson() {
 }
 
 const uploadEmojis = async () => {
-    if (IS_WEB || IS_EQUIBOP || IS_VESKTOP) {
+    if (IS_WEB || IS_PAWTOP || IS_VESKTOP) {
         const input = document.createElement("input");
         input.type = "file";
         input.style.display = "none";

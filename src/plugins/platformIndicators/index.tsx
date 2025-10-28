@@ -239,8 +239,8 @@ const settings = definePluginSettings({
         restartNeeded: true,
         options: [
             {
-                label: "Equicord",
-                value: "equicord",
+                label: "PawsomeVencord",
+                value: "pawsomevencord",
                 default: true
             },
             {

@@ -26,7 +26,7 @@ import { Link } from "@components/Link";
 import { Paragraph } from "@components/Paragraph";
 import { openUpdaterModal } from "@components/settings/tabs/updater";
 import { platformName } from "@equicordplugins/equicordHelper/utils";
-import { CONTRIB_ROLE_ID, Devs, DONOR_ROLE_ID, EQUIBOP_CONTRIB_ROLE_ID, EQUICORD_TEAM, GUILD_ID, SUPPORT_CHANNEL_ID, SUPPORT_CHANNEL_IDS, VC_CONTRIB_ROLE_ID, VC_DONOR_ROLE_ID, VC_GUILD_ID, VC_REGULAR_ROLE_ID, VC_SUPPORT_CHANNEL_IDS, VENCORD_CONTRIB_ROLE_ID } from "@utils/constants";
+import { CONTRIB_ROLE_ID, Devs, DONOR_ROLE_ID, EQUICORD_TEAM, GUILD_ID, PAWTOP_CONTRIB_ROLE_ID, SUPPORT_CHANNEL_ID, SUPPORT_CHANNEL_IDS, VC_CONTRIB_ROLE_ID, VC_DONOR_ROLE_ID, VC_GUILD_ID, VC_REGULAR_ROLE_ID, VC_SUPPORT_CHANNEL_IDS, VENCORD_CONTRIB_ROLE_ID } from "@utils/constants";
 import { sendMessage } from "@utils/discord";
 import { Logger } from "@utils/Logger";
 import { Margins } from "@utils/margins";
@@ -53,7 +53,7 @@ const TrustedRolesIds = [
     EQUICORD_TEAM, // Equicord Team
     DONOR_ROLE_ID, // Equicord Donor
     CONTRIB_ROLE_ID, // Equicord Contributor
-    EQUIBOP_CONTRIB_ROLE_ID, // Equibop Contributor
+    PAWTOP_CONTRIB_ROLE_ID, // Pawtop Contributor
     VENCORD_CONTRIB_ROLE_ID, // Vencord Contributor
 ];
 
@@ -78,11 +78,11 @@ async function generateDebugInfoMessage() {
     const client = (() => {
         if (IS_DISCORD_DESKTOP) return `Discord Desktop v${DiscordNative.app.getVersion()}`;
         if (IS_VESKTOP) return `Vesktop v${VesktopNative.app.getVersion()}`;
-        if (IS_EQUIBOP) {
-            const equibopGitHash = tryOrElse(() => VesktopNative.app.getGitHash?.(), null);
-            if (equibopGitHash) {
-                const shortHash = equibopGitHash.slice(0, 7);
-                return `Pawtop v${VesktopNative.app.getVersion()} • [${shortHash}](<https://github.com/enzomtpYT/Pawtop/commit/${equibopGitHash}>)`;
+        if (IS_PAWTOP) {
+            const pawtopGitHash = tryOrElse(() => VesktopNative.app.getGitHash?.(), null);
+            if (pawtopGitHash) {
+                const shortHash = pawtopGitHash.slice(0, 7);
+                return `Pawtop v${VesktopNative.app.getVersion()} • [${shortHash}](<https://github.com/enzomtpYT/Pawtop/commit/${pawtopGitHash}>)`;
             }
             return `Pawtop v${VesktopNative.app.getVersion()}`;
         }
@@ -95,8 +95,8 @@ async function generateDebugInfoMessage() {
 
     const info = {
         Equicord:
-            `v${VERSION} • [${shortGitHash()}](<https://github.com/Equicord/Equicord/commit/${gitHash}>)` +
-            `${IS_EQUIBOP ? "" : SettingsPlugin.getVersionInfo()} - ${Intl.DateTimeFormat("en-US", { dateStyle: "medium" }).format(BUILD_TIMESTAMP)}`,
+            `v${VERSION} • [${shortGitHash()}](<https://github.com/enzomtpYT/PawsomeVencord/commit/${gitHash}>)` +
+            `${IS_PAWTOP ? "" : SettingsPlugin.getVersionInfo()} - ${Intl.DateTimeFormat("en-US", { dateStyle: "medium" }).format(BUILD_TIMESTAMP)}`,
         Client: `${RELEASE_CHANNEL} ~ ${client}`,
         Platform: platformName()
     };
@@ -117,8 +117,8 @@ async function generateDebugInfoMessage() {
     const commonIssues = {
         "Activity Sharing Disabled": tryOrElse(() => !ShowCurrentGame.getSetting(), false),
         "Link Embeds Disabled": tryOrElse(() => !ShowEmbeds.getSetting(), false),
-        "Equicord DevBuild": !IS_STANDALONE,
-        "Equibop DevBuild": IS_EQUIBOP && tryOrElse(() => VesktopNative.app.isDevBuild?.(), false),
+        "PawsomeVencord DevBuild": !IS_STANDALONE,
+        "Pawtop DevBuild": IS_PAWTOP && tryOrElse(() => VesktopNative.app.isDevBuild?.(), false),
         "Has UserPlugins": Object.values(PluginMeta).some(m => m.userPlugin),
         ">2 Weeks Outdated": BUILD_TIMESTAMP < Date.now() - 12096e5,
         [`Potentially Problematic Plugins: ${potentiallyProblematicPlugins.join(", ")}`]: potentiallyProblematicPlugins.length
@@ -201,14 +201,14 @@ export default definePlugin({
     commands: [
         {
             name: "equicord-debug",
-            description: "Send Equicord debug info",
+            description: "Send PawsomeVencord debug info",
             // @ts-ignore
             predicate: ctx => isAnyPluginDev(UserStore.getCurrentUser()?.id) || isEquicordGuild(ctx?.guild?.id, true),
             execute: async () => ({ content: await generateDebugInfoMessage() })
         },
         {
             name: "equicord-plugins",
-            description: "Send Equicord plugin list",
+            description: "Send PawsomeVencord plugin list",
             // @ts-ignore
             predicate: ctx => isAnyPluginDev(UserStore.getCurrentUser()?.id) || isEquicordGuild(ctx?.guild?.id, true),
             execute: () => {
@@ -237,12 +237,12 @@ export default definePlugin({
                         </div>
                         <Paragraph>Before you ask for help,</Paragraph>
                         <Paragraph>Check for updates and if this</Paragraph>
-                        <Paragraph>issue could be caused by Equicord!</Paragraph>
+                        <Paragraph>issue could be caused by PawsomeVencord!</Paragraph>
                     </div>,
-                    confirmText: "Go to Equicord Support",
+                    confirmText: "Go to PawsomeVencord Support",
                     onConfirm() {
                         clicked = true;
-                        VencordNative.native.openExternal("https://equicord.org/discord");
+                        VencordNative.native.openExternal("https://discord.gg/w9jVtzNx4c");
                     },
                     cancelText: "Okay continue",
                     onCancel() {
@@ -258,7 +258,7 @@ export default definePlugin({
                     return Alerts.show({
                         title: "Hold on!",
                         body: <div>
-                            <Paragraph>You are using an outdated version of Equicord! Chances are, your issue is already fixed.</Paragraph>
+                            <Paragraph>You are using an outdated version of PawsomeVencord! Chances are, your issue is already fixed.</Paragraph>
                             <Paragraph className={Margins.top8}>
                                 Please first update before asking for support!
                             </Paragraph>
@@ -279,9 +279,9 @@ export default definePlugin({
                 return Alerts.show({
                     title: "Hold on!",
                     body: <div>
-                        <Paragraph>You are using an externally updated Equicord version, the ability to help you here may be limited.</Paragraph>
+                        <Paragraph>You are using an externally updated PawsomeVencord version, the ability to help you here may be limited.</Paragraph>
                         <Paragraph className={Margins.top8}>
-                            Please join the <Link href="https://equicord.org/discord">Equicord Server</Link> for support,
+                            Please join the <Link href="https://discord.gg/w9jVtzNx4c">PawsomeVencord Server</Link> for support,
                             or if this issue persists on Vencord, continue on.
                         </Paragraph>
                     </div>
@@ -292,11 +292,11 @@ export default definePlugin({
                 return Alerts.show({
                     title: "Hold on!",
                     body: <div>
-                        <Paragraph>You are using a custom build of Equicord, which we do not provide support for!</Paragraph>
+                        <Paragraph>You are using a custom build of PawsomeVencord, which we do not provide support for!</Paragraph>
 
                         <Paragraph className={Margins.top8}>
-                            We only provide support for <Link href="https://github.com/Equicord/Equicord">official builds</Link>.
-                            Either <Link href="https://github.com/Equicord/Equilotl">switch to an official build</Link> or figure your issue out yourself.
+                            We only provide support for <Link href="https://github.com/enzomtpYT/PawsomeVencord">official builds</Link>.
+                            Either <Link href="https://github.com/enzomtpYT/PawsomeVencordInstaller">switch to an official build</Link> or figure your issue out yourself.
                         </Paragraph>
 
                         <BaseText size="md" weight="bold" className={Margins.top8}>You will be banned from receiving support if you ignore this rule.</BaseText>

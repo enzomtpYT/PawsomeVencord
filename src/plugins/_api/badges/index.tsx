@@ -31,7 +31,7 @@ import { ContextMenuApi, Menu, Toasts, UserStore } from "@webpack/common";
 import { EquicordDonorModal, PawsomeDonorModal, VencordDonorModal } from "./modals";
 
 const CONTRIBUTOR_BADGE = "https://cdn.discordapp.com/emojis/1092089799109775453.png?size=64";
-const EQUICORD_CONTRIBUTOR_BADGE = "https://equicord.org/assets/favicon.png";
+const EQUICORD_CONTRIBUTOR_BADGE = "https://raw.githubusercontent.com/enzomtpYT/PawsomeVencord/refs/heads/main/browser/icon.png";
 
 const ContributorBadge: ProfileBadge = {
     description: "Vencord Contributor",
