@@ -148,7 +148,7 @@ export default definePlugin({
     },
 
     connect() {
-        const arrpcStatus = IS_EQUIBOP ? VesktopNative.arrpc?.getStatus?.() : null;
+        const arrpcStatus = IS_PAWTOP ? VesktopNative.arrpc?.getStatus?.() : null;
         const host = arrpcStatus?.host || "127.0.0.1";
         const port = arrpcStatus?.port || 1337;
 
