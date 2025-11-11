@@ -9,14 +9,14 @@ import definePlugin from "@utils/types";
 
 export default definePlugin({
     name: "CleanUserArea",
-    description: "Hide nameplate in the user area",
+    description: "Removes the nameplate styling from the user area.",
     authors: [EquicordDevs.Prism],
     patches: [
         {
             find: "#{intl::ACCOUNT_SPEAKING_WHILE_MUTED}",
             replacement: {
-                match: /nameplate:\i,hovered/,
-                replace: "nameplate:null,hovered",
+                match: /,nameplate:\i,selectedGuildId:(\i),avatarDecoration/,
+                replace: ",nameplate:null,selectedGuildId:$1,avatarDecoration",
             },
         },
     ],
