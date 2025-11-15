@@ -105,13 +105,13 @@ const enum SearchStatus {
 }
 
 export const ExcludedReasons: Record<"web" | "discordDesktop" | "vesktop" | "equibop" | "pawtop" | "desktop" | "dev", string> = {
-    desktop: "Discord Desktop app or Vesktop",
+    desktop: "Discord Desktop app or Vesktop/Equibop/Pawtop",
     discordDesktop: "Discord Desktop app",
-    vesktop: "Vesktop & Pawtop apps",
-    pawtop: "Vesktop & Pawtop apps",
-    equibop: "Equibop app",
-    web: "Vesktop & Pawtop apps as well as the Web version of Discord",
-    dev: "Developer version of PawsomeVencord"
+    vesktop: "Vesktop/Equibop apps",
+    pawtop: "Vesktop/Pawtop apps",
+    equibop: "Vesktop/Equibop apps",
+    web: "Vesktop/Equibop apps & Discord web",
+    dev: "Developer version of Equicord"
 };
 
 function ExcludedPluginsList({ search }: { search: string; }) {
