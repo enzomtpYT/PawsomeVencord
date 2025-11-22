@@ -274,7 +274,7 @@ export default definePlugin({
 
     getPawsomeDonorBadges(userId: string) {
         return PawsomeDonorBadges[userId]?.map(badge => ({
-            image: badge.badge,
+            iconSrc: badge.badge,
             description: badge.tooltip,
             position: BadgePosition.START,
             props: {
@@ -283,9 +283,12 @@ export default definePlugin({
                     transform: "scale(0.9)" // The image is a bit too big compared to default badges
                 }
             },
+            onContextMenu(event, badge) {
+                ContextMenuApi.openContextMenu(event, () => <BadgeContextMenu badge={badge} />);
+            },
             onClick() {
                 return PawsomeDonorModal();
             },
         } satisfies ProfileBadge));
-    }
+    },
 });

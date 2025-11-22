@@ -93,15 +93,15 @@ export function PluginCard({ plugin, disabled, onRestartNeeded, onMouseEnter, on
     const pluginInfo = [
         {
             condition: isModifiedPlugin,
-            src: "https://equicord.org/assets/icons/equicord/modified.png",
+            src: "https://raw.githubusercontent.com/enzomtpYT/PawsomeVencord/refs/heads/main/browser/modified.png",
             alt: "Modified",
             title: "Modified Vencord Plugin"
         },
         {
             condition: isEquicordPlugin,
             src: "https://raw.githubusercontent.com/enzomtpYT/PawsomeVencord/refs/heads/main/browser/icon.png",
-            alt: "Equicord",
-            title: "Equicord Plugin"
+            alt: "Equicord/PawsomeVencord",
+            title: "Equicord/PawsomeVencord Plugin"
         },
         {
             condition: isVencordPlugin,

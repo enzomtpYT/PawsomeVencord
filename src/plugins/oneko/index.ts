@@ -30,7 +30,7 @@ const enum Follower {
 }
 
 function getFollowerMap(who: Follower): string {
-    switch (who) {
+    switch (Number(who)) {
         case Follower.Oneko:
             return "https://i.imgur.com/Va6wavs.png";
         case Follower.Tora:
@@ -87,6 +87,7 @@ export default definePlugin({
     // Listing adryd here because this literally just evals her script
     authors: [Devs.Ven, Devs.adryd],
     settings,
+    isModified: true,
 
     start() {
         fetch("https://raw.githubusercontent.com/adryd325/oneko.js/c4ee66353b11a44e4a5b7e914a81f8d33111555e/oneko.js")

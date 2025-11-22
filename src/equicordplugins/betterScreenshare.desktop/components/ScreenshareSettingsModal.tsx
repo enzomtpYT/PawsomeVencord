@@ -16,11 +16,12 @@
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
 */
 
+import { Card } from "@components/Card";
 import { Flex } from "@components/Flex";
 import { Switch } from "@components/Switch";
 import { ModalSize, openModalLazy } from "@utils/modal";
 import { SelectOption } from "@vencord/discord-types";
-import { Button, Card, Forms, React, Select, Slider, TextInput, useEffect, useState } from "@webpack/common";
+import { Button, Forms, React, Select, Slider, TextInput, useEffect, useState } from "@webpack/common";
 
 import { MicrophoneSettingsModal } from "../../betterMicrophone.desktop/components";
 import {
