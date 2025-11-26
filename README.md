@@ -69,6 +69,12 @@ Build PawsomeVencord:
 pnpm build
 ```
 
+Build PawsomeVencord for web:
+
+```shell
+pnpm buildWeb
+```
+
 Inject PawsomeVencord into your client:
 
 ```shell
