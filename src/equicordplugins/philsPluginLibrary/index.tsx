@@ -20,7 +20,7 @@ import { Devs } from "@utils/constants";
 import definePlugin from "@utils/types";
 
 
-const plugin = definePlugin({
+export default definePlugin({
     name: "PhilsPluginLibrary",
     description: "A library for phil's plugins",
     authors: [Devs.philhk],
@@ -40,9 +40,6 @@ const plugin = definePlugin({
         }
     ]
 });
-
-
-export default plugin;
 
 export * from "./components";
 export * from "./discordModules";
