@@ -689,7 +689,7 @@ function CustomNicknameModal({ modalProps, user }: { modalProps: ModalProps; use
                 <ModalCloseButton onClick={modalProps.onClose} />
             </ModalHeader>
             <ModalContent>
-                <Heading tag="h3" style={{ marginBottom: 8, fontSize: "16px", fontWeight: "400", lineHeight: "1.25", color: "var(--text-secondary)" }}>
+                <Heading tag="h3" style={{ marginBottom: 8, fontSize: "16px", fontWeight: "400", lineHeight: "1.25", color: "var(--text-subtle)" }}>
                     {"Set a custom SMYN nickname for this user. Make use of it by specifying {custom} in the SMYN template settings."}
                 </Heading>
                 <div style={{ paddingTop: "10px", flexGrow: 0 }}></div>
