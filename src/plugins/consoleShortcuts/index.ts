@@ -35,6 +35,15 @@ const DESKTOP_ONLY = (f: string) => () => {
     throw new Error(`'${f}' is Discord Desktop only.`);
 };
 
+const switchBranch = (branch: string) => () => {
+    if (!IS_VESKTOP && !IS_PAWTOP) throw new Error("This function only works on vesktop and pawtop.");
+
+    const target = IS_VESKTOP ? Vesktop : Pawtop;
+    if (target.Settings.store.discordBranch === branch) throw new Error(`Already on ${branch}.`);
+    target.Settings.store.discordBranch = branch;
+    VesktopNative.app.relaunch();
+};
+
 const define: typeof Object.defineProperty =
     (obj, prop, desc) => {
         if (Object.hasOwn(desc, "value"))
@@ -180,13 +189,12 @@ function makeShortcuts() {
                 experimentBucket: bucket,
             });
         },
-        switchBranch: (branch: string) => {
-            if (!IS_VESKTOP && !IS_PAWTOP) throw new Error("This function only works on vesktop, equibop and pawtop.");
-            const target = IS_VESKTOP ? Vesktop : Pawtop;
-            if (target.Settings.store.discordBranch === branch) throw new Error(`Already on ${branch}.`);
-            target.Settings.store.discordBranch = branch;
-            VesktopNative.app.relaunch();
-        },
+        switchBranch,
+        ...IS_PAWTOP ? {
+            equibopStable: switchBranch("stable"),
+            equibopCanary: switchBranch("canary"),
+            equibopPtb: switchBranch("ptb"),
+        } : {},
     };
 }
 
