@@ -69,17 +69,21 @@ Build PawsomeVencord:
 pnpm build
 ```
 
+Inject PawsomeVencord into your desktop client:
+
+```shell
+pnpm inject
+```
+
 Build PawsomeVencord for web:
 
 ```shell
 pnpm buildWeb
 ```
 
-Inject PawsomeVencord into your client:
+After building PawsomeVencord's web extension, locate the appropriate ZIP file in the `dist` directory and follow your browser’s guide for installing custom extensions, if supported.
 
-```shell
-pnpm inject
-```
+Note: Firefox extension zip requires Firefox for developers
 
 ## Credits
 
