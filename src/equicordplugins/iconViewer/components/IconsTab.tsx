@@ -9,12 +9,13 @@ import "../styles.css";
 import { Button } from "@components/Button";
 import { Heading } from "@components/Heading";
 import { SettingsTab, wrapTab } from "@components/settings";
+import { TooltipContainer } from "@components/TooltipContainer";
 import { debounce } from "@shared/debounce";
 import { Margins } from "@utils/margins";
 import { classes } from "@utils/misc";
 import { useIntersection } from "@utils/react";
 import { Icon } from "@vencord/discord-types";
-import { Clickable, TextInput, TooltipContainer, useCallback, useEffect, useMemo, useState } from "@webpack/common";
+import { Clickable, TextInput, useCallback, useEffect, useMemo, useState } from "@webpack/common";
 
 import { getNameByIcon, IconsFinds } from "../names";
 import { IconsDef } from "../types";
@@ -46,11 +47,13 @@ function searchMatch(search: string, name: string, Icon: Icon, searchByFunction:
 }
 
 function IconItem({ iconName, Icon }: { iconName: string; Icon: Icon; }) {
+    const fill = iconName === "CircleShield" ? "var(--background-base-low)" : "var(--interactive-icon-default)";
+
     return (
         <div className="vc-icon-box">
             <Clickable onClick={() => openIconModal(iconName, Icon, IconsFinds[iconName])}>
                 <div className="vc-icon-container">
-                    <Icon className="vc-icon-icon" size="lg" width={32} height={32} color="var(--interactive-icon-default)" />
+                    <Icon className="vc-icon-icon" size="lg" width={32} height={32} color="var(--interactive-icon-default)" fill={fill} />
                 </div>
             </Clickable>
             <Heading className="vc-icon-title" tag="h3">{iconName}</Heading>
