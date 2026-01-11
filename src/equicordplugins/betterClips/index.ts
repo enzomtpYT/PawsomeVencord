@@ -21,7 +21,6 @@ import { Devs } from "@utils/constants";
 import definePlugin, { OptionType } from "@utils/types";
 import { SelectOption } from "@vencord/discord-types";
 
-
 const settings = definePluginSettings({
     clipAllStreams: {
         description: "Allows clipping on all streams regardless of the streamer's settings.",
