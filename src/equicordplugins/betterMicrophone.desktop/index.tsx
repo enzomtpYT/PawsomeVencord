@@ -17,9 +17,9 @@
 */
 
 import { definePluginSettings } from "@api/Settings";
+import { UserAreaButton, UserAreaRenderProps } from "@api/UserArea";
 import { Devs } from "@utils/constants";
 import definePlugin, { OptionType } from "@utils/types";
-import { findComponentByCodeLazy } from "@webpack";
 
 import { Emitter, MicrophoneSettingsIcon } from "../philsPluginLibrary";
 import { PluginInfo } from "./constants";
@@ -27,16 +27,19 @@ import { openMicrophoneSettingsModal } from "./modals";
 import { MicrophonePatcher } from "./patchers";
 import { initMicrophoneStore } from "./stores";
 
-const Button = findComponentByCodeLazy(".NONE,disabled:", ".PANEL_BUTTON");
+function Icon({ className }: { className?: string; }) {
+    return <MicrophoneSettingsIcon width={20} height={20} className={className} />;
+}
 
-function micSettingsButton() {
+function micSettingsButton({ iconForeground, hideTooltips, nameplate }: UserAreaRenderProps) {
     const { hideSettingsIcon } = settings.use(["hideSettingsIcon"]);
     if (hideSettingsIcon) return null;
     return (
-        <Button
-            tooltipText="Change screenshare settings"
-            icon={MicrophoneSettingsIcon}
+        <UserAreaButton
+            tooltipText={hideTooltips ? void 0 : "Change microphone settings"}
+            icon={<Icon className={iconForeground} />}
             role="button"
+            plated={nameplate != null}
             onClick={openMicrophoneSettingsModal}
         />
     );
@@ -55,15 +58,12 @@ export default definePlugin({
     description: "This plugin allows you to further customize your microphone.",
     authors: [Devs.philhk],
     dependencies: ["PhilsPluginLibrary"],
-    patches: [
-        {
-            find: "#{intl::ACCOUNT_SPEAKING_WHILE_MUTED}",
-            replacement: {
-                match: /className:\i\.buttons,.{0,50}children:\[/,
-                replace: "$&$self.micSettingsButton(),"
-            }
-        }
-    ],
+
+    userAreaButton: {
+        icon: Icon,
+        render: micSettingsButton
+    },
+
     settings: settings,
     start(): void {
         initMicrophoneStore();
@@ -77,6 +77,5 @@ export default definePlugin({
     },
     toolboxActions: {
         "Open Microphone Settings": openMicrophoneSettingsModal
-    },
-    micSettingsButton
+    }
 });

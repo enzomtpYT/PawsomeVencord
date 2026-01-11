@@ -17,9 +17,9 @@
 */
 
 import { definePluginSettings } from "@api/Settings";
+import { UserAreaButton, UserAreaRenderProps } from "@api/UserArea";
 import { Devs } from "@utils/constants";
 import definePlugin, { OptionType } from "@utils/types";
-import { findComponentByCodeLazy } from "@webpack";
 
 import { Emitter, ScreenshareSettingsIcon } from "../philsPluginLibrary";
 import { PluginInfo } from "./constants";
@@ -28,15 +28,17 @@ import { ScreenshareAudioPatcher, ScreensharePatcher } from "./patchers";
 import { GoLivePanelWrapper, replacedSubmitFunction } from "./patches";
 import { initScreenshareAudioStore, initScreenshareStore } from "./stores";
 
-const Button = findComponentByCodeLazy(".NONE,disabled:", ".PANEL_BUTTON");
+function Icon({ className }: { className?: string; }) {
+    return <ScreenshareSettingsIcon width={20} height={20} className={className} />;
+}
 
-function screenshareSettingsButton() {
-
+function screenshareSettingsButton({ iconForeground, hideTooltips, nameplate }: UserAreaRenderProps) {
     return (
-        <Button
-            tooltipText="Change screenshare settings"
-            icon={ScreenshareSettingsIcon}
+        <UserAreaButton
+            tooltipText={hideTooltips ? void 0 : "Change screenshare settings"}
+            icon={<Icon className={iconForeground} />}
             role="button"
+            plated={nameplate != null}
             onClick={openScreenshareModal}
         />
     );
@@ -47,6 +49,12 @@ export default definePlugin({
     description: "This plugin allows you to further customize your screen sharing.",
     authors: [Devs.philhk],
     dependencies: ["PhilsPluginLibrary"],
+
+    userAreaButton: {
+        icon: Icon,
+        render: screenshareSettingsButton
+    },
+
     patches: [
         {
             find: "GoLiveModal: user cannot be undefined", // Module: 60594; canaryRelease: 364525; L431
@@ -60,13 +68,6 @@ export default definePlugin({
             replacement: {
                 match: /\(.{0,10}(,{.{0,100}modalContent)/,
                 replace: "($self.GoLivePanelWrapper$1"
-            }
-        },
-        {
-            find: "#{intl::ACCOUNT_SPEAKING_WHILE_MUTED}",
-            replacement: {
-                match: /className:\i\.buttons,.{0,50}children:\[/,
-                replace: "$&$self.screenshareSettingsButton(),"
             }
         }
     ],
@@ -93,6 +94,5 @@ export default definePlugin({
         "Open Screenshare Settings": openScreenshareModal
     },
     replacedSubmitFunction,
-    GoLivePanelWrapper,
-    screenshareSettingsButton
+    GoLivePanelWrapper
 });
