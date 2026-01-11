@@ -80,7 +80,7 @@ export default definePlugin({
             savedProfile.bio = profile?.bio ?? null;
             savedProfile.themeColors = profile?.themeColors;
             savedProfile.banner = profile?.banner ?? undefined;
-            savedProfile.avatar = selfMember.avatar;
+            savedProfile.avatar = selfMember.avatar ?? undefined;
             savedProfile.profileEffectId = profile?.profileEffectId;
             savedProfile.avatarDecoration = selfMember.avatarDecoration;
         };
