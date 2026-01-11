@@ -16,7 +16,7 @@
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
 */
 
-import { Devs } from "@utils/constants";
+import { EquicordDevs } from "@utils/constants";
 
 import { types } from "../../philsPluginLibrary";
 
@@ -24,8 +24,8 @@ export const PluginInfo = {
     PLUGIN_NAME: "BetterScreenshare",
     DESCRIPTION: "This plugin allows you to further customize your screen sharing.",
     AUTHOR: {
-        ...Devs.philhk,
-        github: "https://github.com/philhk"
+        ...EquicordDevs.enzomtp,
+        github: "https://github.com/enzomtpYT"
     },
     CONTRIBUTORS: {
         walrus: {
@@ -37,6 +37,11 @@ export const PluginInfo = {
             github: "https://github.com/loukious",
             id: 211461918127292416n,
             name: "Loukious"
+        },
+        philhk: {
+            github: "https://github.com/philhk",
+            id: 305288513941667851n,
+            name: "philhk"
         }
     },
     README: "https://github.com/Vendicated/Vencord/tree/main/src/plugins/betterScreenshare"

@@ -18,7 +18,7 @@
 
 import { definePluginSettings } from "@api/Settings";
 import { UserAreaButton, UserAreaRenderProps } from "@api/UserArea";
-import { Devs } from "@utils/constants";
+import { Devs, EquicordDevs } from "@utils/constants";
 import definePlugin, { OptionType } from "@utils/types";
 
 import { Emitter, ScreenshareSettingsIcon } from "../philsPluginLibrary";
@@ -47,7 +47,7 @@ function screenshareSettingsButton({ iconForeground, hideTooltips, nameplate }: 
 export default definePlugin({
     name: "BetterScreenshare",
     description: "This plugin allows you to further customize your screen sharing.",
-    authors: [Devs.philhk],
+    authors: [Devs.philhk, EquicordDevs.enzomtp],
     dependencies: ["PhilsPluginLibrary"],
 
     userAreaButton: {

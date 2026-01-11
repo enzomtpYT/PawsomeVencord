@@ -16,7 +16,7 @@
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
 */
 
-import { Devs } from "@utils/constants";
+import { EquicordDevs } from "@utils/constants";
 
 import { types } from "../../philsPluginLibrary";
 
@@ -24,8 +24,14 @@ export const PluginInfo = {
     PLUGIN_NAME: "BetterMicrophone",
     DESCRIPTION: "This plugin allows you to further customize your microphone.",
     AUTHOR: {
-        ...Devs.philhk,
-        github: "https://github.com/philhk"
+        ...EquicordDevs.enzomtp,
+        github: "https://github.com/enzomtpYT"
     },
-    CONTRIBUTORS: {}
+    CONTRIBUTORS: {
+        philhk: {
+            github: "https://github.com/philhk",
+            id: 305288513941667851n,
+            name: "philhk"
+        }
+    }
 } as const satisfies types.PluginInfo;

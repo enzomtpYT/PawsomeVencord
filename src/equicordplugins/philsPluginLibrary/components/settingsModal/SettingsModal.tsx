@@ -52,7 +52,7 @@ export const SettingsModal = (props: SettingsModalProps) => {
                     <ModalCloseButton onClick={props.onClose} />
                 </div>
             </ModalHeader>
-            <ModalContent style={{ marginBottom: "1em", display: "flex", flexDirection: "column", gap: "1em" }}>
+            <ModalContent style={{ marginBottom: "1em", display: "flex", flexDirection: "column", gap: "1em", color: "var(--text-normal)" }}>
                 {props.children}
             </ModalContent>
             <ModalFooter>

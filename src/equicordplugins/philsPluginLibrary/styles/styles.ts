@@ -20,6 +20,10 @@ export const Styles = {
     infoCard: {
         padding: "1em",
         width: "100%",
-        boxSizing: "border-box"
+        boxSizing: "border-box",
+        color: "var(--text-normal)"
     },
+    modalContent: {
+        color: "var(--text-normal)"
+    }
 } as const satisfies Record<string, React.CSSProperties>;

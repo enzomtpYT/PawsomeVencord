@@ -40,6 +40,7 @@ export const SettingsModalCard = ({ children, title, switchProps, switchEnabled,
                 display: "flex",
                 flexDirection: "column",
                 flex: flex ?? 1,
+                color: "var(--text-normal)",
                 ...(cardProps?.style ? cardProps.style : {})
             }}>
             {title && <Forms.FormTitle tag="h5" style={{ margin: 0 }}>{title}</Forms.FormTitle>}
