@@ -5,22 +5,18 @@
  */
 
 import { definePluginSettings } from "@api/Settings";
-import ErrorBoundary from "@components/ErrorBoundary";
+import { UserAreaButton, UserAreaRenderProps } from "@api/UserArea";
 import { Devs } from "@utils/constants";
 import definePlugin, { OptionType } from "@utils/types";
-import { findComponentByCodeLazy } from "@webpack";
-
 
 export let fakeD = false;
 
-const Button = findComponentByCodeLazy(".NONE,disabled:", ".PANEL_BUTTON");
-
 function mute() {
-    (document.querySelector('[aria-label="Mute"]') as HTMLElement).click();
+    (document.querySelector('[aria-label="Mute"]') as HTMLElement)?.click();
 }
 
 function deafen() {
-    (document.querySelector('[aria-label="Deafen"]') as HTMLElement).click();
+    (document.querySelector('[aria-label="Deafen"]') as HTMLElement)?.click();
 }
 
 function makeDeafenIcon(useFakeState: boolean) {
@@ -73,24 +69,25 @@ function makeDeafenIcon(useFakeState: boolean) {
     };
 }
 
+function Icon({ className }: { className?: string; }) {
+    return makeDeafenIcon(fakeD)();
+}
 
-function fakeDeafenToggleButton() {
-
+function fakeDeafenToggleButton({ iconForeground, hideTooltips, nameplate }: UserAreaRenderProps) {
     return (
-        <Button
-            tooltipText="Fake Deafen"
-            icon={makeDeafenIcon(fakeD)}
+        <UserAreaButton
+            tooltipText={hideTooltips ? void 0 : (fakeD ? "Disable Fake Deafen" : "Enable Fake Deafen")}
+            icon={<Icon className={iconForeground} />}
             role="switch"
-            aria-checked={!fakeD}
+            aria-checked={fakeD}
+            plated={nameplate != null}
             onClick={() => {
                 fakeD = !fakeD;
                 deafen();
                 setTimeout(deafen, 250);
-
                 if (settings.store.muteUponFakeDeafen)
                     setTimeout(mute, 300);
-            }
-            }
+            }}
         />
     );
 }
@@ -123,6 +120,12 @@ export default definePlugin({
     description: "You're deafened but you're not",
     dependencies: ["PhilsPluginLibrary"],
     authors: [Devs.desu],
+    settings,
+
+    userAreaButton: {
+        icon: Icon,
+        render: fakeDeafenToggleButton
+    },
 
     patches: [
         {
@@ -131,27 +134,18 @@ export default definePlugin({
                 match: /self_mute:([^,]+),self_deaf:([^,]+),self_video:([^,]+)/,
                 replace: "self_mute:$self.toggle($1, 'mute'),self_deaf:$self.toggle($2, 'deaf'),self_video:$self.toggle($3, 'video')"
             }
-        },
-        {
-            find: "#{intl::ACCOUNT_SPEAKING_WHILE_MUTED}",
-            replacement: {
-                match: /className:\i\.buttons,.{0,50}children:\[/,
-                replace: "$&$self.fakeDeafenToggleButton(),"
-            }
         }
     ],
 
-    settings,
     toggle: (au: any, what: string) => {
         if (fakeD === false)
             return au;
-        else
-            switch (what) {
-                case "mute": return settings.store.mute;
-                case "deaf": return settings.store.deafen;
-                case "video": return settings.store.cam;
-            }
-    },
-    fakeDeafenToggleButton: ErrorBoundary.wrap(fakeDeafenToggleButton, { noop: true }),
-
+        switch (what) {
+            case "mute": return settings.store.mute;
+            case "deaf": return settings.store.deafen;
+            case "video": return settings.store.cam;
+            default:
+                return au;
+        }
+    }
 });
