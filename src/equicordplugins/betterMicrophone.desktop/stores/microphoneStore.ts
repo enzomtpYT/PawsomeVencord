@@ -19,7 +19,6 @@
 import { createPluginStore, ProfilableInitializer, ProfilableStore, profileable, ProfileableProfile } from "../../philsPluginLibrary";
 import { PluginInfo } from "../constants";
 
-
 export interface MicrophoneProfile {
     freq?: number,
     pacsize?: number,

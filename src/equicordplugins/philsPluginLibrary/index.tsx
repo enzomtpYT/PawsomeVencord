@@ -19,7 +19,6 @@
 import { Devs } from "@utils/constants";
 import definePlugin from "@utils/types";
 
-
 export default definePlugin({
     name: "PhilsPluginLibrary",
     description: "A library for phil's plugins",

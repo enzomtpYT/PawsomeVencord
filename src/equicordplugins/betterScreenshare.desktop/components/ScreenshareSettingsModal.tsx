@@ -133,7 +133,6 @@ export const ScreenshareSettingsModal = (props: ScreenshareSettingsModalProps) =
         getProfiles
     } = screenshareStore.use();
 
-
     const {
         name,
         framerate,
@@ -423,7 +422,6 @@ export const ScreenshareSettingsModal = (props: ScreenshareSettingsModalProps) =
             <Forms.FormTitle style={{ margin: 0 }} tag="h5">Simple</Forms.FormTitle>
             <Switch checked={simpleMode ?? false} disabled={isSaving} onChange={checked => setSimpleMode(checked)} />
         </Flex>;
-
 
     return (
         <SettingsModal
