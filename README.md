@@ -14,6 +14,18 @@ You can join our [discord server](https://discord.gg/w9jVtzNx4c) for commits, ch
 
 Our included plugins can be found [here](https://equicord.org/plugins).
 
+Plus some plugins from Equicord that are not included in the main repo:
+- alwaysPing
+- betterClips
+- betterMicrophone
+- betterScreenshare
+- customVcNarrator
+- fakeDeafen
+- meow (old version with random meows)
+- notifyUserChanges
+- serverProfilesToolbox
+- webcamStartNotifier
+
 ## Installing / Uninstalling
 
 Windows
