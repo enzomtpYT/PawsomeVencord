@@ -182,7 +182,7 @@ function TranscriptionModal(props: { modalProps: ModalProps, src: string, option
                 setError(null);
 
                 let blob: Blob;
-                if (IS_DISCORD_DESKTOP || IS_EQUIBOP) {
+                if (IS_DISCORD_DESKTOP || IS_PAWTOP) {
                     const arrayBuffer = await Native.fetchAudio(src);
                     blob = new Blob([arrayBuffer as any]);
                 } else {
