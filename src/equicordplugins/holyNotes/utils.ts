@@ -37,7 +37,7 @@ export async function downloadNotes() {
     const filename = "notes.json";
     const data = JSON.stringify(noteHandler.exportNotes(), null, 2);
 
-    if (IS_VESKTOP || IS_EQUIBOP || IS_WEB) {
+    if (IS_VESKTOP || IS_PAWTOP || IS_WEB) {
         const file = new File([data], filename, { type: "application/json" });
         const a = document.createElement("a");
         a.href = URL.createObjectURL(file);
@@ -54,7 +54,7 @@ export async function downloadNotes() {
 }
 
 export async function uploadNotes() {
-    if (IS_VESKTOP || IS_EQUIBOP || IS_WEB) {
+    if (IS_VESKTOP || IS_PAWTOP || IS_WEB) {
         const input = document.createElement("input");
         input.type = "file";
         input.accept = "application/json";
