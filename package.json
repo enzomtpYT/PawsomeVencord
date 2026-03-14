@@ -49,6 +49,7 @@
         "@types/tinycolor2": "^1.4.6",
         "@vap/core": "0.0.12",
         "@vap/shiki": "0.10.5",
+        "buttplug": "^4.0.0",
         "fflate": "^0.8.2",
         "gifenc": "github:mattdesl/gifenc#64842fca317b112a8590f8fef2bf3825da8f6fe3",
         "idb": "8.0.3",
