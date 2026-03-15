@@ -88,9 +88,9 @@ const settings = definePluginSettings({
         type: OptionType.STRING,
         description: "The URL of the websocket server",
         default: "ws://127.0.0.1:12345",
-        onChange: () => {
-            handleDisconnection();
-            handleConnection();
+        onChange: async () => {
+            await handleDisconnection();
+            await handleConnection();
         },
         isValid: (value: string) => {
             if (!value) return "Please enter a URL";
@@ -1001,10 +1001,8 @@ async function handleDirectControlCommand(commandInfo: string[], message: Discor
 
             // Immediately stop all devices
             if (client && client.devices) {
-                Array.from(client.devices.values()).forEach(device => {
-                    device.stop().catch(error => {
-                        console.error(`Error stopping device ${device.name}:`, error);
-                    });
+                stopDevices(Array.from(client.devices.values())).catch(error => {
+                    console.error("Error stopping devices:", error);
                 });
             }
 
@@ -1078,8 +1076,16 @@ async function handleConnection() {
         debugLog(`Connecting to WebSocket URL: ${settings.store.websocketUrl}`, undefined, "info");
 
         connector = new ButtplugBrowserWebsocketClientConnector(settings.store.websocketUrl);
-        if (!client)
-            client = new ButtplugClient("Vencord (via VenPlugPlus)");
+
+        // Always create a fresh client to avoid stale connector/listener state
+        // from previous (possibly failed) connection attempts
+        if (client) {
+            client.removeAllListeners();
+            if (client.connected) {
+                try { await client.disconnect(); } catch { }
+            }
+        }
+        client = new ButtplugClient("Vencord (via VenPlugPlus)");
 
         client.addListener("deviceadded", async (device: ButtplugClientDevice) => {
             debugLog(`Device added: ${device.name}`, {
@@ -1114,7 +1120,7 @@ async function handleConnection() {
                 debugLog(`Testing device vibration: ${device.name}`, undefined, "verbose");
                 await device.runOutput(DeviceOutput.Vibrate.percent(0.1));
                 await new Promise(r => setTimeout(r, 500));
-                await device.stop();
+                await device.runOutput(DeviceOutput.Vibrate.percent(0));
                 debugLog(`Device test completed: ${device.name}`, undefined, "verbose");
             } catch (error) {
                 debugLog(`Device test failed: ${device.name}`, error, "warn");
@@ -1402,7 +1408,14 @@ async function handleVibrate(data: VibrateEvent) {
 async function stopDevices(devices: ButtplugClientDevice[]) {
     for (const device of devices) {
         try {
-            await device.stop();
+            // device.stop() sends StopDeviceCmd which is removed in Buttplug spec v4;
+            // zero out every active output via OutputCmd instead
+            if (device.hasOutput(OutputType.Vibrate))
+                await device.runOutput(DeviceOutput.Vibrate.percent(0));
+            if (device.hasOutput(OutputType.Rotate))
+                await device.runOutput(DeviceOutput.Rotate.percent(0));
+            if (device.hasOutput(OutputType.Oscillate))
+                await device.runOutput(DeviceOutput.Oscillate.percent(0));
         } catch (error) {
             debugLog(`Error stopping device ${device.name}`, error, "warn");
         }
