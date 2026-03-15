@@ -379,14 +379,26 @@ export default definePlugin({
             execute: async (_opts, ctx) => {
                 if (!client || !client.connected)
                     return sendBotMessage(ctx.channel.id, { content: "You are not connected to intiface" });
-                const { devices } = client;
-                if (devices.size === 0)
+                const devices = await getLiveDevicesSnapshot();
+                if (devices.length === 0)
                     return sendBotMessage(ctx.channel.id, { content: "No devices connected" });
                 const deviceInfo: string[] = [];
 
-                for (const device of client.devices.values()) {
-                    deviceInfo.push(`**Name:** ${device.name}, **Battery:** ${device.hasInput(InputType.Battery) ? `${await device.battery() * 100}%` : "No battery"}`);
+                for (const device of devices) {
+                    let batteryInfo = "No battery";
+                    if (device.hasInput(InputType.Battery)) {
+                        try {
+                            batteryInfo = `${await device.battery() * 100}%`;
+                        } catch (error) {
+                            if (pruneUnavailableDevice(device, error)) continue;
+                            batteryInfo = "Unknown";
+                        }
+                    }
+                    deviceInfo.push(`**Name:** ${device.name}, **Battery:** ${batteryInfo}`);
                 }
+
+                if (deviceInfo.length === 0)
+                    return sendBotMessage(ctx.channel.id, { content: "No devices connected" });
 
                 findOption(_opts, "send_to_channel") ? sendMessage(ctx.channel.id, {
                     content: `**Connected devices:** \n ${deviceInfo.join("\n")}`
@@ -857,14 +869,25 @@ async function handleDirectControlCommand(commandInfo: string[], message: Discor
             return oscillateDevices(devices, speed);
         }
         case "d": case "devices": {
+            const devices = await getLiveDevicesSnapshot();
+            if (devices.length === 0) {
+                return sendMessage(message.channel_id, { content: "No devices connected" });
+            }
+
             const deviceInfo: string[] = [];
-            for (let i = 0; i < client!.devices.size; i++) {
-                const device = Array.from(client!.devices.values())[i];
+            for (let i = 0; i < devices.length; i++) {
+                const device = devices[i];
 
                 // Battery Information
-                const batteryInfo = device.hasInput(InputType.Battery)
-                    ? `${await device.battery() * 100}%`
-                    : "No battery";
+                let batteryInfo = "No battery";
+                if (device.hasInput(InputType.Battery)) {
+                    try {
+                        batteryInfo = `${await device.battery() * 100}%`;
+                    } catch (error) {
+                        if (pruneUnavailableDevice(device, error)) continue;
+                        batteryInfo = "Unknown";
+                    }
+                }
 
                 // Feature Detection (Enhancement)
                 const features: string[] = [];
@@ -875,6 +898,11 @@ async function handleDirectControlCommand(commandInfo: string[], message: Discor
 
                 deviceInfo.push(`**Name:** ${device.name}, **ID:** ${i + 1}, **Battery:** ${batteryInfo}, **Features:** ${features.join(", ")}`);
             }
+
+            if (deviceInfo.length === 0) {
+                return sendMessage(message.channel_id, { content: "No devices connected" });
+            }
+
             return sendMessage(message.channel_id, { content: `**Connected devices:** \n${deviceInfo.join("\n")}` });
         }
 
@@ -1022,9 +1050,12 @@ async function handleDisconnection() {
     try {
         debugLog("Starting disconnection process", undefined, "info");
         vibrateQueue = [];
-        if (client && client.connected) await client.disconnect();
+        await disconnectClientTransport();
         client = null;
-        if (batteryIntervalId) clearInterval(batteryIntervalId);
+        if (batteryIntervalId) {
+            clearInterval(batteryIntervalId);
+            batteryIntervalId = null;
+        }
 
         setRpc({
             appName: richPresenceTitle,
@@ -1075,16 +1106,13 @@ async function handleConnection() {
 
         debugLog(`Connecting to WebSocket URL: ${settings.store.websocketUrl}`, undefined, "info");
 
-        connector = new ButtplugBrowserWebsocketClientConnector(settings.store.websocketUrl);
-
         // Always create a fresh client to avoid stale connector/listener state
         // from previous (possibly failed) connection attempts
         if (client) {
-            client.removeAllListeners();
-            if (client.connected) {
-                try { await client.disconnect(); } catch { }
-            }
+            await disconnectClientTransport();
         }
+
+        connector = new ButtplugBrowserWebsocketClientConnector(settings.store.websocketUrl);
         client = new ButtplugClient("Vencord (via VenPlugPlus)");
 
         client.addListener("deviceadded", async (device: ButtplugClientDevice) => {
@@ -1188,12 +1216,112 @@ async function handleConnection() {
     }
 }
 
+async function disconnectClientTransport() {
+    if (!client) return;
+
+    try {
+        client.removeAllListeners();
+        const activeConnector = (client as any)._connector;
+
+        if (activeConnector?.Connected) {
+            await activeConnector.disconnect();
+        } else if ((connector as any)?.Connected) {
+            await (connector as any).disconnect();
+        }
+    } catch (error) {
+        debugLog("Error while disconnecting connector transport", error, "warn");
+    }
+}
+
+function isDeviceUnavailableError(error: unknown): boolean {
+    const message = error instanceof Error ? error.message : String(error);
+    return message.includes("DeviceNotAvailable") || message.includes("not connected");
+}
+
+function pruneUnavailableDevice(device: ButtplugClientDevice, error: unknown): boolean {
+    if (!client || !isDeviceUnavailableError(error)) return false;
+
+    const wasPresent = client.devices.delete(device.index);
+    if (wasPresent) {
+        debugLog(`Pruned unavailable device from local list: ${device.name} (#${device.index})`, error, "warn");
+    }
+    return wasPresent;
+}
+
+async function probeDeviceAvailability(device: ButtplugClientDevice): Promise<void> {
+    if (device.hasInput(InputType.Battery)) {
+        await device.battery();
+        return;
+    }
+
+    if (device.hasOutput(OutputType.Vibrate)) {
+        await device.runOutput(DeviceOutput.Vibrate.percent(0));
+        return;
+    }
+
+    if (device.hasOutput(OutputType.Rotate)) {
+        await device.runOutput(DeviceOutput.Rotate.percent(0));
+        return;
+    }
+
+    if (device.hasOutput(OutputType.Oscillate)) {
+        await device.runOutput(DeviceOutput.Oscillate.percent(0));
+        return;
+    }
+}
+
+async function getLiveDevicesSnapshot(): Promise<ButtplugClientDevice[]> {
+    if (!client) return [];
+
+    const collectLiveDevices = async (): Promise<ButtplugClientDevice[]> => {
+        const devices: ButtplugClientDevice[] = [];
+        for (const device of client!.devices.values()) {
+            try {
+                await probeDeviceAvailability(device);
+                devices.push(device);
+            } catch (error) {
+                if (!pruneUnavailableDevice(device, error)) {
+                    debugLog(`Device probe failed for ${device.name}`, error, "warn");
+                    devices.push(device);
+                }
+            }
+        }
+
+        return devices;
+    };
+
+    let liveDevices = await collectLiveDevices();
+
+    // If no devices are currently known, perform a short scan so devices plugged
+    // in after plugin startup can be discovered without manual /start_scanning.
+    if (liveDevices.length === 0 && client.connected) {
+        try {
+            const wasScanning = client.isScanning;
+            if (!wasScanning) {
+                await client.startScanning();
+            }
+            await sleep(2000);
+            if (!wasScanning && client.isScanning) {
+                await client.stopScanning();
+            }
+        } catch (error) {
+            debugLog("Auto device scan failed during snapshot refresh", error, "warn");
+        }
+
+        liveDevices = await collectLiveDevices();
+    }
+
+    return liveDevices;
+}
+
 // monitor device battery levels and warn when low
 async function checkDeviceBattery() {
     if (!client) return;
     batteryIntervalId = setInterval(async () => {
-        Array.from(client!.devices.values()).forEach(async (device: ButtplugClientDevice) => {
-            if (device.hasInput(InputType.Battery) && !device.warnedLowBattery) {
+        for (const device of Array.from(client!.devices.values())) {
+            if (!device.hasInput(InputType.Battery) || device.warnedLowBattery) continue;
+
+            try {
                 const battery = await device.battery();
                 if (battery < 0.1) {
                     device.warnedLowBattery = true;
@@ -1204,8 +1332,11 @@ async function checkDeviceBattery() {
                         noPersist: false,
                     });
                 }
+            } catch (error) {
+                pruneUnavailableDevice(device, error);
+                debugLog(`Battery check failed for device ${device.name}`, error, "warn");
             }
-        });
+        }
     }, 60000);
 }
 
