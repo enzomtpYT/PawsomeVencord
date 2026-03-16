@@ -5,7 +5,6 @@ export * from "./fluxEvents";
 export * from "./menu";
 export * from "./modules";
 export * from "./stores";
-export * from "./passiveupdatestate";
 export * from "./utils";
 export * from "./presenceupdate";
 export * as Webpack from "../webpack";
