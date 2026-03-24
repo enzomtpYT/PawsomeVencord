@@ -166,6 +166,18 @@ export const settings = definePluginSettings({
         default: false,
         hidden: true
     },
+    interceptDiscordUpload: {
+        type: OptionType.BOOLEAN,
+        description: "Intercept Discord uploads and use FileUpload instead.",
+        default: false,
+        hidden: true
+    },
+    interceptDiscordUploadOnlyOverLimit: {
+        type: OptionType.BOOLEAN,
+        description: "Only intercept uploads that exceed Discord file size limit.",
+        default: true,
+        hidden: true
+    },
     gofileToken: {
         type: OptionType.STRING,
         description: "Optional GoFile API token",
@@ -502,6 +514,20 @@ export function SettingsComponent() {
                 <Switch
                     checked={store.autoFormat}
                     onChange={v => store.autoFormat = v}
+                />
+            </SettingsSection>
+
+            <SettingsSection tag="label" name="Intercept Discord Upload Button" description="Use FileUpload when uploading through Discord's file picker" inlineSetting>
+                <Switch
+                    checked={Boolean((store as { interceptDiscordUpload?: boolean; }).interceptDiscordUpload)}
+                    onChange={v => (store as { interceptDiscordUpload?: boolean; }).interceptDiscordUpload = v}
+                />
+            </SettingsSection>
+
+            <SettingsSection tag="label" name="Only Intercept Over Discord File Size Limit" description="Use FileUpload only for files larger than your current Discord upload limit" inlineSetting>
+                <Switch
+                    checked={store.interceptDiscordUploadOnlyOverLimit}
+                    onChange={v => store.interceptDiscordUploadOnlyOverLimit = v}
                 />
             </SettingsSection>
 
