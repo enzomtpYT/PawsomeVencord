@@ -25,6 +25,7 @@ Plus some plugins from Equicord that are not included in the main repo:
 - notifyUserChanges
 - serverProfilesToolbox
 - webcamStartNotifier
+- venplugplus
 
 ## Installing / Uninstalling
 

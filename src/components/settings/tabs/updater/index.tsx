@@ -41,7 +41,7 @@ interface CommonProps {
 }
 
 function EquibopSection() {
-    if (!IS_EQUIBOP) return null;
+    if (!IS_PAWTOP) return null;
 
     const [isEquibopOutdated] = useAwaiter<boolean>(VesktopNative.app.isOutdated, { fallbackValue: false });
 
