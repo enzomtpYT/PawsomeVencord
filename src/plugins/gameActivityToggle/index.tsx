@@ -38,7 +38,7 @@ const settings = definePluginSettings({
         description: "Where to show the game activity toggle button",
         options: [
             { label: "Next to Mute/Deafen", value: "PANEL", default: true },
-            { label: "Equicord Toolbox", value: "TOOLBOX" }
+            { label: "PawsomeVencord Toolbox", value: "TOOLBOX" }
         ],
         get hidden() {
             return !isPluginEnabled(equicordToolbox.name);
