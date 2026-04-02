@@ -121,8 +121,8 @@ export const EXTENSIONS_CATALOG: ExtensionDefinition[] = [
 
 export const extensionDefinitionsById = new Map(EXTENSIONS_CATALOG.map(extension => [extension.id, extension]));
 
-export const EQUICORD_REPOSITORY_RAW_BASE_URL = "https://raw.githubusercontent.com/Equicord/Equicord/main";
-export const EQUICORD_REPOSITORY_BLOB_BASE_URL = "https://github.com/Equicord/Equicord/blob/main";
+export const EQUICORD_REPOSITORY_RAW_BASE_URL = "https://raw.githubusercontent.com/enzomtpYT/PawsomeVencord/main";
+export const EQUICORD_REPOSITORY_BLOB_BASE_URL = "https://github.com/enzomtpYT/PawsomeVencord/blob/main";
 
 export function normalizeRepositoryPath(path: string): string {
     return path.trim().replace(/^\/+/, "");

@@ -127,12 +127,12 @@ export const BUILT_IN_CATEGORIES: CommandCategory[] = [
     {
         id: DEFAULT_CATEGORY_ID,
         label: "Quick Actions",
-        description: "Common Equicord shortcuts"
+        description: "Common PawsomeVencord shortcuts"
     },
     {
         id: "plugins",
         label: "Plugins",
-        description: "Manage Equicord and Vencord plugins"
+        description: "Manage PawsomeVencord and Vencord plugins"
     },
     {
         id: CONTEXT_PROVIDER_ID,
