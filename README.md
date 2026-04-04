@@ -21,7 +21,8 @@ Plus some plugins from Equicord that are not included in the main repo:
 - betterScreenshare
 - customVcNarrator
 - fakeDeafen
-- meow (old version with random meows)
+- meow (old version with random meows + overhaul for pawsome)
+- bark (modification of the overhauled meow)
 - notifyUserChanges
 - serverProfilesToolbox
 - webcamStartNotifier
