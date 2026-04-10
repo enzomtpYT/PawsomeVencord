@@ -26,7 +26,7 @@ permissions:
 
 jobs:
     Build:
-        name: Build Equicord
+        name: Build PawsomeVencord
         runs-on: ubuntu-latest
 
         steps:
@@ -111,7 +111,7 @@ jobs:
                   mkdir -p userscript
                   mv Equicord.user.* userscript/
                   mv desktop.asar desktop/
-                  mv equibop.asar equibop/
+                  mv pawtop.asar pawtop/
                   mv extension-*.zip browser/
 
                   git add -A

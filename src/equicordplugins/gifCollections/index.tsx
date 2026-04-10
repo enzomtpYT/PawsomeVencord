@@ -6,7 +6,7 @@
 
 import "./style.css";
 
-import { Devs, EquicordDevs } from "@utils/constants";
+import { EquicordDevs } from "@utils/constants";
 import definePlugin from "@utils/types";
 import { FluxDispatcher } from "@webpack/common";
 
