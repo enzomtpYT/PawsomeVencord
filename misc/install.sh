@@ -2,7 +2,7 @@
 
 # Configuration
 INSTALLER_PATH="$HOME/.pawsomevencord"
-GITHUB_URL="https://github.com/enzomtpYT/pawsomevencordinstaller/releases/latest/download/PawsomeVencordInstaller-Linux"
+GITHUB_URL="https://github.com/enzomtpYT/pawsomevencordinstaller/releases/latest/download/PawsomeVencordInstallerCli-linux "
 PRIVILEGE_CMDS=("sudo" "doas")
 DEBUG=false
 LOG_FILE="$(dirname "$(realpath "$0")")/pawsomevencordinstalldebug.log"
