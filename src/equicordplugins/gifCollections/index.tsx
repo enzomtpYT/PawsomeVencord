@@ -157,7 +157,7 @@ export default definePlugin({
                 oldTrendingCat = instance.props.trendingCategories;
             }
             if (settings.store.onlyShowCollections) {
-                instance.props.trendingCategories = [...this.sortedCollections(), ...instance.props.favorites];
+                instance.props.trendingCategories = this.sortedCollections();
             } else if (oldTrendingCat != null) {
                 instance.props.trendingCategories = [...this.sortedCollections(), ...oldTrendingCat];
             }
