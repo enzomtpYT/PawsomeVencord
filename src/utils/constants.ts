@@ -900,8 +900,8 @@ export const EquicordDevs = Object.freeze({
         id: 1271128098301022240n
     },
     nin0dev: {
-        name: "nin0dev",
-        id: 886685857560539176n
+        name: "nin0",
+        id: 1395533040914141235n
     },
     D3SOX: {
         name: "D3SOX",
@@ -1017,7 +1017,7 @@ export const EquicordDevs = Object.freeze({
         id: 984392761929256980n
     },
     creations: {
-        name: "Creation's",
+        name: "creations",
         id: 209830981060788225n
     },
     Leko: {
@@ -1319,6 +1319,14 @@ export const EquicordDevs = Object.freeze({
     Kiri: {
         name: "Kiri",
         id: 310525496771346434n,
+    },
+    pointy: {
+        name: "pointy",
+        id: 99914384989519872n
+    },
+    dka: {
+        name: "DKA",
+        id: 119386840624005121n
     },
 } satisfies Record<string, Dev>);
 

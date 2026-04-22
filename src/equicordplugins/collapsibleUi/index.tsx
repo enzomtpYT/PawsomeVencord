@@ -29,7 +29,7 @@ function PanelsIcon(props: SVGProps<SVGSVGElement>) {
 }
 
 function getStateClasses(store: StateStore) {
-    const classNames = [cl("state"), cl(`transition-${store.transitionMs}`)];
+    const classNames = [cl("state"), cl(`collapsed-size-${store.collapsedSize}`), cl(`transition-${store.transitionMs}`)];
 
     for (const panelId of toolbarPanelOrder) {
         const panel = panelRegistry[panelId];
@@ -108,8 +108,10 @@ const ChatButtonsRow = ErrorBoundary.wrap(({ buttons }: { buttons: ReactNode[]; 
 export default definePlugin({
     name: "CollapsibleUI",
     description: "Native collapsible channel, member, chat button, and user area surfaces.",
+    tags: ["Appearance", "Customisation", "Chat", "Servers"],
+    dependencies: ["HeaderBarAPI"],
     authors: [EquicordDevs.benjii],
-    tags: ["ui", "sidebar", "layout"],
+    searchTerms: ["ui", "sidebar", "layout"],
     managedStyle,
     settings,
 
