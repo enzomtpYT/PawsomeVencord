@@ -16,9 +16,9 @@
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
 */
 
+import { Settings } from "@api/Settings";
 import { Flex } from "@components/Flex";
 import { React } from "@webpack/common";
-import { Settings } from "Vencord";
 
 import { SettingsModalCard, SettingsModalCardItem } from "../../philsPluginLibrary";
 import Plugin from "..";

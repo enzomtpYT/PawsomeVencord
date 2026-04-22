@@ -42,6 +42,7 @@ migratePluginSettings("WebRichPresence", "WebRichPresence (arRPC)");
 export default definePlugin({
     name: "WebRichPresence",
     description: "Client plugin for arRPC to enable RPC on Discord Web (experimental)",
+    tags: ["Activity", "Utility"],
     authors: [Devs.Ducko],
     reporterTestable: ReporterTestable.None,
     hidden: !IS_PAWTOP && !IS_VESKTOP && !("legcord" in window),
