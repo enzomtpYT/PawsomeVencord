@@ -48,7 +48,7 @@ if (!IS_VANILLA) {
      * re-apply the patch when discord ships a new host version. skipped
      * on vesktop and equibop because they manage their own updates.
      */
-    if (!IS_VESKTOP && !IS_EQUIBOP) {
+    if (!IS_VESKTOP && !IS_PAWTOP) {
         try {
             require("./hostUpdateHook").installHostUpdateHook();
         } catch (err) {
@@ -56,7 +56,7 @@ if (!IS_VANILLA) {
         }
     }
 
-    if (process.platform === "win32" && !IS_VESKTOP && !IS_EQUIBOP) {
+    if (process.platform === "win32" && !IS_VESKTOP && !IS_PAWTOP) {
         /* before-quit fallback for the rare case the hook above never sees discord_desktop_core get required */
         require("./patchWin32Updater");
     }
