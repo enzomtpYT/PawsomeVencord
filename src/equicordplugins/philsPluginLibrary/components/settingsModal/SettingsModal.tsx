@@ -17,22 +17,22 @@
 */
 
 import { Flex } from "@components/Flex";
-import { ModalCloseButton, ModalContent, ModalFooter, ModalHeader, ModalRoot } from "@utils/modal";
-import { Button, Text } from "@webpack/common";
+import { Button, Modal } from "@webpack/common";
 import React, { JSX } from "react";
 
 import { Author, Contributor } from "../../types";
 import { ContributorAuthorSummary } from "../ContributorAuthorSummary";
 
-export interface SettingsModalProps extends React.ComponentProps<typeof ModalRoot> {
-    title?: string;
+export type SettingsModalProps = Omit<React.ComponentProps<typeof Modal>, "title" | "children"> & {
+    title?: string | React.ReactNode;
     onClose: () => void;
     onDone?: () => void;
     footerContent?: JSX.Element;
     closeButtonName?: string;
     author?: Author,
     contributors?: Contributor[];
-}
+    children?: React.ReactNode;
+};
 
 export const SettingsModal = (props: SettingsModalProps) => {
     const doneButton =
@@ -45,32 +45,27 @@ export const SettingsModal = (props: SettingsModalProps) => {
         </Button>;
 
     return (
-        <ModalRoot {...props}>
-            <ModalHeader separator={false}>
-                {props.title && <Text variant="heading-lg/semibold" style={{ flexGrow: 1 }}>{props.title}</Text>}
-                <div style={{ marginLeft: "auto" }}>
-                    <ModalCloseButton onClick={props.onClose} />
-                </div>
-            </ModalHeader>
-            <ModalContent style={{ marginBottom: "1em", display: "flex", flexDirection: "column", gap: "1em", color: "var(--text-normal)" }}>
+        <Modal
+            {...props}
+            title={props.title}
+        >
+            <div style={{ marginBottom: "1em", display: "flex", flexDirection: "column", gap: "1em", color: "var(--text-normal)" }}>
                 {props.children}
-            </ModalContent>
-            <ModalFooter>
-                <Flex style={{ width: "100%" }}>
-                    <div style={{ flex: 1, display: "flex" }}>
-                        {(props.author || props.contributors && props.contributors.length > 0) &&
+            </div>
+            <Flex style={{ width: "100%" }}>
+                <div style={{ flex: 1, display: "flex" }}>
+                    {(props.author || (props.contributors && props.contributors.length > 0)) &&
 
-                            <Flex style={{ justifyContent: "flex-start", alignItems: "center", flex: 1 }}>
-                                <ContributorAuthorSummary
-                                    author={props.author}
-                                    contributors={props.contributors} />
-                            </Flex>
-                        }
-                        {props.footerContent}
-                    </div>
-                    <div style={{ marginLeft: "auto" }}>{doneButton}</div>
-                </Flex>
-            </ModalFooter>
-        </ModalRoot >
+                        <Flex style={{ justifyContent: "flex-start", alignItems: "center", flex: 1 }}>
+                            <ContributorAuthorSummary
+                                author={props.author}
+                                contributors={props.contributors} />
+                        </Flex>
+                    }
+                    {props.footerContent}
+                </div>
+                <div style={{ marginLeft: "auto" }}>{doneButton}</div>
+            </Flex>
+        </Modal>
     );
 };

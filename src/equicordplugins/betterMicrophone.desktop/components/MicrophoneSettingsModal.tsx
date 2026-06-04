@@ -286,6 +286,7 @@ export const MicrophoneSettingsModal = (props: MicrophoneSettingsModalProps) => 
 
     return (
         <SettingsModal
+            {...props}
             size={simpleMode ? ModalSize.DYNAMIC : ModalSize.DYNAMIC}
             title="Microphone Settings"
             closeButtonName="Apply"
@@ -294,7 +295,6 @@ export const MicrophoneSettingsModal = (props: MicrophoneSettingsModalProps) => 
                     {simpleToggle}
                 </Flex>
             }
-            {...props}
             onDone={() => {
                 props.onClose();
                 props.onDone && props.onDone();

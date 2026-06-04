@@ -425,6 +425,7 @@ export const ScreenshareSettingsModal = (props: ScreenshareSettingsModalProps) =
 
     return (
         <SettingsModal
+            {...props}
             size={simpleMode ? ModalSize.DYNAMIC : ModalSize.LARGE}
             title="Screenshare Settings"
             closeButtonName="Apply"
@@ -433,7 +434,6 @@ export const ScreenshareSettingsModal = (props: ScreenshareSettingsModalProps) =
                     {simpleToggle}
                 </Flex>
             }
-            {...props}
             onDone={() => {
                 props.onClose();
                 props.onDone && props.onDone();

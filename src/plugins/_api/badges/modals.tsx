@@ -130,27 +130,30 @@ export function EquicordDonorModal() {
 }
 
 export function PawsomeDonorModal() {
-    const modalKey = openModal(props => (
+    openModal(props => (
         <ErrorBoundary noop onError={() => {
-            closeModal(modalKey);
+            props.onClose();
             VencordNative.native.openExternal("https://github.com/enzomtpYT");
         }}>
-            <ModalRoot {...props}>
-                <ModalHeader>
-                    <HeadingPrimary
+            <Modal
+                {...props}
+                title={
+                    <Heading
+                        tag="h2"
                         style={{
                             width: "100%",
                             textAlign: "center",
                             margin: 0
                         }}
                     >
-                        <Flex style={{ justifyContent: "center", alignItems: "center", gap: "0.5em" }}>
+                        <Flex justifyContent="center" alignItems="center" gap="0.5em">
                             <Heart />
                             Pawsome Person
                         </Flex>
-                    </HeadingPrimary>
-                </ModalHeader>
-                <ModalContent>
+                    </Heading>
+                }
+            >
+                <div>
                     <Flex>
                         <img
                             role="presentation"
@@ -173,13 +176,13 @@ export function PawsomeDonorModal() {
                             If you want a Pawsome badge, dm @enzomtp :3
                         </Paragraph>
                     </div>
-                </ModalContent>
-                <ModalFooter>
-                    <Flex style={{ width: "100%", justifyContent: "center" }}>
+                </div>
+                <div>
+                    <Flex justifyContent="center" style={{ width: "100%" }}>
                         <DonateButton />
                     </Flex>
-                </ModalFooter>
-            </ModalRoot>
+                </div>
+            </Modal>
         </ErrorBoundary>
     ));
 }
