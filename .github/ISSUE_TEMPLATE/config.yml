@@ -1,8 +1,11 @@
 blank_issues_enabled: false
 contact_links:
-  - name: PawsomeVencord Support Server
-    url: https://discord.gg/w9jVtzNx4c
-    about: If you need help regarding PawsomeVencord, please join our support server!
-  - name: PawsomeVencord Installer
-    url: https://github.com/enzomtpYT/PawsomeVencordInstaller
-    about: You can find the PawsomeVencord Installer here
+    - name: 💬 Discord Community
+      url: https://discord.gg/w9jVtzNx4c
+      about: For plugin requests, support questions, and general help - join our Discord server
+    - name: 🔌 Plugin Requests
+      url: https://discord.gg/w9jVtzNx4c
+      about: Want a new plugin? Request it in our Discord community, not here
+    - name: ❓ Support & Questions
+      url: https://discord.gg/w9jVtzNx4c
+      about: Need help? Ask in our Discord server for faster responses
