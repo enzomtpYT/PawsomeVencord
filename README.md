@@ -46,7 +46,7 @@ Linux
 - [CLI](https://github.com/enzomtpYT/PawsomeVencordInstaller/releases/latest/download/PawsomeVencordInstallerCli-Linux)
 
 ```shell
-sh -c "$(curl -sS https://raw.githubusercontent.com/enzomtpYT/PawsomeVencord/refs/heads/main/misc/install.sh)"
+bash -c "$(curl -sS https://raw.githubusercontent.com/enzomtpYT/PawsomeVencord/refs/heads/main/misc/install.sh)"
 ```
 
 ## Installing PawsomeVencord Devbuild
