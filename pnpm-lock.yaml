@@ -4,9 +4,6 @@ settings:
   autoInstallPeers: true
   excludeLinksFromLockfile: false
 
-patchedDependencies:
-  '@types/less@3.0.8': 641e6c93bb737bac7fc283416857bd095cd85bcbcba63becb7a8bbcc78f73076
-
 importers:
 
   .:
@@ -26,15 +23,6 @@ importers:
       '@streamparser/json':
         specifier: ^0.0.22
         version: 0.0.22
-      '@types/less':
-        specifier: ^3.0.8
-        version: 3.0.8(patch_hash=641e6c93bb737bac7fc283416857bd095cd85bcbcba63becb7a8bbcc78f73076)
-      '@types/stylus':
-        specifier: ^0.48.42
-        version: 0.48.42
-      '@types/tinycolor2':
-        specifier: ^1.4.6
-        version: 1.4.6
       '@vap/core':
         specifier: 0.0.12
         version: 0.0.12
@@ -68,9 +56,6 @@ importers:
       native-file-system-adapter:
         specifier: ^3.0.1
         version: 3.0.1
-      usercss-meta:
-        specifier: ^0.12.0
-        version: 0.12.0
       virtual-merge:
         specifier: ^1.0.1
         version: 1.0.2
@@ -791,9 +776,6 @@ packages:
   '@types/jsonfile@6.1.4':
     resolution: {integrity: sha512-D5qGUYwjvnNNextdU59/+fI+spnwtTFmyQP0h+PfIOSkNfpU6AOICUOkm4i0OnSk+NyjdPJrxCDro0sJsWlRpQ==}
 
-  '@types/less@3.0.8':
-    resolution: {integrity: sha512-Gjm4+H9noDJgu5EdT3rUw5MhPBag46fiOy27BefvWkNL8mlZnKnCaVVVTLKj6RYXed9b62CPKnPav9govyQDzA==}
-
   '@types/lodash@4.17.19':
     resolution: {integrity: sha512-NYqRyg/hIQrYPT9lbOeYc3kIRabJDn/k4qQHIXUpx88CBDww2fD15Sg5kbXlW86zm2XEW4g0QxkTI3/Kfkc7xQ==}
 
@@ -821,12 +803,6 @@ packages:
 
   '@types/react@19.1.0':
     resolution: {integrity: sha512-UaicktuQI+9UKyA4njtDOGBD/67t8YEBt2xdfqu8+gP9hqPUPsiXlNPcpS2gVdjmis5GKPG3fCxbQLVgxsQZ8w==}
-
-  '@types/stylus@0.48.42':
-    resolution: {integrity: sha512-CPGlr5teL4sqdap+EOowMifLuNGeIoLwc0VQ7u/BPxo+ocqiNa5jeVt0H0IVBblEh6ZwX1sGpIQIFnSSr8NBQA==}
-
-  '@types/tinycolor2@1.4.6':
-    resolution: {integrity: sha512-iEN8J0BoMnsWBqjVbWH/c0G0Hh7O21lpR2/+PrvAVgWdzL7eexIFm4JN/Wn10PTcmNdtS6U67r499mlWMXOxNw==}
 
   '@types/trusted-types@2.0.7':
     resolution: {integrity: sha512-ScaPdn1dQczgbl0QFTeTOmVHFULt394XJgOQNoyVhZ6r2vLnMLJfBPd53SB52T/3G36VI1/g2MZaX0cwDuXsfw==}
@@ -1558,7 +1534,7 @@ packages:
     engines: {node: '>= 0.4'}
 
   gifenc@https://codeload.github.com/mattdesl/gifenc/tar.gz/64842fca317b112a8590f8fef2bf3825da8f6fe3:
-    resolution: {gitHosted: true, tarball: https://codeload.github.com/mattdesl/gifenc/tar.gz/64842fca317b112a8590f8fef2bf3825da8f6fe3}
+    resolution: {gitHosted: true, integrity: sha512-xP/ugyNyXc2Go2SpipSltQx9LTL2qR/URxgRxs2VEpvKokR8xPOABiHCD1DWQVt1/gHX/6IBozamH/rgOLFLuQ==, tarball: https://codeload.github.com/mattdesl/gifenc/tar.gz/64842fca317b112a8590f8fef2bf3825da8f6fe3}
     version: 1.0.3
 
   gifuct-js@2.1.2:
@@ -2518,10 +2494,6 @@ packages:
   uri-js@4.4.1:
     resolution: {integrity: sha512-7rKUyy33Q1yc98pQ1DAmLtwX109F7TIfWlW1Ydo8Wl1ii1SeHieeh0HHfPeL2fMXK6z0s8ecKs9frCuLJvndBg==}
 
-  usercss-meta@0.12.0:
-    resolution: {integrity: sha512-zKrXCKdpeIwtVe87omxGo9URf+7mbozduMZEg79dmT4KB3XJwfIkEi/Uk0PcTwR/nZLtAK1+k7isgbGB/g6E7Q==}
-    engines: {node: '>=8.3'}
-
   util-deprecate@1.0.2:
     resolution: {integrity: sha512-EPD5q1uXyFxJpCrLnCc1nHnq3gOa6DZBocAIiI2TaSCA7VCJ1UJDMagCzIkXNsUYfD1daK//LTEQ8xiIbrHtcw==}
 
@@ -3019,8 +2991,6 @@ snapshots:
     dependencies:
       '@types/node': 26.1.1
 
-  '@types/less@3.0.8(patch_hash=641e6c93bb737bac7fc283416857bd095cd85bcbcba63becb7a8bbcc78f73076)': {}
-
   '@types/lodash@4.17.19': {}
 
   '@types/lodash@4.17.24': {}
@@ -3048,12 +3018,6 @@ snapshots:
   '@types/react@19.1.0':
     dependencies:
       csstype: 3.1.3
-
-  '@types/stylus@0.48.42':
-    dependencies:
-      '@types/node': 26.1.1
-
-  '@types/tinycolor2@1.4.6': {}
 
   '@types/trusted-types@2.0.7':
     optional: true
@@ -5129,8 +5093,6 @@ snapshots:
   uri-js@4.4.1:
     dependencies:
       punycode: 2.3.1
-
-  usercss-meta@0.12.0: {}
 
   util-deprecate@1.0.2: {}
 
