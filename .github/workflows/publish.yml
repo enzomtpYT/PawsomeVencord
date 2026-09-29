@@ -53,11 +53,10 @@ jobs:
 
             - name: Create Tag
               if: steps.check.outputs.release == 'true'
-              uses: thororen1234/action-autotag@v1.1.5
+              uses: thororen1234/action-autotag@v1.1.6
               env:
                   GITHUB_TOKEN: "${{ secrets.GITHUB_TOKEN }}"
               with:
-                  version: "${{ steps.pkg.outputs.version }}"
                   tag_prefix: "v"
 
             - name: Setup PNPM
