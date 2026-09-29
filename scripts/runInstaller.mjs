@@ -14,50 +14,45 @@
  *
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
- */
+*/
 
 import "./checkNodeVersion.js";
 
-import { execFileSync, execSync } from "child_process";
-import {
-    createWriteStream,
-    existsSync,
-    mkdirSync,
-    readFileSync,
-    writeFileSync,
-} from "fs";
+import { execFileSync } from "child_process";
+import { createWriteStream, existsSync, mkdirSync, readFileSync, writeFileSync } from "fs";
 import { dirname, join } from "path";
 import { Readable } from "stream";
 import { finished } from "stream/promises";
 import { fileURLToPath } from "url";
 
-const BASE_URL =
-    "https://github.com/enzomtpYT/PawsomeVencordInstaller/releases/latest/download/";
-const INSTALLER_PATH_DARWIN =
-    "PawsomeVencordInstaller.app/Contents/MacOS/PawsomeVencordInstaller";
-const INSTALLER_APP_DARWIN = "PawsomeVencordInstaller.app";
+const BASE_URL = "https://github.com/enzomtpYT/PawsomeVencordInstaller/releases/latest/download/";
 
 const BASE_DIR = join(dirname(fileURLToPath(import.meta.url)), "..");
 const FILE_DIR = join(BASE_DIR, "dist", "Installer");
 const ETAG_FILE = join(FILE_DIR, "etag.txt");
 
+function byArch(files) {
+    return files[process.arch] ?? files.default;
+}
+
 function getFilename() {
     switch (process.platform) {
         case "win32":
-            return "PawsomeVencordInstallerCli.exe";
+            return byArch({
+                arm64: "PawsomeVencordInstallerCli-arm64.exe",
+                default: "PawsomeVencordInstallerCli.exe"
+            });
         case "darwin":
-            switch (process.arch) {
-                case "x64":
-                    return "PawsomeVencordInstaller.MacOS.zip";
-                case "arm64":
-                    return "PawsomeVencordInstaller.MacOS.zip";
-                default:
-                    throw new Error(
-                        "Unsupported macOS architecture: " + process.arch,
-                    );
-            }
+            return byArch({
+                x64: "PawsomeVencordInstallerCli-x64",
+                arm64: "PawsomeVencordInstallerCli-arm64",
+                default: "PawsomeVencordInstallerCli-universal"
+            });
         case "linux":
-            return "PawsomeVencordInstallerCli-linux";
+            return byArch({
+                arm64: "PawsomeVencordInstallerCli-linux-arm64",
+                default: "PawsomeVencordInstallerCli-linux"
+            });
         default:
             throw new Error("Unsupported platform: " + process.platform);
     }
@@ -69,27 +64,16 @@ async function ensureBinary() {
 
     mkdirSync(FILE_DIR, { recursive: true });
 
-    const downloadName = join(FILE_DIR, filename);
-    const outputFile =
-        process.platform === "darwin"
-            ? join(FILE_DIR, INSTALLER_PATH_DARWIN)
-            : downloadName;
-    const outputApp =
-        process.platform === "darwin"
-            ? join(FILE_DIR, INSTALLER_APP_DARWIN)
-            : null;
-
-    const etag =
-        existsSync(outputFile) && existsSync(ETAG_FILE)
-            ? readFileSync(ETAG_FILE, "utf-8")
-            : null;
+    const outputFile = join(FILE_DIR, filename);
+    const etag = existsSync(outputFile) && existsSync(ETAG_FILE)
+        ? readFileSync(ETAG_FILE, "utf-8")
+        : null;
 
     const res = await fetch(BASE_URL + filename, {
         headers: {
-            "User-Agent":
-                "PawsomeVencord (https://github.com/enzomtpYT/PawsomeVencord)",
-            "If-None-Match": etag,
-        },
+            "User-Agent": "PawsomeVencord (https://github.com/enzomtpYT/PawsomeVencord)",
+            "If-None-Match": etag
+        }
     });
 
     if (res.status === 304) {
@@ -97,44 +81,15 @@ async function ensureBinary() {
         return outputFile;
     }
     if (!res.ok)
-        throw new Error(
-            `Failed to download installer: ${res.status} ${res.statusText}`,
-        );
+        throw new Error(`Failed to download installer: ${res.status} ${res.statusText}`);
 
     writeFileSync(ETAG_FILE, res.headers.get("etag"));
 
-    if (process.platform === "darwin") {
-        console.log("Saving zip...");
-        const zip = new Uint8Array(await res.arrayBuffer());
-        writeFileSync(downloadName, zip);
-
-        console.log("Unzipping app bundle...");
-        execSync(`ditto -x -k '${downloadName}' '${FILE_DIR}'`);
-
-        console.log(
-            "Clearing quarantine from installer app (this is required to run it)",
-        );
-        console.log("xattr might error, that's okay");
-
-        const logAndRun = (cmd) => {
-            console.log("Running", cmd);
-            try {
-                execSync(cmd);
-            } catch {}
-        };
-        logAndRun(`sudo xattr -dr com.apple.quarantine '${outputApp}'`);
-    } else {
-        // WHY DOES NODE FETCH RETURN A WEB STREAM OH MY GOD
-        const body = Readable.fromWeb(res.body);
-        await finished(
-            body.pipe(
-                createWriteStream(outputFile, {
-                    mode: 0o755,
-                    autoClose: true,
-                }),
-            ),
-        );
-    }
+    const body = Readable.fromWeb(res.body);
+    await finished(body.pipe(createWriteStream(outputFile, {
+        mode: 0o755,
+        autoClose: true
+    })));
 
     console.log("Finished downloading!");
 
@@ -155,8 +110,8 @@ try {
             ...process.env,
             EQUICORD_USER_DATA_DIR: BASE_DIR,
             EQUICORD_DIRECTORY: join(BASE_DIR, "dist/desktop"),
-            EQUICORD_DEV_INSTALL: "1",
-        },
+            EQUICORD_DEV_INSTALL: "1"
+        }
     });
 } catch {
     console.error("Something went wrong. Please check the logs above.");
