@@ -32,18 +32,28 @@ Plus some plugins from Equicord that are not included in the main repo:
 
 Windows
 
-- [GUI](https://github.com/enzomtpYT/PawsomeVencordInstaller/releases/latest/download/PawsomeVencordInstaller.exe)
-- [CLI](https://github.com/enzomtpYT/PawsomeVencordInstaller/releases/latest/download/PawsomeVencordInstallerCli.exe)
+| | X64 | ARM64 |
+| --- | --- | --- |
+| GUI | [Download](https://github.com/enzomtpYT/PawsomeVencordInstaller/releases/latest/download/PawsomeVencordInstaller.exe) | [Download](https://github.com/enzomtpYT/PawsomeVencordInstaller/releases/latest/download/PawsomeVencordInstaller-arm64.exe) |
+| CLI | [Download](https://github.com/enzomtpYT/PawsomeVencordInstaller/releases/latest/download/PawsomeVencordInstallerCli.exe) | [Download](https://github.com/enzomtpYT/PawsomeVencordInstaller/releases/latest/download/PawsomeVencordInstallerCli-arm64.exe) |
 
 MacOS
 
-- [X64 GUI](https://github.com/enzomtpYT/PawsomeVencordInstaller/releases/latest/download/PawsomeVencordInstaller-darwin-x64.zip)
-- [ARM64 GUI](https://github.com/enzomtpYT/PawsomeVencordInstaller/releases/latest/download/PawsomeVencordInstaller.MacOS.zip)
+| | Universal | X64 | ARM64 |
+| --- | --- | --- | --- |
+| GUI | [Download](https://github.com/enzomtpYT/PawsomeVencordInstaller/releases/latest/download/PawsomeVencordInstaller.dmg) | [Download](https://github.com/enzomtpYT/PawsomeVencordInstaller/releases/latest/download/PawsomeVencordInstaller-x64.dmg) | [Download](https://github.com/enzomtpYT/PawsomeVencordInstaller/releases/latest/download/PawsomeVencordInstaller-arm64.dmg) |
+| CLI | [Download](https://github.com/enzomtpYT/PawsomeVencordInstaller/releases/latest/download/PawsomeVencordInstallerCli-universal) | [Download](https://github.com/enzomtpYT/PawsomeVencordInstaller/releases/latest/download/PawsomeVencordInstallerCli-x64) | [Download](https://github.com/enzomtpYT/PawsomeVencordInstaller/releases/latest/download/PawsomeVencordInstallerCli-arm64) |
+
+The CLI builds are plain binaries, so run `chmod +x <file>` after downloading.
 
 Linux
 
-- [GUI-X11](https://github.com/enzomtpYT/PawsomeVencordInstaller/releases/latest/download/PawsomeVencordInstaller-x11)
-- [CLI](https://github.com/enzomtpYT/PawsomeVencordInstaller/releases/latest/download/PawsomeVencordInstallerCli-Linux)
+| | X64 | ARM64 |
+| --- | --- | --- |
+| Combined GUI | [Download](https://github.com/enzomtpYT/PawsomeVencordInstaller/releases/latest/download/PawsomeVencordInstaller) | [Download](https://github.com/enzomtpYT/PawsomeVencordInstaller/releases/latest/download/PawsomeVencordInstaller-arm64) |
+| X11 GUI | [Download](https://github.com/enzomtpYT/PawsomeVencordInstaller/releases/latest/download/PawsomeVencordInstaller-x11) | [Download](https://github.com/enzomtpYT/PawsomeVencordInstaller/releases/latest/download/PawsomeVencordInstaller-x11-arm64) |
+| Wayland GUI | [Download](https://github.com/enzomtpYT/PawsomeVencordInstaller/releases/latest/download/PawsomeVencordInstaller-wayland) | [Download](https://github.com/enzomtpYT/PawsomeVencordInstaller/releases/latest/download/PawsomeVencordInstaller-wayland-arm64) |
+| CLI | [Download](https://github.com/enzomtpYT/PawsomeVencordInstaller/releases/latest/download/PawsomeVencordInstallerCli-linux) | [Download](https://github.com/enzomtpYT/PawsomeVencordInstaller/releases/latest/download/PawsomeVencordInstallerCli-linux-arm64) |
 
 ```shell
 bash -c "$(curl -sS https://raw.githubusercontent.com/enzomtpYT/PawsomeVencord/refs/heads/main/misc/install.sh)"
