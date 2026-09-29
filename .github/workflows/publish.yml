@@ -26,8 +26,9 @@ jobs:
             - name: Get latest Git tag
               id: tag
               run: |
-                  latest_tag=$(git tag --list 'v*' --sort=-v:refname | head -n 1 || echo "v0.0.0")
-                  echo "latest=$latest_tag" >> $GITHUB_OUTPUT
+                  latest_tag=$(git tag --list 'v*' --sort=-v:refname | head -n 1)
+                  [ -z "$latest_tag" ] && latest_tag="v0.0.0"
+                  echo "latest=$latest_tag" >> "$GITHUB_OUTPUT"
 
             - name: Check if package.json version is newer
               id: check
@@ -56,6 +57,7 @@ jobs:
               env:
                   GITHUB_TOKEN: "${{ secrets.GITHUB_TOKEN }}"
               with:
+                  version: "${{ steps.pkg.outputs.version }}"
                   tag_prefix: "v"
 
             - name: Setup PNPM
