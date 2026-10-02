@@ -74,10 +74,6 @@ export default function CollapsedProfileSongs({ data, user, isSideBar, isRedesig
                                 userId,
                                 guildId,
                                 channelId: SelectedChannelStore.getChannelId(),
-                                analyticsLocation: {
-                                    page: guildId ? "Guild Channel" : "DM Channel",
-                                    section: "Profile Popout",
-                                },
                                 tabSection: "SONG_SPOTLIGHT",
                             });
                         }}
