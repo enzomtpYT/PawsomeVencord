@@ -122,8 +122,8 @@ export default definePlugin({
             find: '("UserProfileModalV2EditingPanel")',
             replacement: [
                 {
-                    match: /"inline"===.{0,100}bannerErrorMessage:\i\}\)/,
-                    replace: "$self.ExperimentDecorSection(),$&"
+                    match: /disabled:\i\|\|\i,errorMessage:\i\}\),/,
+                    replace: "$&$self.ExperimentDecorSection(),"
                 }
             ]
         }
