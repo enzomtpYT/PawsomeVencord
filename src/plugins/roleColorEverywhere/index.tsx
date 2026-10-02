@@ -16,9 +16,11 @@
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
 */
 
+import { isPluginEnabled } from "@api/PluginManager";
 import { definePluginSettings, Settings } from "@api/Settings";
 import ErrorBoundary from "@components/ErrorBoundary";
 import { getCustomColorString } from "@equicordplugins/customUserColors";
+import BetterRoleContext from "@plugins/betterRoleContext";
 import { Devs } from "@utils/constants";
 import { Logger } from "@utils/Logger";
 import definePlugin, { makeRange, OptionType } from "@utils/types";
@@ -103,23 +105,24 @@ export default definePlugin({
             ],
             predicate: () => settings.store.chatMentions
         },
-        // Member List Role Headers
+        // Member List Role Headers (in threads)
         {
             find: 'tutorialId:"whos-online',
             replacement: [
                 {
-                    match: /(#{intl::CHANNEL_MEMBERS_A11Y_LABEL}.+}\):null,).{0,100}?(?:—|\\u2014) ",\i\]\}\)\]/,
+                    match: /(#{intl::CHANNEL_MEMBERS_A11Y_LABEL}.{0,200}?}\):null,).{0,200}?(?:—|\\u2014) ",\i\]\}\)\]/,
                     replace: "$1$self.RoleGroupColor(arguments[0])]"
                 },
             ],
             predicate: () => settings.store.memberList
         },
+        // Member List Role Headers
         {
-            find: "#{intl::THREAD_BROWSER_PRIVATE}",
+            find: "?null:new Intl.NumberFormat",
             replacement: [
                 {
-                    match: /children:\[\i," (?:—|\\u2014) ",\i\]/,
-                    replace: "children:[$self.RoleGroupColor(arguments[0])]"
+                    match: /\(0,\i\.jsx\)\("span",\{[^}]+\}\),null==\i\?null:\(0,\i\.jsxs\)\("span",\{children:\["\\xa0\\u2014 ",\i\]\}\)\]/,
+                    replace: "$self.RoleGroupColor(arguments[0])]"
                 },
             ],
             predicate: () => settings.store.memberList
@@ -129,7 +132,7 @@ export default definePlugin({
             find: "#{intl::GUEST_NAME_SUFFIX})]",
             replacement: [
                 {
-                    match: /#{intl::GUEST_NAME_SUFFIX}.{0,50}?"".{0,100}\](?=\}\))(?<=guildId:(\i),.+?user:(\i).+?)/,
+                    match: /#{intl::GUEST_NAME_SUFFIX}.{0,50}?""\](?<=guildId:(\i),.+?user:(\i).+?)/,
                     replace: "$&,style:$self.getColorStyle($2.id,$1),"
                 }
             ],
@@ -221,13 +224,18 @@ export default definePlugin({
 
     RoleGroupColor: ErrorBoundary.wrap(({ id, count, title, guildId, label }: { id: string; count: number; title: string; guildId: string; label: string; }) => {
         const role = GuildRoleStore.getRole(guildId, id);
+        // we overwrite the context menu event added by BetterRoleContext in our patch
+        const wantsRoleContext = isPluginEnabled(BetterRoleContext.name);
 
         return (
-            <span style={{
-                color: role?.colorString,
-                fontWeight: "unset",
-                letterSpacing: ".05em"
-            }}>
+            <span
+                style={{
+                    color: role?.colorString,
+                    fontWeight: "unset",
+                    letterSpacing: ".05em"
+                }}
+                onContextMenu={wantsRoleContext ? e => BetterRoleContext.openRoleContextMenu(e, { guildId, id }) : undefined}
+            >
                 {title ?? label} &mdash; {count}
             </span>
         );

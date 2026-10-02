@@ -416,3 +416,48 @@ export interface EmojiUtils {
     triggerFullscreenAnimation(emoji: any, node: HTMLElement): void;
     applyPlatformToThemedEmojiColorPalette(colors: any): any;
 }
+
+export interface OpenUserSettingsOpts {
+    /**
+     * a *sub*section of settings to navigate to
+     *
+     * to navigate to a top-level section, use the navigationTarget parameter of {@link SettingsRouter.openUserSettings} instead
+     *
+     * discord has an enum with all the possible values (go dig in the openUserSettings source)
+     */
+    path?: string;
+    /**
+     * modal stacking behavior, defaults to "replaceAll"
+     */
+    stackingBehavior?: "replaceAll" | "stack" | "replace";
+    // ... misc analytics options
+}
+
+export interface SettingsRouter {
+    openUserSettings(navigationTarget?: string, opts?: OpenUserSettingsOpts, onOpen?: () => void): Promise<void>;
+}
+
+export interface OpenUserProfileModalOpts {
+    userId: string;
+    guildId?: string | null;
+    originGuildId?: string | null;
+    channelId?: string | null;
+    messageId?: string | null;
+    roleId?: string | null;
+    sessionId?: unknown | null;
+    joinRequestId?: unknown;
+    tabSection?: unknown;
+    scrollTarget?: unknown;
+    hideRestrictedProfile?: boolean;
+    sourceAnalyticsLocations?: string[];
+    appContext?: unknown;
+    /**
+     * defaults to null
+     */
+    customStatusPrompt?: unknown;
+    onModalOpen?: unknown;
+}
+
+export interface UserProfileModalActionCreators {
+    openUserProfileModal(opts: OpenUserProfileModalOpts): Promise<void>;
+}
