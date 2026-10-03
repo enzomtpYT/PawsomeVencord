@@ -17,10 +17,8 @@
 */
 
 import { isPluginEnabled } from "@api/PluginManager";
-import { definePluginSettings, Settings } from "@api/Settings";
-import ErrorBoundary from "@components/ErrorBoundary";
-import { getCustomColorString } from "@equicordplugins/customUserColors";
-import BetterRoleContext from "@plugins/betterRoleContext";
+import { definePluginSettings } from "@api/Settings";
+import customUserColors, { getCustomColorString } from "@equicordplugins/customUserColors";
 import { Devs } from "@utils/constants";
 import { Logger } from "@utils/Logger";
 import definePlugin, { makeRange, OptionType } from "@utils/types";
@@ -110,8 +108,8 @@ export default definePlugin({
             find: 'tutorialId:"whos-online',
             replacement: [
                 {
-                    match: /(#{intl::CHANNEL_MEMBERS_A11Y_LABEL}.{0,200}?}\):null,).{0,200}?(?:—|\\u2014) ",\i\]\}\)\]/,
-                    replace: "$1$self.RoleGroupColor(arguments[0])]"
+                    match: /(?<=#{intl::CHANNEL_MEMBERS_A11Y_LABEL}.{0,400}?)children:(?=.{0,20}?(?:—|\\u2014) ",\i\])/,
+                    replace: "style:{color:$self.getRoleColor(arguments[0])},$&"
                 },
             ],
             predicate: () => settings.store.memberList
@@ -121,8 +119,8 @@ export default definePlugin({
             find: "?null:new Intl.NumberFormat",
             replacement: [
                 {
-                    match: /\(0,\i\.jsx\)\("span",\{[^}]+\}\),null==\i\?null:\(0,\i\.jsxs\)\("span",\{children:\["\\xa0\\u2014 ",\i\]\}\)\]/,
-                    replace: "$self.RoleGroupColor(arguments[0])]"
+                    match: /(?<=#{intl::CHANNEL_MEMBERS_A11Y_LABEL},\{title:\i,count:\i\}\)\}\),\(0,\i\.jsxs\)\("div",\{)/,
+                    replace: "style:{color:$self.getRoleColor(arguments[0])},"
                 },
             ],
             predicate: () => settings.store.memberList
@@ -169,7 +167,7 @@ export default definePlugin({
 
     getColorString(userId: string, channelOrGuildId: string) {
         try {
-            if (Settings.plugins.CustomUserColors.enabled) {
+            if (isPluginEnabled(customUserColors.name)) {
                 const customColor = getCustomColorString(userId, true);
                 if (customColor) return customColor;
             }
@@ -222,22 +220,9 @@ export default definePlugin({
         return null;
     },
 
-    RoleGroupColor: ErrorBoundary.wrap(({ id, count, title, guildId, label }: { id: string; count: number; title: string; guildId: string; label: string; }) => {
-        const role = GuildRoleStore.getRole(guildId, id);
-        // we overwrite the context menu event added by BetterRoleContext in our patch
-        const wantsRoleContext = isPluginEnabled(BetterRoleContext.name);
-
-        return (
-            <span
-                style={{
-                    color: role?.colorString,
-                    fontWeight: "unset",
-                    letterSpacing: ".05em"
-                }}
-                onContextMenu={wantsRoleContext ? e => BetterRoleContext.openRoleContextMenu(e, { guildId, id }) : undefined}
-            >
-                {title ?? label} &mdash; {count}
-            </span>
-        );
-    }, { noop: true })
+    getRoleColor(props: any) {
+        try {
+            return GuildRoleStore.getRole(props?.guildId, props?.id)?.colorString;
+        } catch (e) { }
+    }
 });
