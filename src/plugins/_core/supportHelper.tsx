@@ -41,7 +41,7 @@ import definePlugin from "@utils/types";
 import { checkForUpdates, isOutdated, update } from "@utils/updater";
 import { RenderModalProps } from "@vencord/discord-types";
 import { CloudUploadPlatform } from "@vencord/discord-types/enums";
-import { Alerts, ChannelStore, CloudUploader, ConfirmModal, Constants, GuildMemberStore, openModal, Parser, PermissionsBits, PermissionStore, RelationshipStore, RestAPI, SelectedChannelStore, showToast, SnowflakeUtils, Text, Toasts, UserStore } from "@webpack/common";
+import { Alerts, ChannelStore, CloudUploader, ConfirmModal, Constants, GuildMemberStore, openModal, Parser, PermissionsBits, PermissionStore, RelationshipStore, RestAPI, SelectedChannelStore, showToast, SnowflakeUtils, Text, UserStore } from "@webpack/common";
 import { JSX } from "react";
 
 import plugins, { PluginMeta } from "~plugins";
@@ -480,10 +480,10 @@ export default definePlugin({
                             } else if (pluginList && typeof pluginList === "object" && pluginList.uploadFile) {
                                 try {
                                     await uploadPluginListFile(props.channel.id, pluginList.fileContent, pluginList.filename);
-                                    showToast("Plugin list uploaded successfully!", Toasts.Type.SUCCESS);
+                                    showToast("Plugin list uploaded successfully!", "success");
                                 } catch (e) {
                                     new Logger("SupportHelper").error("Failed to upload plugin list:", e);
-                                    showToast("Failed to upload plugin list", Toasts.Type.FAILURE);
+                                    showToast("Failed to upload plugin list", "failure");
                                 }
                             }
                         }}

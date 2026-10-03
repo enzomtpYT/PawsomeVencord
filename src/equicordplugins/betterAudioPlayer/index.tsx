@@ -10,7 +10,7 @@ import { definePluginSettings } from "@api/Settings";
 import { EquicordDevs } from "@utils/constants";
 import { classNameFactory } from "@utils/css";
 import definePlugin, { OptionType } from "@utils/types";
-import { ColorUtils, React, showToast, Toasts } from "@webpack/common";
+import { ColorUtils, React, showToast } from "@webpack/common";
 
 const cl = classNameFactory("vc-better-audio-player-");
 const CORS_PROXY = "https://cors.keiran0.workers.dev?url=";
@@ -39,7 +39,7 @@ function validateColor(value: string, key: string, fallback: string) {
         }
     } catch { /* invalid hex */ }
 
-    showToast(`Invalid color format for ${key}, use "R, G, B" or "#RRGGBB"`, Toasts.Type.FAILURE);
+    showToast(`Invalid color format for ${key}, use "R, G, B" or "#RRGGBB"`, "failure");
     settings.store[key] = fallback;
 }
 
