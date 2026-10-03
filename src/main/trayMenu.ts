@@ -120,7 +120,6 @@ function createVencordMenuItems(): MenuItemConstructorOptions[] {
                 }
             ]
         },
-        { type: "separator" }
     ];
 }
 
