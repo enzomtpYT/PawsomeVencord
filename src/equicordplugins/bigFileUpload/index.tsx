@@ -17,7 +17,7 @@ import { insertTextIntoChatInputBox, sendMessage } from "@utils/discord";
 import { Margins } from "@utils/margins";
 import definePlugin, { OptionType, PluginNative } from "@utils/types";
 import { findByPropsLazy } from "@webpack";
-import { Button, DraftType, Forms, Menu, PermissionsBits, PermissionStore, React, Select, SelectedChannelStore, showToast, TextInput, Toasts, UploadManager, useEffect, useState } from "@webpack/common";
+import { Button, DraftType, Forms, Menu, PermissionsBits, PermissionStore, React, Select, SelectedChannelStore, showToast, TextInput, UploadManager, useEffect, useState } from "@webpack/common";
 
 const Native = VencordNative.pluginHelpers.BigFileUpload as PluginNative<typeof import("./native")>;
 
@@ -798,7 +798,7 @@ function handleCSPError(error: unknown, serviceName: string, channelId: string) 
                 "\n-# If the issue persists, check the console for full error details."
         });
 
-        showToast(`${serviceName}: ${isCSPError ? "Blocked by CSP" : "Network/CSP error"}`, Toasts.Type.FAILURE);
+        showToast(`${serviceName}: ${isCSPError ? "Blocked by CSP" : "Network/CSP error"}`, "failure");
         return true;
     }
     return false;
@@ -855,7 +855,7 @@ async function uploadFileToGofileWithStreaming(file: File, channelId: string) {
             }
 
             setTimeout(() => sendTextToChat(`${finalUrl} `), 10);
-            showToast(`${file.name} Successfully Uploaded to GoFile!`, Toasts.Type.SUCCESS);
+            showToast(`${file.name} Successfully Uploaded to GoFile!`, "success");
             UploadManager.clearAll(channelId, DraftType.SlashCommand);
         } else {
             throw new Error(`GoFile upload failed: ${JSON.stringify(uploadResult)}`);
@@ -905,7 +905,7 @@ async function uploadFileToCatboxWithStreaming(file: File, channelId: string) {
             }
 
             setTimeout(() => sendTextToChat(`${finalUrl} `), 10);
-            showToast(`${file.name} Successfully Uploaded to Catbox!`, Toasts.Type.SUCCESS);
+            showToast(`${file.name} Successfully Uploaded to Catbox!`, "success");
             UploadManager.clearAll(channelId, DraftType.SlashCommand);
         } else {
             throw new Error(`Catbox upload failed: ${uploadResult}`);
@@ -944,7 +944,7 @@ async function uploadFileToLitterboxWithStreaming(file: File, channelId: string)
             }
 
             setTimeout(() => sendTextToChat(`${finalUrl}`), 10);
-            showToast(`${file.name} Successfully Uploaded to Litterbox!`, Toasts.Type.SUCCESS);
+            showToast(`${file.name} Successfully Uploaded to Litterbox!`, "success");
             UploadManager.clearAll(channelId, DraftType.SlashCommand);
         } else {
             throw new Error(`Litterbox upload failed: ${uploadResult}`);
@@ -993,7 +993,7 @@ async function uploadFileToZiplineWithStreaming(file: File, channelId: string) {
             }
 
             setTimeout(() => sendTextToChat(`${finalUrl} `), 10);
-            showToast(`${file.name} Successfully Uploaded to Zipline!`, Toasts.Type.SUCCESS);
+            showToast(`${file.name} Successfully Uploaded to Zipline!`, "success");
             UploadManager.clearAll(channelId, DraftType.SlashCommand);
         } else {
             throw new Error(`Zipline upload failed: ${uploadResult}`);
@@ -1075,7 +1075,7 @@ async function uploadFileCustomWithStreaming(file: File, channelId: string) {
         }
 
         setTimeout(() => sendTextToChat(`${finalUrlForChat} `), 10);
-        showToast(`${file.name} Successfully Uploaded with Custom Uploader!`, Toasts.Type.SUCCESS);
+        showToast(`${file.name} Successfully Uploaded with Custom Uploader!`, "success");
         UploadManager.clearAll(channelId, DraftType.SlashCommand);
     } catch (nativeError) {
         throw new Error(`Custom streaming upload failed: ${getErrorMessage(nativeError)}`);
@@ -1162,7 +1162,7 @@ async function uploadFile(file: File, channelId: string) {
     // Large file warning
     if (fileSizeMB > 300) {
         console.warn(`[BigFileUpload] Large file warning: ${fileSizeMB.toFixed(1)}MB may take 10+ minutes to upload`);
-        showToast(`Large file detected (${fileSizeMB.toFixed(1)}MB) - this may take 10+ minutes`, Toasts.Type.MESSAGE);
+        showToast(`Large file detected (${fileSizeMB.toFixed(1)}MB) - this may take 10+ minutes`, "message");
     }
 
     let lastError: any = null;
@@ -1178,7 +1178,7 @@ async function uploadFile(file: File, channelId: string) {
             if (i > 0) {
                 const previousUploader = uploaderOrder[i - 1];
                 console.log(`${previousUploader} failed. Trying fallback uploader: ${uploader}`);
-                showToast(`${previousUploader} failed. Trying ${uploader} as fallback...`, Toasts.Type.MESSAGE);
+                showToast(`${previousUploader} failed. Trying ${uploader} as fallback...`, "message");
 
                 await new Promise(resolve => setTimeout(resolve, 3000));
 
@@ -1212,7 +1212,7 @@ async function uploadFile(file: File, channelId: string) {
 
             // Show progress indicator for large files
             if (fileSizeMB > 200) {
-                showToast(`Uploading ${fileSizeMB.toFixed(1)}MB to ${uploader} - this may take up to ${Math.ceil(uploadTimeout / 60000)} minutes...`, Toasts.Type.MESSAGE);
+                showToast(`Uploading ${fileSizeMB.toFixed(1)}MB to ${uploader} - this may take up to ${Math.ceil(uploadTimeout / 60000)} minutes...`, "message");
             }
 
             // Use streaming upload functions with timeout
@@ -1257,7 +1257,7 @@ async function uploadFile(file: File, channelId: string) {
 
             if (errorMsg.includes("timeout")) {
                 console.error(`[BigFileUpload] ${uploader} timed out - file too large for reliable upload`);
-                showToast(`${uploader} timed out (${fileSizeMB.toFixed(1)}MB too large)`, Toasts.Type.FAILURE);
+                showToast(`${uploader} timed out (${fileSizeMB.toFixed(1)}MB too large)`, "failure");
             } else if (errorMsg.includes("network") || errorMsg.includes("fetch")) {
                 console.error(`[BigFileUpload] ${uploader} network error`);
             } else if (errorMsg.includes("CSP") || errorMsg.includes("Content Security Policy")) {
@@ -1305,7 +1305,7 @@ async function uploadFile(file: File, channelId: string) {
                         timeoutAdvice +
                         "\nCheck console for detailed error logs."
                 });
-                showToast("All streaming uploads failed", Toasts.Type.FAILURE);
+                showToast("All streaming uploads failed", "failure");
                 UploadManager.clearAll(channelId, DraftType.SlashCommand);
                 return;
             }
