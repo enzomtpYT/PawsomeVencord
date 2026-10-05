@@ -12,8 +12,8 @@ import { findByPropsLazy, findComponentByCodeLazy } from "@webpack";
 import {
     Button,
     GuildMemberStore,
+    showToast,
     Text,
-    Toasts,
     UserProfileStore,
     UserStore
 } from "@webpack/common";
@@ -120,32 +120,20 @@ export default definePlugin({
             try {
                 const clip = await navigator.clipboard.readText();
                 if (!clip) {
-                    Toasts.show({
-                        message: "Clipboard is empty",
-                        type: Toasts.Type.FAILURE,
-                        id: Toasts.genId(),
-                    });
+                    showToast("Clipboard is empty", "failure");
                     return;
                 }
                 const clipboardProfile: SavedProfile = JSON.parse(clip);
 
                 if (!("nick" in clipboardProfile)) {
-                    Toasts.show({
-                        message: "Data is not in correct format",
-                        type: Toasts.Type.FAILURE,
-                        id: Toasts.genId(),
-                    });
+                    showToast("Data is not in correct format", "failure");
                     return;
                 }
 
                 Object.assign(savedProfile, JSON.parse(clip));
                 paste();
             } catch (e) {
-                Toasts.show({
-                    message: `Failed to read clipboard data: ${e}`,
-                    type: Toasts.Type.FAILURE,
-                    id: Toasts.genId(),
-                });
+                showToast(`Failed to read clipboard data: ${e}`, "failure");
             }
         };
 
