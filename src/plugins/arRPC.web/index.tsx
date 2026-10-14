@@ -45,7 +45,11 @@ export default definePlugin({
     tags: ["Activity", "Utility"],
     authors: [Devs.Ducko],
     reporterTestable: ReporterTestable.None,
+<<<<<<< HEAD
     hidden: !IS_PAWTOP && !IS_VESKTOP && !("legcord" in window),
+=======
+    hidden: IS_EQUIBOP || IS_VESKTOP || "legcord" in window,
+>>>>>>> e0e85c8d4f6dc73aac9368cf3f4b2200eac4d4b4
 
     settingsAboutComponent: () => (
         <>
