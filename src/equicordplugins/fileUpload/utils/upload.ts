@@ -1178,7 +1178,6 @@ const EXE_BLOCKED_SERVICES = new Set<ServiceType>([
 function getEmbedProxyService(): EmbedProxyService {
     const service = settings.store.embedProxyService;
     return service === "nfp" ? service : "cors";
-
 }
 
 function shouldProxyEmbedUrl(url: string): boolean {

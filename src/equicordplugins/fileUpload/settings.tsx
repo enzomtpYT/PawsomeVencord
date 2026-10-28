@@ -6,8 +6,10 @@
 
 import { definePluginSettings } from "@api/Settings";
 import { Button } from "@components/Button";
+import { Notice } from "@components/Notice";
 import { SettingsSection } from "@components/settings/tabs/plugins/components/Common";
 import { Switch } from "@components/Switch";
+import { useCspPermission } from "@utils/csp";
 import { classNameFactory } from "@utils/css";
 import { useForceUpdater } from "@utils/react";
 import { OptionType, PluginNative } from "@utils/types";
@@ -51,8 +53,8 @@ const litterboxOptions = [
 ];
 
 const embedProxyOptions = [
-    { label: "CORS Proxy", value: "cors", default: true },
-    { label: "discord.nfp.is", value: "nfp" }
+    { label: "CORS Proxy", value: "cors" },
+    { label: "discord.nfp.is", value: "nfp", default: true }
 ];
 
 const encryptingHostUrlStyleOptions = [
@@ -291,7 +293,7 @@ export const settings = definePluginSettings({
         type: OptionType.SELECT,
         description: "Embed helper service to wrap uploaded video links.",
         options: embedProxyOptions,
-        default: "cors",
+        default: "nfp",
         hidden: true
     },
     corsProxyUrl: {
@@ -521,10 +523,30 @@ function FallbackOrderSettings() {
     );
 }
 
+function getShareXRequestUrl(config: string) {
+    try {
+        return parseShareXConfig(config).RequestURL;
+    } catch {
+        return undefined;
+    }
+}
+
+function AllowHostNotice({ url }: { url?: string; }) {
+    const [isAllowed, allow] = useCspPermission(url, ["connect-src"], "FileUpload");
+    if (isAllowed || !url) return null;
+
+    return (
+        <Notice variant="warning" action={<Button size="small" variant="secondary" onClick={allow}>Allow Host</Button>}>
+            Connections to {URL.parse(url)?.host} are blocked. Allow this host if you trust it, then restart Discord.
+        </Notice>
+    );
+}
+
 export function SettingsComponent() {
     const update = useForceUpdater();
     const sharexFileInputRef = React.useRef<HTMLInputElement>(null);
     const { serviceType } = settings.store;
+    const { serviceUrl, sharexConfig, corsProxyUrl } = settings.use(["serviceUrl", "sharexConfig", "corsProxyUrl"]);
 
     const validateShareXConfig = () => {
         try {
@@ -582,6 +604,7 @@ export function SettingsComponent() {
                         onChange={v => settings.store.serviceUrl = v}
                         placeholder="https://your-zipline-instance.com"
                     />
+                    <AllowHostNotice url={serviceUrl} />
                     <SettingTextInput
                         name="Zipline Token"
                         description="Your Zipline API authorization token"
@@ -833,6 +856,7 @@ export function SettingsComponent() {
                             onChange={handleShareXFileUpload}
                         />
                     </SettingsSection>
+                    <AllowHostNotice url={getShareXRequestUrl(sharexConfig || "")} />
                 </SettingGroup>
             )}
 
@@ -1021,11 +1045,12 @@ export function SettingsComponent() {
             <SettingGroup name="Network" description="Configure browser upload proxying and timeouts.">
                 <SettingTextInput
                     name="CORS Proxy URL"
-                    description="Optional CORS proxy used for web uploads. Leave empty to upload directly."
+                    description="Optional CORS proxy for uploads that can't go through the desktop app. The proxy sees every file and token sent through it, so only use one you trust. Leave empty to upload directly."
                     value={settings.store.corsProxyUrl || ""}
                     onChange={v => settings.store.corsProxyUrl = v}
                     placeholder="https://your-cors-proxy.example.com"
                 />
+                <AllowHostNotice url={corsProxyUrl} />
 
                 <SettingsSection id="upload-timeout" name="Upload Timeout" description="Maximum time to wait per upload attempt before switching to fallback">
                     <Select
