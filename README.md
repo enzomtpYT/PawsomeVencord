@@ -12,22 +12,24 @@ You can join our [discord server](https://discord.gg/w9jVtzNx4c) for commits, ch
 
 ### Included Plugins
 
-Our included plugins can be found [here](https://equicord.org/plugins).
+Standard Equicord and Vencord plugins can be browsed [here](https://equicord.org/plugins).
 
-Plus some plugins from Equicord that are not included in the main repo:
-- alwaysPing
-- betterClips
-- betterMicrophone
-- betterScreenshare
-- customVcNarrator
-- fakeDeafen
-- meow (old version with random meows + overhaul for pawsome)
-- bark (modification of the overhauled meow)
-- notifyUserChanges
-- serverProfilesToolbox
-- webcamStartNotifier
-- venplugplus
-- bigFileUpload
+Additionally, PawsomeVencord includes 14 exclusive or customized plugins (located in `src/pawsomeplugins/`), badged with the Pawsome logo in the client settings and filterable via the **Show PawsomeVencord** filter:
+
+- **alwaysPing**: Always ping users when replying.
+- **bark**: Adds a chatbar button to bark in chat.
+- **betterClips**: Enhanced clips controls and options.
+- **betterMicrophone** *(Desktop)*: Further customize your microphone settings.
+- **betterScreenshare** *(Desktop)*: Further customize screen sharing resolution and frame rates.
+- **bigFileUpload**: Upload large files via external file hosts through `/fileupload` or the chat button.
+- **customVcNarrator**: Voice channel narrator with TikTok TTS for joins, leaves, and moves.
+- **fakeDeafen**: Appears deafened while still hearing voice channels.
+- **meow**: Adds a chatbar button with random meow sounds and messages.
+- **notifyUserChanges**: Context menu option to receive notifications on voice channel or status changes.
+- **philsPluginLibrary**: Shared helper library for Phil's plugins.
+- **serverProfilesToolbox**: Adds copy, paste, and reset buttons to the server profiles editor.
+- **VenPlugPlus**: Enhanced plugin management utilities.
+- **webcamStartNotifier**: Alerts when cameras turn on in voice channels.
 
 ## Installing / Uninstalling
 

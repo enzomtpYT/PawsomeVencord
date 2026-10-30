@@ -32,6 +32,7 @@ interface PluginCardProps extends React.HTMLProps<HTMLDivElement> {
 export function PluginCard({ plugin, disabled, onRestartNeeded, onMouseEnter, onMouseLeave, isNew }: PluginCardProps) {
     const settings = Settings.plugins[plugin.name];
     const pluginMeta = PluginMeta[plugin.name];
+    const isPawsomePlugin = pluginMeta.folderName.startsWith("src/pawsomeplugins/") ?? false;
     const isEquicordPlugin = pluginMeta.folderName.startsWith("src/equicordplugins/") ?? false;
     const isVencordPlugin = pluginMeta.folderName.startsWith("src/plugins/") ?? false;
     const isUserPlugin = pluginMeta?.userPlugin ?? false;
@@ -95,10 +96,16 @@ export function PluginCard({ plugin, disabled, onRestartNeeded, onMouseEnter, on
             title: "Modified Vencord Plugin"
         },
         {
-            condition: isEquicordPlugin,
+            condition: isPawsomePlugin,
             src: "https://raw.githubusercontent.com/enzomtpYT/PawsomeVencord/refs/heads/main/browser/icon.png",
-            alt: "Equicord/PawsomeVencord",
-            title: "Equicord/PawsomeVencord Plugin"
+            alt: "PawsomeVencord",
+            title: "PawsomeVencord Plugin"
+        },
+        {
+            condition: isEquicordPlugin,
+            src: "https://equicord.org/assets/favicon.png",
+            alt: "Equicord",
+            title: "Equicord Plugin"
         },
         {
             condition: isVencordPlugin,

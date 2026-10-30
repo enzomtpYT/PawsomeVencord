@@ -147,7 +147,7 @@ export const globPlugins = kind => ({
         });
 
         build.onLoad({ filter, namespace: "import-plugins" }, async () => {
-            const pluginDirs = ["plugins/_api", "plugins/_core", "plugins", "equicordplugins/_api", "equicordplugins/_core", "equicordplugins", "userplugins"];
+            const pluginDirs = ["plugins/_api", "plugins/_core", "plugins", "equicordplugins/_api", "equicordplugins/_core", "equicordplugins", "pawsomeplugins/_api", "pawsomeplugins/_core", "pawsomeplugins", "userplugins"];
             let code = "";
             let pluginsCode = "\n";
             let metaCode = "\n";
