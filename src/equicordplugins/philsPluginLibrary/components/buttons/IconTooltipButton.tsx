@@ -16,25 +16,26 @@
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
 */
 
+import { Button, ButtonProps } from "@components/Button";
 import { Flex } from "@components/Flex";
-import { Button, Tooltip } from "@webpack/common";
+import { Tooltip } from "@webpack/common";
 import React, { JSX } from "react";
 
-export interface IconTooltipButtonProps {
+export interface IconTooltipButtonProps extends ButtonProps {
     tooltipText?: string;
     icon?: JSX.Element;
 }
 
-export const IconTooltipButton = (props: React.ComponentProps<typeof Button> & IconTooltipButtonProps) => {
+export const IconTooltipButton = ({ tooltipText, icon, size = "small", style, ...props }: IconTooltipButtonProps) => {
     return (
-        <Tooltip text={props.tooltipText}>
+        <Tooltip text={tooltipText}>
             {tooltipProps => <Button
-                size={Button.Sizes.SMALL}
-                {...props as any}
-                style={{ aspectRatio: 1, maxHeight: "32px", boxSizing: "border-box", ...props.style }}
+                size={size}
+                {...props}
+                style={{ aspectRatio: 1, maxHeight: "32px", boxSizing: "border-box", ...style }}
             >
                 <Flex style={{ justifyContent: "center", alignItems: "center", width: 24, height: 24 }}>
-                    {props.icon}
+                    {icon}
                 </Flex>
                 <span {...tooltipProps} style={{ position: "absolute", top: 0, right: 0, bottom: 0, left: 0 }} />
             </Button>}

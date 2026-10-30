@@ -7,17 +7,26 @@
 import { ApplicationCommandInputType, ApplicationCommandOptionType, sendBotMessage } from "@api/Commands";
 import { NavContextMenuPatchCallback } from "@api/ContextMenu";
 import { definePluginSettings } from "@api/Settings";
+import { Button } from "@components/Button";
 import { Divider } from "@components/Divider";
 import { Flex } from "@components/Flex";
 import { FormSwitch } from "@components/FormSwitch";
 import { Heading } from "@components/Heading";
 import { OpenExternalIcon } from "@components/Icons";
+import { Paragraph } from "@components/Paragraph";
 import { Devs, EquicordDevs } from "@utils/constants";
 import { insertTextIntoChatInputBox, sendMessage } from "@utils/discord";
 import { Margins } from "@utils/margins";
 import definePlugin, { OptionType, PluginNative } from "@utils/types";
 import { findByPropsLazy } from "@webpack";
-import { Button, DraftType, Forms, Menu, PermissionsBits, PermissionStore, React, Select, SelectedChannelStore, showToast, TextInput, UploadManager, useEffect, useState } from "@webpack/common";
+import { DraftType, Menu, PermissionsBits, PermissionStore, React, Select, SelectedChannelStore, showToast as showDiscordToast, TextInput, UploadManager, useEffect, useState } from "@webpack/common";
+
+function showToast(text: string, type?: "success" | "failure" | "message") {
+    showDiscordToast({
+        text,
+        variant: type === "failure" ? "critical" : type === "success" ? "success" : "default"
+    });
+}
 
 const Native = VencordNative.pluginHelpers.BigFileUpload as PluginNative<typeof import("./native")>;
 
@@ -279,10 +288,10 @@ function SettingsComponent(props: { setValue(v: any): void; }) {
             <Divider />
             <section>
                 <Heading>Upload Limit Bypass</Heading>
-                <Forms.FormText>
+                <Paragraph>
                     Select the external file uploader service to be used to bypass the upload limit.
                     If a service fails, the plugin will automatically try other services as fallbacks.
-                </Forms.FormText>
+                </Paragraph>
                 <Select
                     options={[
                         { label: "GoFile (Temporary | Unlimited)", value: "GoFile" },
@@ -322,9 +331,9 @@ function SettingsComponent(props: { setValue(v: any): void; }) {
 
             <section>
                 <Heading>Upload Timeout</Heading>
-                <Forms.FormText>
+                <Paragraph>
                     Configure how long to wait for large file uploads before timing out. Higher settings allow larger files but may hang longer if the upload fails.
-                </Forms.FormText>
+                </Paragraph>
                 <Select
                     options={[
                         { label: "Conservative (10 min max)", value: "conservative" },
@@ -345,9 +354,9 @@ function SettingsComponent(props: { setValue(v: any): void; }) {
                 <>
                     <section>
                         <Heading>GoFile Token (optional)</Heading>
-                        <Forms.FormText>
+                        <Paragraph>
                             Insert your personal GoFile account's token to save all uploads to your GoFile account.
-                        </Forms.FormText>
+                        </Paragraph>
                         <TextInput
                             type="text"
                             value={settings.store.gofileToken || ""}
@@ -363,9 +372,9 @@ function SettingsComponent(props: { setValue(v: any): void; }) {
                 <>
                     <section>
                         <Heading>Catbox User hash (optional)</Heading>
-                        <Forms.FormText>
+                        <Paragraph>
                             Insert your personal Catbox account's hash to save all uploads to your Catbox account.
-                        </Forms.FormText>
+                        </Paragraph>
                         <TextInput
                             type="text"
                             value={settings.store.catboxUserHash || ""}
@@ -381,9 +390,9 @@ function SettingsComponent(props: { setValue(v: any): void; }) {
                 <>
                     <section>
                         <Heading>File Expiration Time</Heading>
-                        <Forms.FormText>
+                        <Paragraph>
                             Select how long it should take for your uploads to expire and get deleted.
-                        </Forms.FormText>
+                        </Paragraph>
                         <Select
                             options={[
                                 { label: "1 hour", value: "1h" },
@@ -405,9 +414,9 @@ function SettingsComponent(props: { setValue(v: any): void; }) {
                 <>
                     <section>
                         <Heading>Zipline Authorization Token (required)</Heading>
-                        <Forms.FormText>
+                        <Paragraph>
                             Insert your Zipline authorization token. This is required to upload files to your Zipline instance.
-                        </Forms.FormText>
+                        </Paragraph>
                         <TextInput
                             type="text"
                             value={settings.store.ziplineAuthToken || ""}
@@ -419,9 +428,9 @@ function SettingsComponent(props: { setValue(v: any): void; }) {
 
                     <section>
                         <Heading>Zipline Server URL (optional)</Heading>
-                        <Forms.FormText>
+                        <Paragraph>
                             Insert your custom Zipline server URL. Defaults to https://share.enzomtp.party/api/upload if not provided.
-                        </Forms.FormText>
+                        </Paragraph>
                         <TextInput
                             type="text"
                             value={settings.store.ziplineServerURL || ""}
@@ -433,9 +442,9 @@ function SettingsComponent(props: { setValue(v: any): void; }) {
 
                     <section>
                         <Heading>Zipline Folder (optional)</Heading>
-                        <Forms.FormText>
+                        <Paragraph>
                             Specify a folder name to organize uploaded files on your Zipline instance.
-                        </Forms.FormText>
+                        </Paragraph>
                         <TextInput
                             type="text"
                             value={settings.store.ziplineFolder || ""}
@@ -447,9 +456,9 @@ function SettingsComponent(props: { setValue(v: any): void; }) {
 
                     <section>
                         <Heading>Zipline Delete After (optional)</Heading>
-                        <Forms.FormText>
+                        <Paragraph>
                             Specify when the file should be deleted after upload (e.g., "30d" for 30 days, "12h" for 12 hours, "7d" for 7 days). Leave empty for permanent storage.
-                        </Forms.FormText>
+                        </Paragraph>
                         <TextInput
                             type="text"
                             value={settings.store.ziplineDeleteAfter || ""}
@@ -466,11 +475,11 @@ function SettingsComponent(props: { setValue(v: any): void; }) {
                     <Divider />
                     <section>
                         <Heading>Custom Uploader Configuration</Heading>
-                        <Forms.FormText>
+                        <Paragraph>
                             Configure a custom file uploader. This is the most flexible option and can work around Content Security Policy restrictions.
                             <br /><br />
                             <strong>CSP-Compliant Alternatives:</strong> If Catbox/Litterbox get blocked, try services that use domains like *.githubusercontent.com, *.imgur.com, or other whitelisted domains.
-                        </Forms.FormText>
+                        </Paragraph>
                     </section>
                     <section>
                         <Heading>Custom Uploader Name</Heading>
@@ -522,11 +531,11 @@ function SettingsComponent(props: { setValue(v: any): void; }) {
 
                     <section>
                         <Heading>URL (JSON path)</Heading>
-                        <Forms.FormText>
+                        <Paragraph>
                             Enter the JSON path to extract the file URL from the response.<br />
                             Examples: "url", "data.file_url", "result.download_link"<br />
                             <strong>Do NOT enter a full URL here - just the JSON path.</strong>
-                        </Forms.FormText>
+                        </Paragraph>
                         <TextInput
                             type="text"
                             value={customUploaderStore.get().url}
@@ -548,7 +557,7 @@ function SettingsComponent(props: { setValue(v: any): void; }) {
                     </section>
 
                     <Divider />
-                    <Forms.FormTitle>Custom Uploader Arguments</Forms.FormTitle>
+                    <Heading>Custom Uploader Arguments</Heading>
                     {Object.entries(customUploaderStore.get().args).map(([key, value], index) => (
                         <div key={index}>
                             <TextInput
@@ -569,7 +578,7 @@ function SettingsComponent(props: { setValue(v: any): void; }) {
                     ))}
 
                     <Divider />
-                    <Forms.FormTitle>Headers</Forms.FormTitle>
+                    <Heading>Headers</Heading>
                     {Object.entries(customUploaderStore.get().headers).map(([key, value], index) => (
                         <div key={index}>
                             <TextInput
@@ -590,11 +599,10 @@ function SettingsComponent(props: { setValue(v: any): void; }) {
                     ))}
 
                     <Divider />
-                    <Forms.FormTitle>Import ShareX Config</Forms.FormTitle>
+                    <Heading>Import ShareX Config</Heading>
                     <Button
                         onClick={triggerFileUpload}
-                        color={Button.Colors.BRAND}
-                        size={Button.Sizes.XLARGE}
+                        variant="primary"
                         className={Margins.bottom16}
                     >
                         Import

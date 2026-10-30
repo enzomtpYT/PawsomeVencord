@@ -16,15 +16,15 @@
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
 */
 
-import { Button } from "@webpack/common";
+import { ButtonProps } from "@components/Button";
 import React from "react";
 
 import { IconTooltipButton } from ".";
 
-export const CopyButton = (props: React.ComponentProps<typeof Button>) => {
+export const CopyButton = (props: ButtonProps) => {
     return (
         <IconTooltipButton
-            color={Button.Colors.PRIMARY}
+            variant="secondary"
             tooltipText="Copy Profile"
             icon={
                 <svg width="18" height="18" viewBox="0 0 24 24">

@@ -4,7 +4,9 @@
  * SPDX-License-Identifier: GPL-3.0-or-later
  */
 
-import { Forms, SearchableSelect, useMemo, useState } from "@webpack/common";
+import { Heading } from "@components/Heading";
+import { Paragraph } from "@components/Paragraph";
+import { SearchableSelect, useMemo, useState } from "@webpack/common";
 
 import { getCurrentVoice, settings, TIKTOK_VOICES } from "./settings";
 
@@ -84,7 +86,7 @@ function ComplexPicker({ voice, voices }: PickerProps) {
 
     return (
         <>
-            <Forms.FormTitle>Language</Forms.FormTitle>
+            <Heading>Language</Heading>
             <SearchableSelect
                 placeholder="Select a language"
                 options={languageOptions}
@@ -93,7 +95,7 @@ function ComplexPicker({ voice, voices }: PickerProps) {
                 maxVisibleItems={5}
                 closeOnSelect
             />
-            <Forms.FormTitle>Voice</Forms.FormTitle>
+            <Heading>Voice</Heading>
             <SimplePicker
                 voice={voice}
                 voices={voicesForLanguage}
@@ -106,7 +108,7 @@ function VoiceSetting() {
     const { customVoice } = settings.use(["customVoice"]);
 
     if (!TIKTOK_VOICES.length)
-        return <Forms.FormText>No voices found.</Forms.FormText>;
+        return <Paragraph>No voices found.</Paragraph>;
 
     // Group voices by language if there are many
     const Picker = TIKTOK_VOICES.length > 20 ? ComplexPicker : SimplePicker;
@@ -116,7 +118,7 @@ function VoiceSetting() {
 export function VoiceSettingSection() {
     return (
         <section>
-            <Forms.FormTitle>Voice</Forms.FormTitle>
+            <Heading>Voice</Heading>
             <VoiceSetting />
         </section>
     );

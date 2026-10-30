@@ -16,15 +16,15 @@
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
 */
 
-import { Button } from "@webpack/common";
+import { ButtonProps } from "@components/Button";
 import React from "react";
 
 import { IconTooltipButton } from ".";
 
-export const DeleteButton = (props: React.ComponentProps<typeof Button>) => {
+export const DeleteButton = (props: ButtonProps) => {
     return (
         <IconTooltipButton
-            color={Button.Colors.RED}
+            variant="dangerPrimary"
             tooltipText="Delete Profile"
             icon={
                 <svg width="18" height="18" viewBox="0 0 24 24">

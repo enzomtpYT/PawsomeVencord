@@ -16,26 +16,26 @@
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
 */
 
+import { Button, ButtonProps } from "@components/Button";
 import { classes } from "@utils/misc";
-import { Button } from "@webpack/common";
 import React, { JSX } from "react";
 
 import { panelClasses } from "../../../philsPluginLibrary";
 
 export type IconComponent = <T extends { className: string; }>(props: T) => JSX.Element;
-export interface SettingsPanelButtonProps extends Partial<React.ComponentProps<typeof Button>> {
+export interface SettingsPanelButtonProps extends ButtonProps {
     icon?: IconComponent;
 }
 
-export const SettingsPanelButton = (props: SettingsPanelButtonProps) => {
+export const SettingsPanelButton = ({ icon: Icon, size = "small", ...props }: SettingsPanelButtonProps) => {
     return (
         <Button
-            size={Button.Sizes.SMALL}
+            size={size}
             className={classes(panelClasses.button, panelClasses.buttonColor)}
             {...props}
         >
             <div className={classes(panelClasses.buttonContents)}>
-                {props.icon && <props.icon className={classes(panelClasses.buttonIcon)} />}
+                {Icon && <Icon className={classes(panelClasses.buttonIcon)} />}
             </div>
         </Button>
     );

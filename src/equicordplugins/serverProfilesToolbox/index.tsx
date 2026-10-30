@@ -4,16 +4,16 @@
  * SPDX-License-Identifier: GPL-3.0-or-later
  */
 
+import { Button } from "@components/Button";
+import { Text } from "@components/Text";
 import { copyToClipboard } from "@utils/clipboard";
 import { Devs } from "@utils/constants";
 import definePlugin from "@utils/types";
 import { GuildMember } from "@vencord/discord-types";
 import { findByPropsLazy, findComponentByCodeLazy } from "@webpack";
 import {
-    Button,
     GuildMemberStore,
     showToast,
-    Text,
     UserProfileStore,
     UserStore
 } from "@webpack/common";
@@ -120,26 +120,26 @@ export default definePlugin({
             try {
                 const clip = await navigator.clipboard.readText();
                 if (!clip) {
-                    showToast("Clipboard is empty", "failure");
+                    showToast({ text: "Clipboard is empty", variant: "critical" });
                     return;
                 }
                 const clipboardProfile: SavedProfile = JSON.parse(clip);
 
                 if (!("nick" in clipboardProfile)) {
-                    showToast("Data is not in correct format", "failure");
+                    showToast({ text: "Data is not in correct format", variant: "critical" });
                     return;
                 }
 
                 Object.assign(savedProfile, JSON.parse(clip));
                 paste();
             } catch (e) {
-                showToast(`Failed to read clipboard data: ${e}`, "failure");
+                showToast({ text: `Failed to read clipboard data: ${e}`, variant: "critical" });
             }
         };
 
         return <SummaryItem title="Server Profiles Toolbox" hideDivider={false} forcedDivider>
             <div style={{ display: "flex", alignItems: "center", flexDirection: "column", gap: "5px" }}>
-                <Text variant="text-md/normal">
+                <Text size="md" weight="normal">
                     Use the following buttons to mange the currently selected server
                 </Text>
                 <div style={{ display: "flex", gap: "5px" }}>

@@ -16,8 +16,9 @@
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
 */
 
+import { Button } from "@components/Button";
 import { Flex } from "@components/Flex";
-import { Button, Modal } from "@webpack/common";
+import { Modal } from "@webpack/common";
 import React, { JSX } from "react";
 
 import { Author, Contributor } from "../../types";
@@ -37,8 +38,8 @@ export type SettingsModalProps = Omit<React.ComponentProps<typeof Modal>, "title
 export const SettingsModal = (props: SettingsModalProps) => {
     const doneButton =
         <Button
-            size={Button.Sizes.SMALL}
-            color={Button.Colors.BRAND}
+            size="small"
+            variant="primary"
             onClick={props.onDone}
         >
             {props.closeButtonName ?? "Done"}

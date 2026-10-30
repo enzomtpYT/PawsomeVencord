@@ -16,15 +16,15 @@
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
 */
 
-import { Button } from "@webpack/common";
+import { ButtonProps } from "@components/Button";
 import React from "react";
 
 import { IconTooltipButton } from ".";
 
-export const SaveButton = (props: React.ComponentProps<typeof Button>) => {
+export const SaveButton = (props: ButtonProps) => {
     return (
         <IconTooltipButton
-            color={Button.Colors.GREEN}
+            variant="positive"
             tooltipText="Save Profile"
             icon={
                 <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" >
