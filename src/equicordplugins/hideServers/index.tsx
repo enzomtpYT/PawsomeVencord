@@ -116,7 +116,7 @@ export default definePlugin({
                     replace: "$self.useFilteredGuilds($1)$2"
                 },
                 {
-                    match: /let{disableAppDownload.{0,10}isPlatformEmbedded/,
+                    match: /{disableAppDownload:\i=\i\.isPlatformEmbedded/,
                     replace: "$self.useStore();$&",
                 }
             ]
