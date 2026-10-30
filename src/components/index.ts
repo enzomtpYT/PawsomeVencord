@@ -22,6 +22,8 @@ export * from "./Link";
 export * from "./margins";
 export * from "./Notice";
 export * from "./Paragraph";
+export * from "./ServerListItem";
 export * from "./settings";
 export * from "./Span";
 export * from "./Switch";
+export * from "./Text";
