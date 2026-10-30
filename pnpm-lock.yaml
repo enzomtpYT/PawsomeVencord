@@ -498,7 +498,7 @@ importers:
         specifier: 'catalog:'
         version: 19.2.3(@types/react@19.2.3)
       '@vencord/discord-types':
-        specifier: link:../discord-types
+        specifier: workspace:@equicord/discord-types@^
         version: link:../discord-types
       lodash:
         specifier: 'catalog:'

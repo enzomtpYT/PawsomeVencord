@@ -23,7 +23,7 @@
     },
     "dependencies": {
         "@types/node": "catalog:",
-        "@vencord/discord-types": "link:../discord-types",
+        "@vencord/discord-types": "workspace:@equicord/discord-types@^",
         "lodash": "catalog:",
         "moment": "catalog:",
         "ts-pattern": "catalog:",
