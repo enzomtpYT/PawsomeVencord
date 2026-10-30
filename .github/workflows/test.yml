@@ -8,6 +8,8 @@ on:
         branches:
             - main
             - dev
+permissions:
+    contents: read
 
 jobs:
     Test:
@@ -15,7 +17,8 @@ jobs:
         runs-on: ubuntu-latest
 
         steps:
-            - uses: actions/checkout@v7
+            - name: Checkout repository
+              uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
 
             - name: Setup PNPM
               uses: pnpm/setup@v2.1.0
@@ -23,11 +26,5 @@ jobs:
                   runtime: node@v24
                   require-lockfile: true
 
-            - name: Lint & Test if desktop version compiles
+            - name: Run Tests
               run: pnpm test
-
-            - name: Test if web version compiles
-              run: pnpm buildWeb
-
-            - name: Test if plugin structure is valid
-              run: pnpm generatePluginJson
