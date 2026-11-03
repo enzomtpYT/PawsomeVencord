@@ -360,7 +360,7 @@ function sendOtherNotif(content: string, titleString: string) {
         content: content,
         useBase64Icon: false,
         icon: "default",
-        sourceApp: "PawsomeVencord"
+        sourceApp: "EnderCord"
     };
     sendToOverlay(msgData);
 }

@@ -181,7 +181,7 @@ const settings = definePluginSettings({
         restartNeeded: true,
         options: [
             {
-                label: "PawsomeVencord",
+                label: "EnderCord",
                 value: "pawsomevencord",
                 default: true
             },

@@ -1,4 +1,10 @@
-# PawsomeVencord
+# EnderCord
+
+EnderCord is a personal fork of [PawsomeVencord](https://github.com/enzomtpYT/PawsomeVencord).
+
+## Making your own plugins
+
+Open Discord settings, go to **EnderCord Settings > My Plugins** and type a name to create a plugin. It lands in `src/userplugins/<name>/index.tsx`. Edit that file, then click **Rebuild and Restart** (or run `pnpm build`) to load it. This tab only shows up when EnderCord runs from a source checkout, not from the standalone installer.
 
 ## Note, this is an unofficial fork of equicord. This repo might be behind the main repo at times.
 

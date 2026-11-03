@@ -11,4 +11,4 @@ export { gitHash, gitRemote };
 
 export const gitHashShort = gitHash.slice(0, 9);
 export const VENCORD_USER_AGENT = `PawsomeVencord/${gitHash}${gitRemote ? ` (https://github.com/${gitRemote})` : ""}`;
-export const VENCORD_USER_AGENT_HASHLESS = `PawsomeVencord${gitRemote ? ` (https://github.com/${gitRemote})` : ""}`;
+export const VENCORD_USER_AGENT_HASHLESS = `EnderCord${gitRemote ? ` (https://github.com/${gitRemote})` : ""}`;

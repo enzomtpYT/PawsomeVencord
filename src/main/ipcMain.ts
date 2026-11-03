@@ -19,6 +19,7 @@
 import "./updater";
 import "./ipcPlugins";
 import "./settings";
+import "./userPlugins";
 
 import { debounce } from "@shared/debounce";
 import { IpcEvents } from "@shared/IpcEvents";
@@ -160,7 +161,7 @@ ipcMain.handle(IpcEvents.OPEN_MONACO_EDITOR, async () => {
     }
 
     monacoWin = new BrowserWindow({
-        title: "PawsomeVencord QuickCSS Editor",
+        title: "EnderCord QuickCSS Editor",
         autoHideMenuBar: true,
         darkTheme: true,
         backgroundColor: nativeTheme.shouldUseDarkColors ? "#1e1e1e" : "white",

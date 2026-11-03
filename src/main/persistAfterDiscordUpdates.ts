@@ -22,7 +22,7 @@ function patchLatest() {
         const stale = findStaleSibling(dirname(process.execPath));
         if (stale) patchResourcesDir(stale, join(__dirname, "patcher.js"));
     } catch (err) {
-        console.error("[PawsomeVencord] Failed to repatch latest host update", err);
+        console.error("[EnderCord] Failed to repatch latest host update", err);
     }
 }
 

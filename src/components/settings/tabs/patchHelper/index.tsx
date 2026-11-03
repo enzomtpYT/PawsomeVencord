@@ -110,7 +110,7 @@ function PatchHelper() {
         <SettingsTab>
             <Heading className={Margins.top16}>Patch Helper</Heading>
             <Paragraph className={Margins.bottom16}>
-                A developer tool to help you create patches for PawsomeVencord plugins.
+                A developer tool to help you create patches for EnderCord plugins.
             </Paragraph>
 
             <Heading className="">Full Patch</Heading>

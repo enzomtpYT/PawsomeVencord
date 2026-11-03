@@ -24,7 +24,7 @@ import { RendererSettings } from "./settings";
 import { patchTrayMenu } from "./trayMenu";
 import { IS_VANILLA } from "./utils/constants";
 
-console.log("[PawsomeVencord] Starting up...");
+console.log("[EnderCord] Starting up...");
 
 // Our injector file at app/index.js
 const injectorPath = require.main!.filename;
@@ -156,8 +156,8 @@ if (!IS_VANILLA) {
     process.env.DATA_DIR = join(app.getPath("userData"), "..", "PawsomeVencord");
     if (settings.plugins?.NoTrack?.disableStackDumping !== false) process.env.ELECTRON_ENABLE_STACK_DUMPING = "true";
 } else {
-    console.log("[PawsomeVencord] Running in vanilla mode. Not loading PawsomeVencord");
+    console.log("[EnderCord] Running in vanilla mode. Not loading EnderCord");
 }
 
-console.log("[PawsomeVencord] Loading original Discord app.asar");
+console.log("[EnderCord] Loading original Discord app.asar");
 require(require.main!.filename);

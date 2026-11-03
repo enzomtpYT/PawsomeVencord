@@ -77,6 +77,12 @@ window.VencordNative = {
         applyUpdate: async () => ({ ok: true, value: true }),
     },
 
+    userPlugins: {
+        openFolder: async () => Promise.reject("userPlugins:openFolder is not supported on web"),
+        create: async () => ({ ok: false, error: "Creating plugins is not supported on web." }),
+        build: async () => ({ ok: false, error: "Building plugins is not supported on web." }),
+    },
+
     quickCss: {
         get: () => DataStore.get("VencordQuickCss").then(s => s ?? ""),
         set: async (css: string) => {

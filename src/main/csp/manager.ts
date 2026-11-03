@@ -85,7 +85,7 @@ async function addCspRule(_: IpcMainInvokeEvent, url: string | string[], directi
     const { checkboxChecked, response } = await dialog.showMessageBox({
         ...getMessage(domain, directives, isPlugin, callerName),
         type: isPlugin ? "info" : "warning",
-        title: "PawsomeVencord Host Permissions",
+        title: "EnderCord Host Permissions",
         buttons: ["Cancel", "Allow"],
         defaultId: 0,
         cancelId: 0,

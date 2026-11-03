@@ -5,7 +5,7 @@
  */
 
 import { definePluginSettings } from "@api/Settings";
-import { BackupRestoreIcon, CloudIcon, LogIcon, MainSettingsIcon, PaintbrushIcon, PatchHelperIcon, PluginsIcon, UpdaterIcon } from "@components/Icons";
+import { BackupRestoreIcon, CloudIcon, HammerAndChiselIcon, LogIcon, MainSettingsIcon, PaintbrushIcon, PatchHelperIcon, PluginsIcon, UpdaterIcon } from "@components/Icons";
 import {
     BackupAndRestoreTab,
     ChangelogTab,
@@ -14,6 +14,7 @@ import {
     PluginsTab,
     ThemesTab,
     UpdaterTab,
+    UserPluginsTab,
     VencordTab,
 } from "@components/settings";
 import { gitHashShort } from "@shared/vencordUserAgent";
@@ -98,7 +99,7 @@ interface SettingsLayoutBuilder {
 const settings = definePluginSettings({
     settingsLocation: {
         type: OptionType.SELECT,
-        description: "Where to put the PawsomeVencord settings section",
+        description: "Where to put the EnderCord settings section",
         options: [
             { label: "At the very top", value: "top" },
             { label: "Above Billing section", value: "aboveNitro", default: true },
@@ -192,8 +193,8 @@ export default definePlugin({
         const equicordEntries: SettingsLayoutNode[] = [
             buildEntry({
                 key: "equicord_main",
-                title: "PawsomeVencord",
-                panelTitle: "PawsomeVencord Settings",
+                title: "EnderCord",
+                panelTitle: "EnderCord Settings",
                 Component: VencordTab,
                 Icon: MainSettingsIcon
             }),
@@ -202,6 +203,12 @@ export default definePlugin({
                 title: "Plugins",
                 Component: PluginsTab,
                 Icon: PluginsIcon
+            }),
+            !IS_WEB && !IS_STANDALONE && buildEntry({
+                key: "equicord_user_plugins",
+                title: "My Plugins",
+                Component: UserPluginsTab,
+                Icon: HammerAndChiselIcon
             }),
             buildEntry({
                 key: "equicord_themes",
@@ -212,7 +219,7 @@ export default definePlugin({
             !IS_UPDATER_DISABLED && UpdaterTab && buildEntry({
                 key: "equicord_updater",
                 title: "Updater",
-                panelTitle: "PawsomeVencord Updater",
+                panelTitle: "EnderCord Updater",
                 Component: UpdaterTab,
                 Icon: UpdaterIcon
             }),
@@ -247,7 +254,7 @@ export default definePlugin({
         const equicordSection: SettingsLayoutNode = {
             key: "equicord_section",
             type: LayoutTypes.SECTION,
-            useTitle: () => "PawsomeVencord Settings",
+            useTitle: () => "EnderCord Settings",
             buildLayout: () => equicordEntries
         };
 
@@ -313,7 +320,7 @@ export default definePlugin({
     getInfoRows() {
         const { electronVersion, chromiumVersion, getVersionInfo } = this;
 
-        const rows = [`PawsomeVencord ${gitHashShort}${getVersionInfo()}`];
+        const rows = [`EnderCord ${gitHashShort}${getVersionInfo()}`];
 
         if (electronVersion) rows.push(`Electron ${electronVersion}`);
         if (chromiumVersion) rows.push(`Chromium ${chromiumVersion}`);

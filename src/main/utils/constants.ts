@@ -68,7 +68,7 @@ if (IS_DEV) {
                 app.relaunch();
                 app.exit(0);
             } catch (err) {
-                console.error("[PawsomeVencord] Failed to copy prod data:", err);
+                console.error("[EnderCord] Failed to copy prod data:", err);
             }
         }, 5000);
     }

@@ -135,7 +135,7 @@ export function Updatable(props: CommonProps) {
                 </>
             ) : (
                 <Paragraph>
-                    You're running the latest version of PawsomeVencord.
+                    You're running the latest version of EnderCord.
                 </Paragraph>
             )}
         </>

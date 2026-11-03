@@ -82,31 +82,31 @@ const notify = (window: BaseWindow | undefined, title: string, message: string) 
 function createVencordMenuItems(): MenuItemConstructorOptions[] {
     return [
         {
-            label: "PawsomeVencord",
+            label: "EnderCord",
             submenu: [
                 {
-                    label: "About PawsomeVencord",
+                    label: "About EnderCord",
                     click: () => openAboutWindow()
                 },
                 {
-                    label: "Update PawsomeVencord",
+                    label: "Update EnderCord",
                     async click(_item, window) {
                         try {
                             const updateAvailable = await updater.fetchUpdate();
                             if (!updateAvailable) {
-                                return notify(window, "No Update Available", "You are already using the latest version of PawsomeVencord.");
+                                return notify(window, "No Update Available", "You are already using the latest version of EnderCord.");
                             }
 
                             const result = await updater.applyUpdate();
                             if (!result) {
-                                return notify(window, "Update Failed", "Failed to apply the update for PawsomeVencord.");
+                                return notify(window, "Update Failed", "Failed to apply the update for EnderCord.");
                             }
 
-                            await notify(window, "Update Successful", "Now relaunching PawsomeVencord to apply the update.");
+                            await notify(window, "Update Successful", "Now relaunching EnderCord to apply the update.");
                             app.relaunch();
                             app.exit();
                         } catch (e) {
-                            notify(window, "Update Error", `An error occurred while updating PawsomeVencord.\n\n${String(e)}`);
+                            notify(window, "Update Error", `An error occurred while updating EnderCord.\n\n${String(e)}`);
                         }
                     }
                 },

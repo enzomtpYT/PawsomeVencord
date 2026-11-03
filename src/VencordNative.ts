@@ -53,6 +53,12 @@ export default {
         applyUpdate: () => invoke<IpcRes<boolean>>(IpcEvents.UPDATER_APPLY_UPDATE),
     },
 
+    userPlugins: {
+        openFolder: () => invoke<void>(IpcEvents.OPEN_USERPLUGINS_FOLDER),
+        create: (name: string) => invoke<IpcRes<void>>(IpcEvents.CREATE_USERPLUGIN, name),
+        build: () => invoke<IpcRes<void>>(IpcEvents.BUILD_USERPLUGINS),
+    },
+
     settings: {
         get: () => sendSync<Settings>(IpcEvents.GET_SETTINGS),
         set: (settings: Settings, pathToNotify?: string) => invoke<void>(IpcEvents.SET_SETTINGS, settings, pathToNotify),

@@ -49,6 +49,9 @@ export const enum IpcEvents {
 
     OPEN_THEMES_FOLDER = "VencordOpenThemesFolder",
     OPEN_SETTINGS_FOLDER = "VencordOpenSettingsFolder",
+    OPEN_USERPLUGINS_FOLDER = "VencordOpenUserPluginsFolder",
+    CREATE_USERPLUGIN = "VencordCreateUserPlugin",
+    BUILD_USERPLUGINS = "VencordBuildUserPlugins",
     GET_RENDERER_CSS = "VencordGetRendererCss",
     RENDERER_CSS_UPDATE = "VencordRendererCssUpdate",
     PRELOAD_GET_RENDERER_JS = "VencordPreloadGetRendererJs",

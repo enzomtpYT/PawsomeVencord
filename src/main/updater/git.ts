@@ -70,7 +70,7 @@ async function pull() {
     return res.stdout.includes("Fast-forward");
 }
 
-async function build() {
+export async function build() {
     const opts = { cwd: EQUICORD_DIR };
 
     const command = isFlatpak ? "flatpak-spawn" : "node";

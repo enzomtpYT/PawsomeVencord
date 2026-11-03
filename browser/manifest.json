@@ -1,9 +1,9 @@
 {
     "manifest_version": 3,
     "minimum_chrome_version": "111",
-    "name": "PawsomeVencord Web",
+    "name": "EnderCord Web",
     "description": "The other cutest Discord mod now in your browser",
-    "author": "PawsomeVencord",
+    "author": "EnderCord",
     "homepage_url": "https://github.com/enzomtpYT/PawsomeVencord",
     "icons": {
         "128": "icon.png"

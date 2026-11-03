@@ -202,7 +202,7 @@ function EquicordSettings() {
             ) : (
                 <SpecialCard
                     title="Support the Project"
-                    description="Please consider supporting the development of PawsomeVencord by donating!"
+                    description="Please consider supporting the development of EnderCord by donating!"
                     cardImage={donateImage}
                     backgroundImage={DONOR_BACKGROUND_IMAGE}
                     backgroundColor="#c3a3ce"
@@ -214,7 +214,7 @@ function EquicordSettings() {
                 <SpecialCard
                     title="Contributions"
                     subtitle="Thank you for contributing!"
-                    description="Since you've contributed to PawsomeVencord you now have a cool new badge!"
+                    description="Since you've contributed to EnderCord you now have a cool new badge!"
                     cardImage={COZY_CONTRIB_IMAGE}
                     backgroundImage={CONTRIB_BACKGROUND_IMAGE}
                     backgroundColor="#EDCC87"
@@ -300,7 +300,7 @@ function EquicordSettings() {
     );
 }
 
-export default wrapTab(EquicordSettings, "PawsomeVencord Settings");
+export default wrapTab(EquicordSettings, "EnderCord Settings");
 
 export function isEquicordDonor(userId: string): boolean {
     const donorBadges = BadgeAPI.getEquicordDonorBadges(userId);

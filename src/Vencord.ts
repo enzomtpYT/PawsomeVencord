@@ -146,7 +146,7 @@ async function runUpdateCheck() {
                 notifiedForUpdatesThisSession = true;
 
                 showNotice(
-                    "PawsomeVencord has been updated!",
+                    "EnderCord has been updated!",
                     "Restart",
                     relaunch
                 );
@@ -158,7 +158,7 @@ async function runUpdateCheck() {
         notifiedForUpdatesThisSession = true;
 
         showNotice(
-            "A new version of PawsomeVencord is available!",
+            "A new version of EnderCord is available!",
             "View Update",
             () => openSettingsTabModal(UpdaterTab!)
         );
@@ -189,7 +189,7 @@ async function init() {
                 "Webpack has finished initialising, but some patches haven't been applied yet.",
                 "This might be expected since some Modules are lazy loaded, but please verify",
                 "that all plugins are working as intended.",
-                "You are seeing this warning because this is a Development build of PawsomeVencord.",
+                "You are seeing this warning because this is a Development build of EnderCord.",
                 "\nThe following patches have not been applied:",
                 "\n\n" + pendingPatches.map(p => `${p.plugin}: ${p.find}`).join("\n")
             );

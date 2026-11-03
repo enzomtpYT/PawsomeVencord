@@ -107,7 +107,7 @@ function toCodeBlock(s: string, indentation = 0, isDiscord = false) {
 async function printReport() {
     console.log();
 
-    console.log("# PawsomeVencord Report" + (CANARY ? " (Canary)" : ""));
+    console.log("# EnderCord Report" + (CANARY ? " (Canary)" : ""));
 
     console.log();
 
@@ -211,7 +211,7 @@ async function printReport() {
         }
 
         const body = JSON.stringify({
-            username: "PawsomeVencord Reporter" + (CANARY ? " (Canary)" : ""),
+            username: "EnderCord Reporter" + (CANARY ? " (Canary)" : ""),
             embeds
         });
 
@@ -258,7 +258,7 @@ page.on("console", async e => {
 
     const firstArg = await rawArgs[0]?.jsonValue();
 
-    const isEquicord = firstArg === "[PawsomeVencord]";
+    const isEquicord = firstArg === "[EnderCord]";
     const isDebug = firstArg === "[PUP_DEBUG]";
     const isReporterMeta = firstArg === "[REPORTER_META]";
 

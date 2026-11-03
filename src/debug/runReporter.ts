@@ -41,7 +41,7 @@ async function runReporter() {
                 match: /"Could not find app-mount"/,
                 replace: "(Vencord.Webpack._initReporter(),$&)"
             }
-        }, "PawsomeVencord Reporter");
+        }, "EnderCord Reporter");
 
         // initReporter is called in the patched entry point of Discord
         // @ts-expect-error

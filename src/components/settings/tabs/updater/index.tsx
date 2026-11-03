@@ -88,20 +88,20 @@ function Updater() {
             <EquibopSection />
             <Heading className={Margins.top16}>Update Preferences</Heading>
             <Paragraph className={Margins.bottom20}>
-                Control how PawsomeVencord keeps itself up to date. You can choose to update automatically in the background or be notified when new updates are available.
+                Control how EnderCord keeps itself up to date. You can choose to update automatically in the background or be notified when new updates are available.
             </Paragraph>
 
             <div className="vc-settings-switches">
                 <FormSwitch
                     title="Automatically update"
-                    description="When enabled, PawsomeVencord will automatically download and install updates in the background without asking for confirmation. You'll need to restart Discord to apply the changes."
+                    description="When enabled, EnderCord will automatically download and install updates in the background without asking for confirmation. You'll need to restart Discord to apply the changes."
                     value={settings.autoUpdate}
                     onChange={(v: boolean) => settings.autoUpdate = v}
                     hideBorder
                 />
                 <FormSwitch
                     title="Get notified when an automatic update completes"
-                    description="Receive a notification when PawsomeVencord finishes downloading an update in the background, so you know when to restart Discord."
+                    description="Receive a notification when EnderCord finishes downloading an update in the background, so you know when to restart Discord."
                     value={settings.autoUpdateNotification}
                     onChange={(v: boolean) => settings.autoUpdateNotification = v}
                     disabled={!settings.autoUpdate}
@@ -113,7 +113,7 @@ function Updater() {
 
             <Heading className={Margins.top20}>Repository</Heading>
             <Paragraph className={Margins.bottom8}>
-                This is the GitHub repository where PawsomeVencord fetches updates from.
+                This is the GitHub repository where EnderCord fetches updates from.
             </Paragraph>
             <Paragraph color="text-subtle">
                 {repoPending
