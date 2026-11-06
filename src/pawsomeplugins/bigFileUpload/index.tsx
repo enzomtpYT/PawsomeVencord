@@ -6,1174 +6,120 @@
 
 import { ApplicationCommandInputType, ApplicationCommandOptionType, sendBotMessage } from "@api/Commands";
 import { NavContextMenuPatchCallback } from "@api/ContextMenu";
-import { definePluginSettings } from "@api/Settings";
-import { Button } from "@components/Button";
-import { Divider } from "@components/Divider";
-import { Flex } from "@components/Flex";
-import { FormSwitch } from "@components/FormSwitch";
-import { Heading } from "@components/Heading";
 import { OpenExternalIcon } from "@components/Icons";
-import { Paragraph } from "@components/Paragraph";
 import { Devs, EquicordDevs } from "@utils/constants";
-import { insertTextIntoChatInputBox, sendMessage } from "@utils/discord";
-import { Margins } from "@utils/margins";
-import definePlugin, { OptionType, PluginNative } from "@utils/types";
+import definePlugin from "@utils/types";
 import { findByPropsLazy } from "@webpack";
-import { DraftType, Menu, PermissionsBits, PermissionStore, React, Select, SelectedChannelStore, showToast as showDiscordToast, TextInput, UploadManager, useEffect, useState } from "@webpack/common";
+import { DraftType, Menu, PermissionsBits, PermissionStore, React, SelectedChannelStore, UploadManager } from "@webpack/common";
 
-function showToast(text: string, type?: "success" | "failure" | "message") {
-    showDiscordToast({
-        text,
-        variant: type === "failure" ? "critical" : type === "success" ? "success" : "default"
-    });
-}
-
-const Native = VencordNative.pluginHelpers.BigFileUpload as PluginNative<typeof import("./native")>;
+import { uploadFileToCatboxWithStreaming, uploadFileToLitterboxWithStreaming } from "./providers/catbox";
+import { uploadFileCustomWithStreaming } from "./providers/custom";
+import { uploadFileToGofileWithStreaming } from "./providers/gofile";
+import { uploadFileToZiplineWithStreaming } from "./providers/zipline";
+import { settings } from "./settings";
+import { UploaderName } from "./types";
+import { getErrorMessage, handleCSPError, logger, showToast } from "./utils";
 
 const UploadStore = findByPropsLazy("getUploads");
 const OptionClasses = findByPropsLazy("optionName", "optionIcon", "optionLabel");
 
-function createCloneableStore(initialState: any) {
-    const store = { ...initialState };
-    const listeners: (() => void)[] = [];
-
-    function get() {
-        return { ...store };
-    }
-
-    function set(newState: Partial<typeof store>) {
-        Object.assign(store, newState);
-        listeners.forEach(listener => listener());
-    }
-
-    function subscribe(listener: () => void) {
-        listeners.push(listener);
-        return () => {
-            const index = listeners.indexOf(listener);
-            if (index > -1) {
-                listeners.splice(index, 1);
-            }
-        };
-    }
-
-    return {
-        get,
-        set,
-        subscribe
-    };
-}
-
-// Helper function to safely get error messages
-function getErrorMessage(error: unknown): string {
-    if (error instanceof Error) {
-        return error.message;
-    }
-    if (typeof error === "string") {
-        return error;
-    }
-    return String(error);
-}
-
-function sendTextToChat(text: string) {
-    if (settings.store.autoSend === "No") {
-        insertTextIntoChatInputBox(text);
-    } else {
-        const channelId = SelectedChannelStore.getChannelId();
-        sendMessage(channelId, { content: text });
-    }
-}
-
-function SettingsComponent(props: { setValue(v: any): void; }) {
-    const initialUploader = settings.store.fileUploader || "Catbox";
-    const [fileUploader, setFileUploader] = useState(initialUploader);
-    const [customUploaderStore] = useState(() => createCloneableStore({
-        name: settings.store.customUploaderName || "",
-        requestURL: settings.store.customUploaderRequestURL || "",
-        fileFormName: settings.store.customUploaderFileFormName || "",
-        responseType: settings.store.customUploaderResponseType || "",
-        url: settings.store.customUploaderURL || "",
-        thumbnailURL: settings.store.customUploaderThumbnailURL || "",
-        headers: (() => {
-            const parsedHeaders = JSON.parse(settings.store.customUploaderHeaders || "{}");
-            if (Object.keys(parsedHeaders).length === 0) {
-                parsedHeaders[""] = "";
-            }
-            return parsedHeaders;
-        })(),
-        args: (() => {
-            const parsedArgs = JSON.parse(settings.store.customUploaderArgs || "{}");
-            if (Object.keys(parsedArgs).length === 0) {
-                parsedArgs[""] = "";
-            }
-            return parsedArgs;
-        })(),
-    }));
-
-    const fileInputRef = React.useRef<HTMLInputElement>(null);
-
-    useEffect(() => {
-        if (!settings.store.fileUploader || settings.store.fileUploader.trim() === "") {
-            updateSetting("fileUploader", "Catbox");
-        }
-
-        const unsubscribe = customUploaderStore.subscribe(() => {
-            const state = customUploaderStore.get();
-            updateSetting("customUploaderName", state.name);
-            updateSetting("customUploaderRequestURL", state.requestURL);
-            updateSetting("customUploaderFileFormName", state.fileFormName);
-            updateSetting("customUploaderResponseType", state.responseType);
-            updateSetting("customUploaderURL", state.url);
-            updateSetting("customUploaderThumbnailURL", state.thumbnailURL);
-            updateSetting("customUploaderHeaders", JSON.stringify(state.headers));
-            updateSetting("customUploaderArgs", JSON.stringify(state.args));
-        });
-
-        return unsubscribe;
-    }, []);
-
-    function updateSetting(key: keyof typeof settings.store, value: any) {
-        if (key in settings.store) {
-            (settings.store as any)[key] = value;
-        } else {
-            console.error(`Invalid setting key: ${key}`);
-        }
-    }
-
-    function handleShareXConfigUpload(event: React.ChangeEvent<HTMLInputElement>) {
-        const file = event.target.files?.[0];
-        if (file) {
-            const reader = new FileReader();
-            reader.onload = (e: ProgressEvent<FileReader>) => {
-                try {
-                    const config = JSON.parse(e.target?.result as string);
-
-                    customUploaderStore.set({
-                        name: "",
-                        requestURL: "",
-                        fileFormName: "",
-                        responseType: "Text",
-                        url: "",
-                        thumbnailURL: "",
-                        headers: { "": "" },
-                        args: { "": "" }
-                    });
-
-                    customUploaderStore.set({
-                        name: config.Name || "",
-                        requestURL: config.RequestURL || "",
-                        fileFormName: config.FileFormName || "",
-                        responseType: config.ResponseType || "Text",
-                        url: config.URL || "",
-                        thumbnailURL: config.ThumbnailURL || "",
-                        headers: config.Headers || { "": "" },
-                        args: config.Arguments || { "": "" }
-                    });
-
-                    updateSetting("customUploaderName", config.Name || "");
-                    updateSetting("customUploaderRequestURL", config.RequestURL || "");
-                    updateSetting("customUploaderFileFormName", config.FileFormName || "");
-                    updateSetting("customUploaderResponseType", config.ResponseType || "Text");
-                    updateSetting("customUploaderURL", config.URL || "");
-                    updateSetting("customUploaderThumbnailURL", config.ThumbnailURL || "");
-                    updateSetting("customUploaderHeaders", JSON.stringify(config.Headers || { "": "" }));
-                    updateSetting("customUploaderArgs", JSON.stringify(config.Arguments || { "": "" }));
-
-                    setFileUploader("Custom");
-                    updateSetting("fileUploader", "Custom");
-
-                    showToast("ShareX config imported successfully!");
-                } catch (error) {
-                    console.error("Error parsing ShareX config:", error);
-                    showToast("Error importing ShareX config. Check console for details.");
-                }
-            };
-            reader.readAsText(file);
-
-            event.target.value = "";
-        }
-    }
-
-    const validateCustomUploaderSettings = () => {
-        if (fileUploader === "Custom") {
-            if (!settings.store.customUploaderRequestURL || settings.store.customUploaderRequestURL.trim() === "") {
-                showToast("Custom uploader request URL is required.");
-                return false;
-            }
-            if (!settings.store.customUploaderFileFormName || settings.store.customUploaderFileFormName.trim() === "") {
-                showToast("Custom uploader file form name is required.");
-                return false;
-            }
-            if (!settings.store.customUploaderURL || settings.store.customUploaderURL.trim() === "") {
-                showToast("Custom uploader URL (JSON path) is required.");
-                return false;
-            }
-            // Check for placeholder values that shouldn't be there
-            if (settings.store.customUploaderURL.includes("$json:") || settings.store.customUploaderURL.includes("$")) {
-                showToast("Please replace placeholder values in custom uploader URL field.");
-                return false;
-            }
-        }
-        return true;
-    };
-
-    const handleFileUploaderChange = (v: string) => {
-        if (!v || v.trim() === "") {
-            console.warn("Attempted to select empty uploader, keeping current selection");
-            return;
-        }
-
-        if (v === "Custom" && !validateCustomUploaderSettings()) {
-            return;
-        }
-        setFileUploader(v);
-        updateSetting("fileUploader", v);
-    };
-
-    const handleArgChange = (oldKey: string, newKey: string, value: any) => {
-        const state = customUploaderStore.get();
-        const newArgs = { ...state.args };
-
-        if (oldKey !== newKey) {
-            delete newArgs[oldKey];
-        }
-
-        if (value === "" && newKey === "") {
-            delete newArgs[oldKey];
-        } else {
-            newArgs[newKey] = value;
-        }
-
-        customUploaderStore.set({ args: newArgs });
-
-        // Only add empty key-value pair if all current ones are filled
-        if (Object.values(newArgs).every(v => v !== "") && Object.keys(newArgs).every(k => k !== "")) {
-            newArgs[""] = "";
-        }
-
-        customUploaderStore.set({ args: newArgs });
-    };
-
-    const handleHeaderChange = (oldKey: string, newKey: string, value: string) => {
-        const state = customUploaderStore.get();
-        const newHeaders = { ...state.headers };
-
-        if (oldKey !== newKey) {
-            delete newHeaders[oldKey];
-        }
-
-        if (value === "" && newKey === "") {
-            delete newHeaders[oldKey];
-        } else {
-            newHeaders[newKey] = value;
-        }
-
-        customUploaderStore.set({ headers: newHeaders });
-
-        // Only add empty key-value pair if all current ones are filled
-        if (Object.values(newHeaders).every(v => v !== "") && Object.keys(newHeaders).every(k => k !== "")) {
-            newHeaders[""] = "";
-        }
-
-        customUploaderStore.set({ headers: newHeaders });
-    };
-
-    const triggerFileUpload = () => {
-        if (fileInputRef.current) {
-            fileInputRef.current.click();
-        }
-    };
-
-    return (
-        <Flex flexDirection="column">
-            <Divider />
-            <section>
-                <Heading>Upload Limit Bypass</Heading>
-                <Paragraph>
-                    Select the external file uploader service to be used to bypass the upload limit.
-                    If a service fails, the plugin will automatically try other services as fallbacks.
-                </Paragraph>
-                <Select
-                    options={[
-                        { label: "GoFile (Temporary | Unlimited)", value: "GoFile" },
-                        { label: "Catbox (Up to 200MB)", value: "Catbox" },
-                        { label: "Litterbox (Temporary | Up to 1GB)", value: "Litterbox" },
-                        { label: "Zipline (Self-Hosted | Ask for Access to enzomtp  )", value: "Zipline" },
-                        { label: "Custom Uploader", value: "Custom" },
-                    ]}
-                    className={Margins.bottom16}
-                    select={handleFileUploaderChange}
-                    isSelected={v => v === fileUploader}
-                    serialize={v => v}
-                    closeOnSelect={true}
-                    clearable={false}
-                />
-            </section>
-
-            <section>
-                <FormSwitch
-                    title="Auto-Send Uploads To Chat"
-                    description="Whether to automatically send the links with the uploaded files to chat instead of just pasting them into the chatbox."
-                    value={settings.store.autoSend === "Yes"}
-                    onChange={(enabled: boolean) => updateSetting("autoSend", enabled ? "Yes" : "No")}
-                    hideBorder={true}
-                />
-            </section>
-
-            <section>
-                <FormSwitch
-                    title="Auto-Mask Links"
-                    description="Whether to mask the link to match the original filename."
-                    value={settings.store.autoFormat === "Yes"}
-                    onChange={(enabled: boolean) => updateSetting("autoFormat", enabled ? "Yes" : "No")}
-                    hideBorder={true}
-                />
-            </section>
-
-            <section>
-                <Heading>Upload Timeout</Heading>
-                <Paragraph>
-                    Configure how long to wait for large file uploads before timing out. Higher settings allow larger files but may hang longer if the upload fails.
-                </Paragraph>
-                <Select
-                    options={[
-                        { label: "Conservative (10 min max)", value: "conservative" },
-                        { label: "Standard (20 min max)", value: "standard" },
-                        { label: "Extended (30 min max)", value: "extended" },
-                        { label: "Maximum (60 min max)", value: "maximum" },
-                    ]}
-                    className={Margins.bottom16}
-                    select={(newValue: string) => updateSetting("uploadTimeout", newValue)}
-                    isSelected={(v: string) => v === (settings.store.uploadTimeout || "standard")}
-                    serialize={(v: string) => v}
-                    closeOnSelect={true}
-                    clearable={false}
-                />
-            </section>
-
-            {fileUploader === "GoFile" && (
-                <>
-                    <section>
-                        <Heading>GoFile Token (optional)</Heading>
-                        <Paragraph>
-                            Insert your personal GoFile account's token to save all uploads to your GoFile account.
-                        </Paragraph>
-                        <TextInput
-                            type="text"
-                            value={settings.store.gofileToken || ""}
-                            placeholder="Insert GoFile Token"
-                            onChange={newValue => updateSetting("gofileToken", newValue)}
-                            className={Margins.top16}
-                        />
-                    </section>
-                </>
-            )}
-
-            {fileUploader === "Catbox" && (
-                <>
-                    <section>
-                        <Heading>Catbox User hash (optional)</Heading>
-                        <Paragraph>
-                            Insert your personal Catbox account's hash to save all uploads to your Catbox account.
-                        </Paragraph>
-                        <TextInput
-                            type="text"
-                            value={settings.store.catboxUserHash || ""}
-                            placeholder="Insert User Hash"
-                            onChange={newValue => updateSetting("catboxUserHash", newValue)}
-                            className={Margins.top16}
-                        />
-                    </section>
-                </>
-            )}
-
-            {fileUploader === "Litterbox" && (
-                <>
-                    <section>
-                        <Heading>File Expiration Time</Heading>
-                        <Paragraph>
-                            Select how long it should take for your uploads to expire and get deleted.
-                        </Paragraph>
-                        <Select
-                            options={[
-                                { label: "1 hour", value: "1h" },
-                                { label: "12 hours", value: "12h" },
-                                { label: "24 hours", value: "24h" },
-                                { label: "72 hours", value: "72h" },
-                            ]}
-                            placeholder="Select Duration"
-                            className={Margins.top16}
-                            select={newValue => updateSetting("litterboxTime", newValue)}
-                            isSelected={v => v === settings.store.litterboxTime}
-                            serialize={v => v}
-                        />
-                    </section>
-                </>
-            )}
-
-            {fileUploader === "Zipline" && (
-                <>
-                    <section>
-                        <Heading>Zipline Authorization Token (required)</Heading>
-                        <Paragraph>
-                            Insert your Zipline authorization token. This is required to upload files to your Zipline instance.
-                        </Paragraph>
-                        <TextInput
-                            type="text"
-                            value={settings.store.ziplineAuthToken || ""}
-                            placeholder="Insert Authorization Token"
-                            onChange={newValue => updateSetting("ziplineAuthToken", newValue)}
-                            className={Margins.top16}
-                        />
-                    </section>
-
-                    <section>
-                        <Heading>Zipline Server URL (optional)</Heading>
-                        <Paragraph>
-                            Insert your custom Zipline server URL. Defaults to https://share.enzomtp.party/api/upload if not provided.
-                        </Paragraph>
-                        <TextInput
-                            type="text"
-                            value={settings.store.ziplineServerURL || ""}
-                            placeholder="https://share.enzomtp.party/api/upload"
-                            onChange={newValue => updateSetting("ziplineServerURL", newValue)}
-                            className={Margins.top16}
-                        />
-                    </section>
-
-                    <section>
-                        <Heading>Zipline Folder (optional)</Heading>
-                        <Paragraph>
-                            Specify a folder name to organize uploaded files on your Zipline instance.
-                        </Paragraph>
-                        <TextInput
-                            type="text"
-                            value={settings.store.ziplineFolder || ""}
-                            placeholder="Folder name (optional)"
-                            onChange={newValue => updateSetting("ziplineFolder", newValue)}
-                            className={Margins.top16}
-                        />
-                    </section>
-
-                    <section>
-                        <Heading>Zipline Delete After (optional)</Heading>
-                        <Paragraph>
-                            Specify when the file should be deleted after upload (e.g., "30d" for 30 days, "12h" for 12 hours, "7d" for 7 days). Leave empty for permanent storage.
-                        </Paragraph>
-                        <TextInput
-                            type="text"
-                            value={settings.store.ziplineDeleteAfter || ""}
-                            placeholder="e.g., 30d, 12h, 7d (optional)"
-                            onChange={newValue => updateSetting("ziplineDeleteAfter", newValue)}
-                            className={Margins.top16}
-                        />
-                    </section>
-                </>
-            )}
-
-            {fileUploader === "Custom" && (
-                <>
-                    <Divider />
-                    <section>
-                        <Heading>Custom Uploader Configuration</Heading>
-                        <Paragraph>
-                            Configure a custom file uploader. This is the most flexible option and can work around Content Security Policy restrictions.
-                            <br /><br />
-                            <strong>CSP-Compliant Alternatives:</strong> If Catbox/Litterbox get blocked, try services that use domains like *.githubusercontent.com, *.imgur.com, or other whitelisted domains.
-                        </Paragraph>
-                    </section>
-                    <section>
-                        <Heading>Custom Uploader Name</Heading>
-                        <TextInput
-                            type="text"
-                            value={customUploaderStore.get().name}
-                            placeholder="Name"
-                            onChange={(newValue: string) => customUploaderStore.set({ name: newValue })}
-                            className={Margins.bottom16}
-                        />
-                    </section>
-
-                    <section>
-                        <Heading>Request URL</Heading>
-                        <TextInput
-                            type="text"
-                            value={customUploaderStore.get().requestURL}
-                            placeholder="URL"
-                            onChange={(newValue: string) => customUploaderStore.set({ requestURL: newValue })}
-                            className={Margins.bottom16}
-                        />
-                    </section>
-
-                    <section>
-                        <Heading>File Form Name</Heading>
-                        <TextInput
-                            type="text"
-                            value={customUploaderStore.get().fileFormName}
-                            placeholder="Name"
-                            onChange={(newValue: string) => customUploaderStore.set({ fileFormName: newValue })}
-                            className={Margins.bottom16}
-                        />
-                    </section>
-
-                    <section>
-                        <Heading>Response type</Heading>
-                        <Select
-                            options={[
-                                { label: "Text", value: "Text" },
-                                { label: "JSON", value: "JSON" },
-                            ]}
-                            placeholder="Select Response Type"
-                            className={Margins.bottom16}
-                            select={(newValue: string) => customUploaderStore.set({ responseType: newValue })}
-                            isSelected={(v: string) => v === customUploaderStore.get().responseType}
-                            serialize={(v: string) => v}
-                        />
-                    </section>
-
-                    <section>
-                        <Heading>URL (JSON path)</Heading>
-                        <Paragraph>
-                            Enter the JSON path to extract the file URL from the response.<br />
-                            Examples: "url", "data.file_url", "result.download_link"<br />
-                            <strong>Do NOT enter a full URL here - just the JSON path.</strong>
-                        </Paragraph>
-                        <TextInput
-                            type="text"
-                            value={customUploaderStore.get().url}
-                            placeholder="url"
-                            onChange={(newValue: string) => customUploaderStore.set({ url: newValue })}
-                            className={Margins.bottom16}
-                        />
-                    </section>
-
-                    <section>
-                        <Heading>Thumbnail URL (JSON path)</Heading>
-                        <TextInput
-                            type="text"
-                            value={customUploaderStore.get().thumbnailURL}
-                            placeholder="Thumbnail URL"
-                            onChange={(newValue: string) => customUploaderStore.set({ thumbnailURL: newValue })}
-                            className={Margins.bottom16}
-                        />
-                    </section>
-
-                    <Divider />
-                    <Heading>Custom Uploader Arguments</Heading>
-                    {Object.entries(customUploaderStore.get().args).map(([key, value], index) => (
-                        <div key={index}>
-                            <TextInput
-                                type="text"
-                                value={key}
-                                placeholder="Argument Key"
-                                onChange={(newKey: string) => handleArgChange(key, newKey, value as string)}
-                                className={Margins.bottom16}
-                            />
-                            <TextInput
-                                type="text"
-                                value={value as string}
-                                placeholder="Argument Value"
-                                onChange={(newValue: string) => handleArgChange(key, key, newValue)}
-                                className={Margins.bottom16}
-                            />
-                        </div>
-                    ))}
-
-                    <Divider />
-                    <Heading>Headers</Heading>
-                    {Object.entries(customUploaderStore.get().headers).map(([key, value], index) => (
-                        <div key={index}>
-                            <TextInput
-                                type="text"
-                                value={key}
-                                placeholder="Header Key"
-                                onChange={(newKey: string) => handleHeaderChange(key, newKey, value as string)}
-                                className={Margins.bottom16}
-                            />
-                            <TextInput
-                                type="text"
-                                value={value as string}
-                                placeholder="Header Value"
-                                onChange={(newValue: string) => handleHeaderChange(key, key, newValue)}
-                                className={Margins.bottom16}
-                            />
-                        </div>
-                    ))}
-
-                    <Divider />
-                    <Heading>Import ShareX Config</Heading>
-                    <Button
-                        onClick={triggerFileUpload}
-                        variant="primary"
-                        className={Margins.bottom16}
-                    >
-                        Import
-                    </Button>
-                    <input
-                        ref={fileInputRef}
-                        type="file"
-                        accept=".sxcu"
-                        style={{ display: "none" }}
-                        onChange={handleShareXConfigUpload}
-                    />
-                </>
-            )}
-        </Flex>
-    );
-}
-
-const settings = definePluginSettings({
-    fileUploader: {
-        type: OptionType.SELECT,
-        options: [
-            { label: "GoFile (Streaming)", value: "GoFile" },
-            { label: "Catbox (Up to 200MB)", value: "Catbox", default: true },
-            { label: "Litterbox (Temporary | Up to 1GB)", value: "Litterbox" },
-            { label: "Zipline", value: "Zipline" },
-            { label: "Custom Uploader", value: "Custom" },
-        ],
-        description: "Select the file uploader service",
-        hidden: true
-    },
-    gofileToken: {
-        type: OptionType.STRING,
-        default: "",
-        description: "GoFile Token (optional)",
-        hidden: true
-    },
-    autoSend: {
-        type: OptionType.SELECT,
-        options: [
-            { label: "Yes", value: "Yes" },
-            { label: "No", value: "No", default: true },
-        ],
-        description: "Auto-Send",
-        hidden: true
-    },
-    autoFormat: {
-        type: OptionType.SELECT,
-        options: [
-            { label: "Yes", value: "Yes" },
-            { label: "No", value: "No", default: true },
-        ],
-        description: "Auto-Format",
-        hidden: true
-    },
-    uploadTimeout: {
-        type: OptionType.SELECT,
-        options: [
-            { label: "Conservative (10 min max)", value: "conservative" },
-            { label: "Standard (20 min max)", value: "standard", default: true },
-            { label: "Extended (30 min max)", value: "extended" },
-            { label: "Maximum (60 min max)", value: "maximum" },
-        ],
-        description: "Upload timeout for large files",
-        hidden: true
-    },
-    catboxUserHash: {
-        type: OptionType.STRING,
-        default: "",
-        description: "User hash for Catbox uploader (optional)",
-        hidden: true
-    },
-    litterboxTime: {
-        type: OptionType.SELECT,
-        options: [
-            { label: "1 hour", value: "1h", default: true },
-            { label: "12 hours", value: "12h" },
-            { label: "24 hours", value: "24h" },
-            { label: "72 hours", value: "72h" },
-        ],
-        description: "Duration for files on Litterbox before they are deleted",
-        hidden: true
-    },
-    ziplineAuthToken: {
-        type: OptionType.STRING,
-        default: "",
-        description: "Authorization token for Zipline uploader (required)",
-        hidden: true
-    },
-    ziplineServerURL: {
-        type: OptionType.STRING,
-        default: "https://share.enzomtp.party/api/upload",
-        description: "Server URL for Zipline uploader",
-        hidden: true
-    },
-    ziplineFolder: {
-        type: OptionType.STRING,
-        default: "",
-        description: "Folder for Zipline uploader (optional)",
-        hidden: true
-    },
-    ziplineDeleteAfter: {
-        type: OptionType.STRING,
-        default: "",
-        description: "Delete after duration for Zipline uploader (optional, e.g., 30d, 12h, 7d)",
-        hidden: true
-    },
-    customUploaderName: {
-        type: OptionType.STRING,
-        default: "",
-        description: "Name of the custom uploader",
-        hidden: true
-    },
-    customUploaderRequestURL: {
-        type: OptionType.STRING,
-        default: "",
-        description: "Request URL for the custom uploader",
-        hidden: true
-    },
-    customUploaderFileFormName: {
-        type: OptionType.STRING,
-        default: "",
-        description: "File form name for the custom uploader",
-        hidden: true
-    },
-    customUploaderResponseType: {
-        type: OptionType.SELECT,
-        options: [
-            { label: "Text", value: "Text", default: true },
-            { label: "JSON", value: "JSON" },
-        ],
-        description: "Response type for the custom uploader",
-        hidden: true
-    },
-    customUploaderURL: {
-        type: OptionType.STRING,
-        default: "",
-        description: "URL (JSON path) for the custom uploader",
-        hidden: true
-    },
-    customUploaderThumbnailURL: {
-        type: OptionType.STRING,
-        default: "",
-        description: "Thumbnail URL (JSON path) for the custom uploader",
-        hidden: true
-    },
-    customUploaderHeaders: {
-        type: OptionType.STRING,
-        default: JSON.stringify({}),
-        description: "Headers for the custom uploader (JSON string)",
-        hidden: true
-    },
-    customUploaderArgs: {
-        type: OptionType.STRING,
-        default: JSON.stringify({}),
-        description: "Arguments for the custom uploader (JSON string)",
-        hidden: true
-    },
-    customSettings: {
-        type: OptionType.COMPONENT,
-        component: SettingsComponent,
-        description: "Configure custom uploader settings",
-        hidden: false
-    },
-}).withPrivateSettings<{
-    customUploaderArgs?: Record<string, string>;
-    customUploaderHeaders?: Record<string, string>;
-}>();
-
-function handleCSPError(error: unknown, serviceName: string, channelId: string) {
-    const errorMessage = getErrorMessage(error);
-    const isCSPError = errorMessage.includes("Content Security Policy") ||
-        errorMessage.includes("CSP") ||
-        errorMessage.includes("violates the following Content Security Policy directive");
-
-    // Some environments report CSP or connectivity problems as a generic fetch failure.
-    const isNetworkFetchFailed = /fetch failed|Failed to fetch|ENOTFOUND|ECONNREFUSED|ERR_NAME_NOT_RESOLVED|ERR_CONNECTION_REFUSED/i.test(errorMessage);
-
-    if (isCSPError || isNetworkFetchFailed) {
-        console.error(`${isCSPError ? "CSP" : "Network"} issue with ${serviceName}`);
-
-        const genericAdvice = "**Try:**\n" +
-            "• Use the **Custom uploader** with a CSP-friendly domain\n" +
-            "• Switch to GoFile which often bypasses CSP\n" +
-            "• Check plugin settings for alternative uploaders\n";
-
-        // Extra hints for self-hosted services like Zipline
-        const ziplineAdvice = serviceName === "Zipline"
-            ? ("\n**Zipline checks:**\n" +
-                "• Verify the Server URL is correct and includes /api/upload\n" +
-                "• Ensure your Authorization token is valid (no 'Bearer ' prefix unless your server requires it)\n" +
-                "• If behind Cloudflare or a reverse proxy, disable browser challenges for API routes\n" +
-                "• Check SSL/TLS cert validity; Electron may reject invalid/self-signed certs\n")
-            : "";
-
-        sendBotMessage(channelId, {
-            content: `**${serviceName} upload failed due to ${isCSPError ? "Content Security Policy" : "network connectivity"}**\n` +
-                (isCSPError
-                    ? `Discord's security policy is preventing uploads to ${serviceName}.\n\n`
-                    : `The request to ${serviceName} failed to connect.\n\n`) +
-                genericAdvice + ziplineAdvice +
-                "\n-# If the issue persists, check the console for full error details."
-        });
-
-        showToast(`${serviceName}: ${isCSPError ? "Blocked by CSP" : "Network/CSP error"}`, "failure");
-        return true;
-    }
-    return false;
-}
-
-async function resolveFile(options: any[], ctx: any): Promise<File | null> {
-    for (const opt of options) {
-        if (opt.name === "file") {
-            const upload = UploadStore.getUpload(ctx.channel.id, opt.name, DraftType.SlashCommand);
-            return upload.item.file;
-        }
-    }
-    return null;
-}
-
-/**
- * GoFile upload
- */
-async function uploadFileToGofileWithStreaming(file: File, channelId: string) {
-    console.log(`[GoFile] Starting upload for ${file.name} (${(file.size / 1024 / 1024).toFixed(1)}MB)`);
-
-    const servers = [
-        "store1", "store2", "store3", "store4", "store5", "store6", "store7", "store8", "store9", "store10",
-        "store-eu-par-1", "store-eu-par-2", "store-eu-par-3", "store-eu-par-4",
-        "store-na-phx-1"
-    ];
-    const server = servers[Math.floor(Math.random() * servers.length)];
-
-    try {
-        const startTime = Date.now();
-
-        console.log("[GoFile] Converting file to ArrayBuffer...");
-        const arrayBuffer = await file.arrayBuffer();
-        console.log(`[GoFile] ArrayBuffer conversion completed (${arrayBuffer.byteLength} bytes)`);
-        console.log(`[GoFile] Uploading ${file.name} (${(file.size / 1024 / 1024).toFixed(1)}MB)`);
-
-        const uploadResult = await Native.uploadFileToGofileNative(
-            `https://${server}.gofile.io/uploadFile`,
-            arrayBuffer,
-            file.name,
-            file.type,
-            settings.store.gofileToken
-        );
-
-        const uploadTime = Date.now() - startTime;
-        console.log(`[GoFile] Upload completed in ${uploadTime}ms`);
-
-        if ((uploadResult as any).status === "ok") {
-            const { downloadPage } = (uploadResult as any).data;
-            let finalUrl = downloadPage;
-
-            if (settings.store.autoFormat === "Yes") {
-                finalUrl = `[${file.name}](${finalUrl})`;
-            }
-
-            setTimeout(() => sendTextToChat(`${finalUrl} `), 10);
-            showToast(`${file.name} Successfully Uploaded to GoFile!`, "success");
-            UploadManager.clearAll(channelId, DraftType.SlashCommand);
-        } else {
-            throw new Error(`GoFile upload failed: ${JSON.stringify(uploadResult)}`);
-        }
-    } catch (nativeError) {
-        const errorMsg = getErrorMessage(nativeError);
-        const sizeMB = file.size / (1024 * 1024);
-
-        if (errorMsg.includes("413") || errorMsg.includes("payload too large")) {
-            throw new Error(`GoFile rejected file: too large (${sizeMB.toFixed(1)}MB)`);
-        } else if (errorMsg.includes("timeout") || errorMsg.includes("network")) {
-            throw new Error(`GoFile upload timeout (${sizeMB.toFixed(1)}MB file may be too large)`);
-        }
-
-        throw new Error(`GoFile streaming upload failed: ${errorMsg}`);
-    }
-}
-
-/**
- * Catbox upload
- */
-async function uploadFileToCatboxWithStreaming(file: File, channelId: string) {
-    console.log(`[Catbox] Starting upload for ${file.name} (${(file.size / 1024 / 1024).toFixed(1)}MB)`);
-
-    const url = "https://catbox.moe/user/api.php";
-    const userHash = settings.store.catboxUserHash;
-
-    try {
-        console.log("[Catbox] Converting file to ArrayBuffer...");
-        const arrayBuffer = await file.arrayBuffer();
-        console.log(`[Catbox] ArrayBuffer conversion completed (${arrayBuffer.byteLength} bytes)`);
-        console.log(`[Catbox] Uploading ${file.name} (${(file.size / 1024 / 1024).toFixed(1)}MB)`);
-
-        const uploadResult = await Native.uploadFileToCatboxNative(
-            url,
-            arrayBuffer,
-            file.name,
-            file.type,
-            userHash
-        );
-
-        if (uploadResult.startsWith("https://") || uploadResult.startsWith("http://")) {
-            let finalUrl = uploadResult;
-
-            if (settings.store.autoFormat === "Yes") {
-                finalUrl = `[${file.name}](${finalUrl})`;
-            }
-
-            setTimeout(() => sendTextToChat(`${finalUrl} `), 10);
-            showToast(`${file.name} Successfully Uploaded to Catbox!`, "success");
-            UploadManager.clearAll(channelId, DraftType.SlashCommand);
-        } else {
-            throw new Error(`Catbox upload failed: ${uploadResult}`);
-        }
-    } catch (nativeError) {
-        throw new Error(`Catbox streaming upload failed: ${getErrorMessage(nativeError)}`);
-    }
-}
-
-/**
- * Litterbox upload
- */
-async function uploadFileToLitterboxWithStreaming(file: File, channelId: string) {
-    console.log(`[Litterbox] Starting upload for ${file.name} (${(file.size / 1024 / 1024).toFixed(1)}MB)`);
-
-    const time = settings.store.litterboxTime;
-
-    try {
-        console.log("[Litterbox] Converting file to ArrayBuffer...");
-        const arrayBuffer = await file.arrayBuffer();
-        console.log(`[Litterbox] ArrayBuffer conversion completed (${arrayBuffer.byteLength} bytes)`);
-        console.log(`[Litterbox] Uploading ${file.name} (${(file.size / 1024 / 1024).toFixed(1)}MB)`);
-
-        const uploadResult = await Native.uploadFileToLitterboxNative(
-            arrayBuffer,
-            file.name,
-            file.type,
-            time
-        );
-
-        if (uploadResult.startsWith("https://") || uploadResult.startsWith("http://")) {
-            let finalUrl = uploadResult;
-
-            if (settings.store.autoFormat === "Yes") {
-                finalUrl = `[${file.name}](${finalUrl})`;
-            }
-
-            setTimeout(() => sendTextToChat(`${finalUrl}`), 10);
-            showToast(`${file.name} Successfully Uploaded to Litterbox!`, "success");
-            UploadManager.clearAll(channelId, DraftType.SlashCommand);
-        } else {
-            throw new Error(`Litterbox upload failed: ${uploadResult}`);
-        }
-    } catch (nativeError) {
-        throw new Error(`Litterbox streaming upload failed: ${getErrorMessage(nativeError)}`);
-    }
-}
-
-/**
- * Zipline upload
- */
-async function uploadFileToZiplineWithStreaming(file: File, channelId: string) {
-    console.log(`[Zipline] Starting upload for ${file.name} (${(file.size / 1024 / 1024).toFixed(1)}MB)`);
-
-    const authToken = settings.store.ziplineAuthToken;
-    const serverURL = settings.store.ziplineServerURL || "https://share.enzomtp.party/api/upload";
-    const folder = settings.store.ziplineFolder;
-    const deleteAfter = settings.store.ziplineDeleteAfter;
-
-    if (!authToken || authToken.trim() === "") {
-        throw new Error("Zipline authorization token is required");
-    }
-
-    try {
-        console.log("[Zipline] Converting file to ArrayBuffer...");
-        const arrayBuffer = await file.arrayBuffer();
-        console.log(`[Zipline] ArrayBuffer conversion completed (${arrayBuffer.byteLength} bytes)`);
-        console.log(`[Zipline] Uploading ${file.name} (${(file.size / 1024 / 1024).toFixed(1)}MB) to ${serverURL}`);
-
-        const uploadResult = await Native.uploadFileToZiplineNative(
-            serverURL,
-            arrayBuffer,
-            file.name,
-            file.type,
-            authToken,
-            folder,
-            deleteAfter
-        );
-
-        if (uploadResult.startsWith("https://") || uploadResult.startsWith("http://")) {
-            let finalUrl = uploadResult;
-
-            if (settings.store.autoFormat === "Yes") {
-                finalUrl = `[${file.name}](${finalUrl})`;
-            }
-
-            setTimeout(() => sendTextToChat(`${finalUrl} `), 10);
-            showToast(`${file.name} Successfully Uploaded to Zipline!`, "success");
-            UploadManager.clearAll(channelId, DraftType.SlashCommand);
-        } else {
-            throw new Error(`Zipline upload failed: ${uploadResult}`);
-        }
-    } catch (nativeError) {
-        throw new Error(`Zipline streaming upload failed: ${getErrorMessage(nativeError)}`);
-    }
-}
-
-/**
- * Custom upload
- */
-async function uploadFileCustomWithStreaming(file: File, channelId: string) {
-    console.log(`[Custom] Starting upload for ${file.name} (${(file.size / 1024 / 1024).toFixed(1)}MB)`);
-
-    const fileFormName = settings.store.customUploaderFileFormName || "file";
-    const responseType = settings.store.customUploaderResponseType;
-
-    let customArgs: Record<string, string>;
-    try {
-        customArgs = JSON.parse(settings.store.customUploaderArgs || "{}");
-    } catch (e) {
-        throw new Error(`Failed to parse custom uploader arguments: ${e}`);
-    }
-
-    let customHeaders: Record<string, string>;
-    try {
-        const parsedHeaders = JSON.parse(settings.store.customUploaderHeaders || "{}");
-        customHeaders = Object.entries(parsedHeaders).reduce((acc, [key, value]) => {
-            if (key && typeof key === "string" && key.trim() !== "") {
-                acc[key] = String(value);
-            }
-            return acc;
-        }, {} as Record<string, string>);
-    } catch (e) {
-        throw new Error(`Failed to parse custom uploader headers: ${e}`);
-    }
-
-    // Handle URL path parsing - this should be just the JSON path, not a full URL
-    const urlPathString = settings.store.customUploaderURL || "";
-    let urlPath: string[] = [];
-
-    // Check if this looks like a JSON path (e.g., "url" or "data.downloadUrl") vs a full URL
-    if (urlPathString.includes("://")) {
-        // This looks like a full URL (legacy format) - extract just the path
-        try {
-            const baseUrl = new URL(urlPathString);
-            urlPath = baseUrl.pathname.split("/").filter(segment => segment);
-        } catch (e) {
-            throw new Error(`Invalid custom uploader URL: ${urlPathString}`);
-        }
-    } else {
-        // This is a JSON path (e.g., "url", "data.file_url", etc.)
-        urlPath = urlPathString.split(".").filter(segment => segment);
-    }
-
-    try {
-        console.log("[Custom] Converting file to ArrayBuffer...");
-        const arrayBuffer = await file.arrayBuffer();
-        console.log(`[Custom] ArrayBuffer conversion completed (${arrayBuffer.byteLength} bytes)`);
-        console.log(`[Custom] Uploading ${file.name} (${(file.size / 1024 / 1024).toFixed(1)}MB)`);
-
-        const finalUrl = await Native.uploadFileCustomNative(
-            settings.store.customUploaderRequestURL,
-            arrayBuffer,
-            file.name,
-            file.type,
-            fileFormName,
-            customArgs,
-            customHeaders,
-            responseType,
-            urlPath
-        );
-
-        let finalUrlForChat = finalUrl;
-
-        if (settings.store.autoFormat === "Yes") {
-            finalUrlForChat = `[${file.name}](${finalUrlForChat})`;
-        }
-
-        setTimeout(() => sendTextToChat(`${finalUrlForChat} `), 10);
-        showToast(`${file.name} Successfully Uploaded with Custom Uploader!`, "success");
-        UploadManager.clearAll(channelId, DraftType.SlashCommand);
-    } catch (nativeError) {
-        throw new Error(`Custom streaming upload failed: ${getErrorMessage(nativeError)}`);
-    }
-}
-
-function getCompatibleUploaders(fileSize: number, primaryUploader: string): string[] {
+function getCompatibleUploaders(fileSize: number, primaryUploader: UploaderName): UploaderName[] {
     const sizeMB = fileSize / (1024 * 1024);
+    const uploaderOrder: UploaderName[] = [];
 
-    const uploaderOrder: string[] = [];
+    if (!settings.store.enableFallback) {
+        if (sizeMB > 1024 && (primaryUploader === "Catbox" || primaryUploader === "Litterbox")) {
+            return [];
+        }
+        if (sizeMB > 200 && primaryUploader === "Catbox") {
+            return [];
+        }
+        return [primaryUploader];
+    }
 
+    const fallbackMode = settings.store.fallbackOrder || "smart";
+
+    if (fallbackMode !== "smart") {
+        let baseList: UploaderName[] = [];
+        switch (fallbackMode) {
+            case "catbox-first":
+                baseList = ["Catbox", "Litterbox", "GoFile", "Zipline", "Custom"];
+                break;
+            case "gofile-first":
+                baseList = ["GoFile", "Catbox", "Litterbox", "Zipline", "Custom"];
+                break;
+            case "zipline-first":
+                baseList = ["Zipline", "Catbox", "Litterbox", "GoFile", "Custom"];
+                break;
+            case "custom-first":
+                baseList = ["Custom", "Catbox", "Litterbox", "GoFile", "Zipline"];
+                break;
+            default:
+                baseList = ["Catbox", "Litterbox", "GoFile", "Zipline", "Custom"];
+        }
+
+        // Put primary first if compatible
+        const order = [primaryUploader, ...baseList.filter(u => u !== primaryUploader)];
+
+        // Filter out size-incompatible services
+        return order.filter(u => {
+            if (sizeMB > 1024 && (u === "Catbox" || u === "Litterbox")) return false;
+            if (sizeMB > 200 && u === "Catbox") return false;
+            return true;
+        });
+    }
+
+    // Default smart size-based fallback
     if (sizeMB > 1024) {
-        // Files larger than 1GB - only GoFile, Zipline, and Custom can handle these
-        if (primaryUploader === "GoFile") {
-            uploaderOrder.push("GoFile");
-        } else if (primaryUploader === "Zipline") {
-            uploaderOrder.push("Zipline");
-        } else if (primaryUploader === "Custom") {
-            uploaderOrder.push("Custom");
+        if (primaryUploader === "GoFile" || primaryUploader === "Zipline" || primaryUploader === "Custom") {
+            uploaderOrder.push(primaryUploader);
         }
-
-        if (primaryUploader !== "GoFile") {
-            uploaderOrder.push("GoFile");
-        }
-        if (primaryUploader !== "Zipline") {
-            uploaderOrder.push("Zipline");
-        }
-        if (primaryUploader !== "Custom") {
-            uploaderOrder.push("Custom");
+        const candidates: UploaderName[] = ["GoFile", "Zipline", "Custom"];
+        for (const u of candidates) {
+            if (!uploaderOrder.includes(u)) uploaderOrder.push(u);
         }
     } else if (sizeMB > 200) {
-        // Files 200MB-1GB - Litterbox, GoFile, Zipline, and Custom can handle these
-        if (primaryUploader === "Litterbox") {
-            uploaderOrder.push("Litterbox");
-        } else if (primaryUploader === "GoFile") {
-            uploaderOrder.push("GoFile");
-        } else if (primaryUploader === "Zipline") {
-            uploaderOrder.push("Zipline");
-        } else if (primaryUploader === "Custom") {
-            uploaderOrder.push("Custom");
+        if (primaryUploader !== "Catbox") {
+            uploaderOrder.push(primaryUploader);
         }
-
-        if (primaryUploader !== "Litterbox") {
-            uploaderOrder.push("Litterbox");
-        }
-        if (primaryUploader !== "GoFile") {
-            uploaderOrder.push("GoFile");
-        }
-        if (primaryUploader !== "Zipline") {
-            uploaderOrder.push("Zipline");
-        }
-        if (primaryUploader !== "Custom") {
-            uploaderOrder.push("Custom");
+        const candidates: UploaderName[] = ["Litterbox", "GoFile", "Zipline", "Custom"];
+        for (const u of candidates) {
+            if (!uploaderOrder.includes(u)) uploaderOrder.push(u);
         }
     } else {
-        // Files under 200MB - all services can handle these
         uploaderOrder.push(primaryUploader);
-
-        const fallbackOrder = ["Catbox", "Litterbox", "GoFile", "Zipline", "Custom"];
-        for (const uploader of fallbackOrder) {
-            if (uploader !== primaryUploader) {
-                uploaderOrder.push(uploader);
-            }
+        const candidates: UploaderName[] = ["Catbox", "Litterbox", "GoFile", "Zipline", "Custom"];
+        for (const u of candidates) {
+            if (!uploaderOrder.includes(u)) uploaderOrder.push(u);
         }
     }
 
     return uploaderOrder;
 }
 
-/**
- * Main upload function with smart fallbacks
- */
-async function uploadFile(file: File, channelId: string) {
-    const primaryUploader = settings.store.fileUploader || "Catbox";
+async function uploadFile(file: File, channelId: string): Promise<void> {
+    const primaryUploader = (settings.store.fileUploader as UploaderName) || "Catbox";
     const fileSizeMB = file.size / (1024 * 1024);
 
-    console.log(`[BigFileUpload] Starting upload for file: ${file.name}`);
-    console.log(`[BigFileUpload] File size: ${file.size} bytes (${fileSizeMB.toFixed(1)}MB)`);
+    logger.info(`Starting upload for file: ${file.name} (${fileSizeMB.toFixed(1)}MB)`);
 
-    // Get compatible uploaders based on file size
     const uploaderOrder = getCompatibleUploaders(file.size, primaryUploader);
-    console.log(`[BigFileUpload] Uploader order: ${uploaderOrder.join(", ")}`);
+    logger.info(`Uploader order: ${uploaderOrder.join(", ")}`);
 
-    // Large file warning
-    if (fileSizeMB > 300) {
-        console.warn(`[BigFileUpload] Large file warning: ${fileSizeMB.toFixed(1)}MB may take 10+ minutes to upload`);
-        showToast(`Large file detected (${fileSizeMB.toFixed(1)}MB) - this may take 10+ minutes`, "message");
+    if (uploaderOrder.length === 0) {
+        showToast(`File is too large (${fileSizeMB.toFixed(1)}MB) for the selected uploader.`, "failure");
+        sendBotMessage(channelId, {
+            content: `**Upload cancelled**: File size is **${fileSizeMB.toFixed(1)}MB**, which exceeds the capacity of **${primaryUploader}**.`
+        });
+        return;
     }
 
-    let lastError: any = null;
+    if (fileSizeMB > 300) {
+        logger.warn(`Large file detected (${fileSizeMB.toFixed(1)}MB) - may take several minutes to upload.`);
+        showToast(`Large file detected (${fileSizeMB.toFixed(1)}MB) - this may take several minutes`, "message");
+    }
+
+    let lastError: unknown = null;
     let attemptCount = 0;
 
     for (let i = 0; i < uploaderOrder.length; i++) {
@@ -1181,49 +127,43 @@ async function uploadFile(file: File, channelId: string) {
         attemptCount++;
 
         try {
-            console.log(`[BigFileUpload] === Attempt ${attemptCount}: ${uploader} ===`);
+            logger.info(`=== Attempt ${attemptCount}: ${uploader} ===`);
 
             if (i > 0) {
                 const previousUploader = uploaderOrder[i - 1];
-                console.log(`${previousUploader} failed. Trying fallback uploader: ${uploader}`);
+                logger.info(`${previousUploader} failed. Trying fallback uploader: ${uploader}`);
                 showToast(`${previousUploader} failed. Trying ${uploader} as fallback...`, "message");
 
                 await new Promise(resolve => setTimeout(resolve, 3000));
 
-                // Clear any residual upload state
                 try {
                     UploadManager.clearAll(channelId, DraftType.SlashCommand);
                 } catch (clearError) {
-                    console.warn("Failed to clear upload manager state:", clearError);
+                    logger.warn("Failed to clear upload manager state:", clearError);
                 }
             }
 
-            // Dynamic timeout based on file size and user setting
             const timeoutSetting = settings.store.uploadTimeout || "standard";
-            let uploadTimeout;
+            let uploadTimeout: number;
 
             switch (timeoutSetting) {
                 case "conservative":
-                    uploadTimeout = fileSizeMB > 100 ? 600000 : 300000; // 10 min max
+                    uploadTimeout = fileSizeMB > 100 ? 600000 : 300000;
                     break;
                 case "extended":
-                    uploadTimeout = fileSizeMB > 500 ? 1800000 : fileSizeMB > 300 ? 1200000 : fileSizeMB > 100 ? 900000 : 600000; // 30 min max
+                    uploadTimeout = fileSizeMB > 500 ? 1800000 : fileSizeMB > 300 ? 1200000 : fileSizeMB > 100 ? 900000 : 600000;
                     break;
                 case "maximum":
-                    uploadTimeout = fileSizeMB > 500 ? 3600000 : fileSizeMB > 300 ? 2400000 : fileSizeMB > 100 ? 1800000 : 1200000; // 60 min max
+                    uploadTimeout = fileSizeMB > 500 ? 3600000 : fileSizeMB > 300 ? 2400000 : fileSizeMB > 100 ? 1800000 : 1200000;
                     break;
                 default:
-                    uploadTimeout = fileSizeMB > 500 ? 1200000 : fileSizeMB > 300 ? 900000 : fileSizeMB > 100 ? 600000 : 300000; // 20 min max
+                    uploadTimeout = fileSizeMB > 500 ? 1200000 : fileSizeMB > 300 ? 900000 : fileSizeMB > 100 ? 600000 : 300000;
             }
 
-            console.log(`[BigFileUpload] Upload timeout set to ${uploadTimeout / 60000} minutes for ${fileSizeMB.toFixed(1)}MB file (${timeoutSetting} mode)`);
-
-            // Show progress indicator for large files
             if (fileSizeMB > 200) {
-                showToast(`Uploading ${fileSizeMB.toFixed(1)}MB to ${uploader} - this may take up to ${Math.ceil(uploadTimeout / 60000)} minutes...`, "message");
+                showToast(`Uploading ${fileSizeMB.toFixed(1)}MB to ${uploader}...`, "message");
             }
 
-            // Use streaming upload functions with timeout
             const uploadPromise = (() => {
                 switch (uploader) {
                     case "GoFile":
@@ -1241,35 +181,22 @@ async function uploadFile(file: File, channelId: string) {
                 }
             })();
 
-            // Add timeout handling
             const timeoutPromise = new Promise((_, reject) => {
                 setTimeout(() => {
-                    reject(new Error(`Upload timeout after ${uploadTimeout / 60000} minutes - file may be too large for reliable upload`));
+                    reject(new Error(`Upload timeout after ${uploadTimeout / 60000} minutes`));
                 }, uploadTimeout);
             });
 
             await Promise.race([uploadPromise, timeoutPromise]);
-
-            console.log(`[BigFileUpload] ${uploader} upload completed successfully`);
+            logger.info(`${uploader} upload completed successfully`);
             return;
-
         } catch (error) {
-            console.error(`[BigFileUpload] Upload failed with ${uploader}:`, error);
-            console.error(`[BigFileUpload] Error type: ${typeof error}`);
-            console.error(`[BigFileUpload] Error message: ${getErrorMessage(error)}`);
-
+            logger.error(`Upload failed with ${uploader}:`, error);
             lastError = error;
 
-            // Check for specific error types
             const errorMsg = getErrorMessage(error);
-
             if (errorMsg.includes("timeout")) {
-                console.error(`[BigFileUpload] ${uploader} timed out - file too large for reliable upload`);
                 showToast(`${uploader} timed out (${fileSizeMB.toFixed(1)}MB too large)`, "failure");
-            } else if (errorMsg.includes("network") || errorMsg.includes("fetch")) {
-                console.error(`[BigFileUpload] ${uploader} network error`);
-            } else if (errorMsg.includes("CSP") || errorMsg.includes("Content Security Policy")) {
-                console.error(`[BigFileUpload] ${uploader} blocked by CSP`);
             }
 
             if (handleCSPError(error, uploader, channelId)) {
@@ -1277,48 +204,19 @@ async function uploadFile(file: File, channelId: string) {
             }
 
             if (i === uploaderOrder.length - 1) {
-                console.error("[BigFileUpload] All uploaders failed. Last error:", lastError);
-
-                const allUploaders = ["Catbox", "Litterbox", "GoFile", "Zipline", "Custom"];
-                const skippedUploaders = allUploaders.filter(u => !uploaderOrder.includes(u));
-
-                let skipMessage = "";
-                if (skippedUploaders.length > 0) {
-                    skipMessage = `\nSkipped (file too large): ${skippedUploaders.join(", ")}\n`;
-                }
-
-                // Enhanced error message for timeout issues
-                let timeoutAdvice = "";
-                if (getErrorMessage(lastError).includes("timeout")) {
-                    timeoutAdvice = "\n**Upload Timeout Solutions:**\n" +
-                        "• Try uploading during off-peak hours (less network congestion)\n" +
-                        "• Use a faster/more stable internet connection\n" +
-                        "• Split large files into smaller parts (recommended: under 200MB each)\n" +
-                        "• Try a different upload service\n" +
-                        "• Consider using Discord's native file upload for very large files\n";
-                }
+                logger.error("All uploaders failed. Last error:", lastError);
 
                 sendBotMessage(channelId, {
-                    content: "**All compatible upload services failed!**\n" +
+                    content: "**All upload attempts failed!**\n" +
                         `File size: ${fileSizeMB.toFixed(1)}MB\n` +
                         `Attempts made: ${attemptCount}\n` +
-                        `Tried: ${uploaderOrder.join(", ")}${skipMessage}` +
-                        `Last error: ${getErrorMessage(lastError)}\n\n` +
-                        "**Memory-efficient streaming was used** but uploads still failed.\n" +
-                        "This may be due to:\n" +
-                        "• **File too large for reliable upload over internet**\n" +
-                        "• Network timeout (uploads >400MB often fail)\n" +
-                        "• Slow/unstable internet connection\n" +
-                        "• Service overload or temporary issues\n" +
-                        timeoutAdvice +
-                        "\nCheck console for detailed error logs."
+                        `Tried: ${uploaderOrder.join(", ")}\n` +
+                        `Last error: ${getErrorMessage(lastError)}`
                 });
                 showToast("All streaming uploads failed", "failure");
                 UploadManager.clearAll(channelId, DraftType.SlashCommand);
                 return;
             }
-
-            continue;
         }
     }
 }
@@ -1330,7 +228,7 @@ function triggerFileUpload() {
 
     fileInput.onchange = async event => {
         const target = event.target as HTMLInputElement;
-        if (target && target.files && target.files.length > 0) {
+        if (target?.files && target.files.length > 0) {
             const file = target.files[0];
             if (file) {
                 const channelId = SelectedChannelStore.getChannelId();
@@ -1362,6 +260,16 @@ const ctxMenuPatch: NavContextMenuPatchCallback = (children, props) => {
         />
     );
 };
+
+async function resolveFile(options: any[], ctx: any): Promise<File | null> {
+    for (const opt of options) {
+        if (opt.name === "file") {
+            const upload = UploadStore.getUpload(ctx.channel.id, opt.name, DraftType.SlashCommand);
+            return upload.item.file;
+        }
+    }
+    return null;
+}
 
 export default definePlugin({
     name: "BigFileUpload",
