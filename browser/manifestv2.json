@@ -33,7 +33,11 @@
     "background": {
         "scripts": ["background.js"]
     },
-    "web_accessible_resources": ["dist/Equicord.js", "dist/Equicord.css"],
+    "web_accessible_resources": [
+        "dist/Equicord.js",
+        "dist/Equicord.css",
+        "vendor/*"
+    ],
     "browser_specific_settings": {
         "gecko": {
             "id": "firefox@equicord.org",

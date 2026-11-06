@@ -1,7 +1,7 @@
 {
     "name": "pawsomevencord",
     "private": "true",
-    "version": "1.15.14.0",
+    "version": "1.15.16.0",
     "description": "The other cutest Discord client mod",
     "homepage": "https://github.com/enzomtpYT/PawsomeVencord#readme",
     "bugs": {
@@ -49,13 +49,13 @@
         "@streamparser/json": "catalog:",
         "@vap/core": "catalog:",
         "@vap/shiki": "catalog:",
+        "@vencord/monaco-editor": "catalog:",
         "buttplug": "catalog:",
         "fflate": "catalog:",
         "gifenc": "catalog:",
         "gifuct-js": "catalog:",
         "idb": "catalog:",
         "jsqr": "catalog:",
-        "monaco-editor": "catalog:",
         "nanoid": "catalog:",
         "native-file-system-adapter": "catalog:",
         "yaml-js": "catalog:"
@@ -97,7 +97,7 @@
         "typescript-transform-paths": "catalog:",
         "zip-local": "catalog:"
     },
-    "packageManager": "pnpm@12.15.0",
+    "packageManager": "pnpm@12.16.1",
     "engines": {
         "node": ">=22"
     }
