@@ -22,7 +22,7 @@ import { Card } from "@components/Card";
 import { Divider } from "@components/Divider";
 import { Flex } from "@components/Flex";
 import { FormSwitch } from "@components/FormSwitch";
-import { Heading, HeadingSecondary } from "@components/Heading";
+import { Heading } from "@components/Heading";
 import { Link } from "@components/Link";
 import { Paragraph } from "@components/Paragraph";
 import { SettingsTab, wrapTab } from "@components/settings/tabs/BaseTab";
@@ -48,8 +48,8 @@ function EquibopSection() {
     return (
         <Flex className={Margins.bottom20} flexDirection="column" gap="1em">
             <Card variant="brand">
-                <HeadingSecondary>Pawtop & Equicord</HeadingSecondary>
-                <Paragraph>Pawtop and Equicord are two separate things. This updater is for Equicord.</Paragraph>
+                <Heading tag="h3" className={Margins.bottom8}>Pawtop & PawsomeVencord</Heading>
+                <Paragraph>Pawtop and PawsomeVencord are two separate things. This updater is for PawsomeVencord.</Paragraph>
                 <Paragraph className={Margins.top8}>
                     You receive separate popups for Pawtop updates. You can also manually update by installing the <Link href="https://github.com/enzomtpYT/pawtop">latest version</Link>.
                 </Paragraph>
@@ -57,7 +57,7 @@ function EquibopSection() {
 
             {isEquibopOutdated && (
                 <Card variant="warning">
-                    <HeadingSecondary>Pawtop Outdated</HeadingSecondary>
+                    <Heading tag="h3" className={Margins.bottom8}>Pawtop Outdated</Heading>
                     <Flex flexDirection="column" gap="0.5em">
                         <Paragraph>Your version of Pawtop is outdated!</Paragraph>
                         <Button variant="link" onClick={() => VesktopNative.app.openUpdater()}>Open Pawtop Updater</Button>
