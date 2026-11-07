@@ -1,23 +1,11 @@
 /*
- * Vencord, a modification for Discord's desktop app
- * Copyright (c) 2022 Vendicated and contributors
- *
- * This program is free software: you can redistribute it and/or modify
- * it under the terms of the GNU General Public License as published by
- * the Free Software Foundation, either version 3 of the License, or
- * (at your option) any later version.
- *
- * This program is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU General Public License for more details.
- *
- * You should have received a copy of the GNU General Public License
- * along with this program.  If not, see <https://www.gnu.org/licenses/>.
-*/
+ * Vencord, a Discord client mod
+ * Copyright (c) 2026 Vendicated and contributors
+ * SPDX-License-Identifier: GPL-3.0-or-later
+ */
 
 import { definePluginSettings } from "@api/Settings";
-import { Devs } from "@utils/constants";
+import { Devs, EquicordDevs } from "@utils/constants";
 import definePlugin, { OptionType } from "@utils/types";
 import { SelectOption } from "@vencord/discord-types";
 
@@ -46,7 +34,8 @@ export default definePlugin({
     name: "BetterClips",
     authors: [
         Devs.Loukious,
-        Devs.niko
+        Devs.niko,
+        EquicordDevs.enzomtp
     ],
     description: "Enables extra clipping options for streams.",
     settings,
@@ -55,7 +44,7 @@ export default definePlugin({
             predicate: () => settings.store.clipAllStreams,
             find: "}isViewerClippingAllowedForUser",
             replacement: {
-                match: /isViewerClippingAllowedForUser\(\w+\){/,
+                match: /isViewerClippingAllowedForUser\(\i\){/,
                 replace: "$&return true;"
             }
         },
@@ -63,7 +52,7 @@ export default definePlugin({
             predicate: () => settings.store.clipAllParticipants,
             find: "}isVoiceRecordingAllowedForUser",
             replacement: {
-                match: /isVoiceRecordingAllowedForUser\(\w+\){/,
+                match: /isVoiceRecordingAllowedForUser\(\i\){/,
                 replace: "$&return true;"
             }
         },
@@ -72,11 +61,11 @@ export default definePlugin({
             find: "clips_recording_settings",
             replacement: [
                 {
-                    match: /\[\{.{0,10}\i.\i.FPS_15.{0,250}\}\]/,
+                    match: /\[\{.{0,10}\i\.\i\.FPS_15.{0,250}\}\]/,
                     replace: "$self.patchFramerates($&)"
                 },
                 {
-                    match: /\[\{.{0,10}\i.\i.SECONDS_30.{0,250}\}\]/,
+                    match: /\[\{.{0,10}\i\.\i\.SECONDS_30.{0,250}\}\]/,
                     replace: "$self.patchTimeslots($&)"
                 },
             ]
@@ -88,7 +77,7 @@ export default definePlugin({
 
         extraTimeslots.forEach(timeslot => newTimeslots.push({ value: timeslot * 60000, label: `${timeslot} Minutes` }));
 
-        return newTimeslots;
+        return newTimeslots.sort((a, b) => Number(a.value) - Number(b.value));
     },
 
     patchFramerates(framerates: SelectOption[]) {
@@ -98,6 +87,6 @@ export default definePlugin({
         // Lower framerates than 15FPS have adverse affects on compression, 3 minute clips at 10FPS skyrocket the filesize to 200mb!!
         extraFramerates.forEach(framerate => newFramerates.push({ value: framerate, label: `${framerate}FPS` }));
 
-        return newFramerates.toSorted();
+        return newFramerates.sort((a, b) => Number(a.value) - Number(b.value));
     }
 });
