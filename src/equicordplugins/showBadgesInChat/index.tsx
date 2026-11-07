@@ -8,7 +8,7 @@ import "./styles.css";
 
 import badges from "@plugins/_api/badges";
 import { Devs, EquicordDevs } from "@utils/constants";
-import { isEquicordPluginDev, isPluginDev } from "@utils/misc";
+import { isEquicordPluginDev, isPawsomePluginDev, isPluginDev } from "@utils/misc";
 import definePlugin from "@utils/types";
 import { findComponentByCodeLazy, findCssClassesLazy } from "@webpack";
 
@@ -65,6 +65,17 @@ function CheckBadge({ badge, author }: { badge: string; author: User; }): JSX.El
                     ))}
                 </span>
             );
+        case "PawsomeContributer":
+            return isPawsomePluginDev(author.id) ? (
+                <span style={{ order: settings.store.PawsomeContributorPosition }}>
+                    <RoleIconComponent
+                        className={roleIcon}
+                        name="PawsomeVencord Contributor"
+                        size={20}
+                        src={"https://raw.githubusercontent.com/enzomtpYT/PawsomeVencord/refs/heads/main/browser/icon.png"}
+                    />
+                </span>
+            ) : null;
         case "EquicordContributer":
             return isEquicordPluginDev(author.id) ? (
                 <span style={{ order: settings.store.EquicordContributorPosition }}>
@@ -72,7 +83,7 @@ function CheckBadge({ badge, author }: { badge: string; author: User; }): JSX.El
                         className={roleIcon}
                         name="Equicord Contributor"
                         size={20}
-                        src={"https://raw.githubusercontent.com/enzomtpYT/PawsomeVencord/refs/heads/main/browser/icon.png"}
+                        src={"https://cdn.discordapp.com/emojis/1563740725726683167.webp?size=128"}
                     />
                 </span>
             ) : null;
@@ -143,6 +154,7 @@ function ChatBadges({ author }: { author: User; }) {
     return (
         <span className="vc-sbic-badge-row" style={{ margin: "2px" }}>
             {settings.store.showPawsomeDonor && <CheckBadge badge={"PawsomeDonor"} author={author} />}
+            {settings.store.showPawsomeContributor && <CheckBadge badge={"PawsomeContributer"} author={author} />}
             {settings.store.showEquicordDonor && <CheckBadge badge={"EquicordDonor"} author={author} />}
             {settings.store.showEquicordContributor && <CheckBadge badge={"EquicordContributer"} author={author} />}
             {settings.store.showVencordDonor && <CheckBadge badge={"VencordDonor"} author={author} />}

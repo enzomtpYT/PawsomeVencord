@@ -7,7 +7,7 @@
 import { ApplicationCommandInputType, ApplicationCommandOptionType, sendBotMessage } from "@api/Commands";
 import { NavContextMenuPatchCallback } from "@api/ContextMenu";
 import { OpenExternalIcon } from "@components/Icons";
-import { Devs, EquicordDevs } from "@utils/constants";
+import { Devs, PawsomeDevs } from "@utils/constants";
 import definePlugin from "@utils/types";
 import { findByPropsLazy } from "@webpack";
 import { DraftType, Menu, PermissionsBits, PermissionStore, React, SelectedChannelStore, UploadManager } from "@webpack/common";
@@ -274,7 +274,7 @@ async function resolveFile(options: any[], ctx: any): Promise<File | null> {
 export default definePlugin({
     name: "BigFileUpload",
     description: "Bypass Discord's upload limit by uploading files using the 'Upload a Big File' button or /fileupload and they'll get uploaded as links into chat via file uploaders.",
-    authors: [Devs.ScattrdBlade, EquicordDevs.enzomtp],
+    authors: [Devs.ScattrdBlade, PawsomeDevs.enzomtp],
     settings,
     dependencies: ["CommandsAPI"],
     contextMenus: {

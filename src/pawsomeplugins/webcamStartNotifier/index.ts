@@ -5,7 +5,7 @@
  */
 
 import { definePluginSettings } from "@api/Settings";
-import { Devs, EquicordDevs } from "@utils/constants";
+import { Devs, PawsomeDevs } from "@utils/constants";
 import definePlugin, { OptionType } from "@utils/types";
 import { ChannelStore, SelectedChannelStore, UserStore } from "@webpack/common";
 
@@ -46,7 +46,7 @@ const settings = definePluginSettings({
 export default definePlugin({
     name: "WebcamStartNotifier",
     description: "Plays a sound when someone starts/stops their webcam in a voice channel",
-    authors: [Devs.redbaron2k7, EquicordDevs.enzomtp],
+    authors: [Devs.redbaron2k7, PawsomeDevs.enzomtp],
     settings,
 
     stop() {

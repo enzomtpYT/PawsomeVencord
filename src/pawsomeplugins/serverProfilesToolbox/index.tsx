@@ -10,7 +10,7 @@ import { Card } from "@components/Card";
 import ErrorBoundary from "@components/ErrorBoundary";
 import { Heading } from "@components/Heading";
 import { Paragraph } from "@components/Paragraph";
-import { Devs, EquicordDevs } from "@utils/constants";
+import { Devs, PawsomeDevs } from "@utils/constants";
 import definePlugin from "@utils/types";
 import type { Guild, User } from "@vencord/discord-types";
 import { Menu, NewCustomizationSection, UserStore } from "@webpack/common";
@@ -19,7 +19,7 @@ import { openServerProfilesModal } from "./components/ServerProfilesModal";
 
 export default definePlugin({
     name: "ServerProfilesToolbox",
-    authors: [Devs.D3SOX, EquicordDevs.enzomtp],
+    authors: [Devs.D3SOX, PawsomeDevs.enzomtp],
     description: "Manage, copy, paste, and switch server profile presets (nicknames, pronouns, bios, banners, avatars) with presets and JSON import/export.",
 
     toolboxActions: {

@@ -7,7 +7,7 @@
 import { Button } from "@components/Button";
 import { Heading } from "@components/Heading";
 import { Paragraph } from "@components/Paragraph";
-import { Devs, EquicordDevs } from "@utils/constants";
+import { Devs, PawsomeDevs } from "@utils/constants";
 import { Margins } from "@utils/margins";
 import { wordsToTitle } from "@utils/text";
 import definePlugin, { ReporterTestable } from "@utils/types";
@@ -96,7 +96,7 @@ function playSample(type: string) {
 export default definePlugin({
     name: "CustomVcNarrator",
     description: "Announces when users join, leave, or move voice channels via narrator. TikTok TTS version; speechSynthesis is pretty boring",
-    authors: [Devs.Ven, Devs.Nyako, Devs.Loukious, EquicordDevs.enzomtp],
+    authors: [Devs.Ven, Devs.Nyako, Devs.Loukious, PawsomeDevs.enzomtp],
     reporterTestable: ReporterTestable.None,
 
     settings,

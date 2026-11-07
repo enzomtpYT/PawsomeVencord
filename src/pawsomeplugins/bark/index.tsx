@@ -6,7 +6,7 @@
 
 import { ChatBarButton, ChatBarButtonFactory } from "@api/ChatButtons";
 import { definePluginSettings } from "@api/Settings";
-import { Devs, EquicordDevs } from "@utils/constants";
+import { Devs, PawsomeDevs } from "@utils/constants";
 import { getCurrentChannel, sendMessage } from "@utils/discord";
 import definePlugin, { OptionType } from "@utils/types";
 
@@ -50,7 +50,7 @@ export default definePlugin({
     settings,
     requiresRestart: true,
     authors:
-        [Devs.Samwich, EquicordDevs.enzomtp],
+        [Devs.Samwich, PawsomeDevs.enzomtp],
     chatBarButton: {
         icon: BarkIcon,
         render: ChatBarIcon,

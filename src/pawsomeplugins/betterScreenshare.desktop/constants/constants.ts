@@ -16,7 +16,7 @@
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
 */
 
-import { EquicordDevs } from "@utils/constants";
+import { PawsomeDevs } from "@utils/constants";
 
 import { types } from "../../philsPluginLibrary";
 
@@ -24,7 +24,7 @@ export const PluginInfo = {
     PLUGIN_NAME: "BetterScreenshare",
     DESCRIPTION: "This plugin allows you to further customize your screen sharing.",
     AUTHOR: {
-        ...EquicordDevs.enzomtp,
+        ...PawsomeDevs.enzomtp,
         github: "https://github.com/enzomtpYT"
     },
     CONTRIBUTORS: {

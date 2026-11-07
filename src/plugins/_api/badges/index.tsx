@@ -25,7 +25,7 @@ import { openContributorModal } from "@components/settings/tabs";
 import { Devs } from "@utils/constants";
 import { copyWithToast } from "@utils/discord";
 import { Logger } from "@utils/Logger";
-import { shouldShowContributorBadge, shouldShowEquicordContributorBadge } from "@utils/misc";
+import { shouldShowContributorBadge, shouldShowEquicordContributorBadge, shouldShowPawsomeContributorBadge } from "@utils/misc";
 import definePlugin from "@utils/types";
 import { ContextMenuApi, Menu, showToast, UserStore } from "@webpack/common";
 
@@ -50,10 +50,28 @@ const EquicordContributorBadge: ProfileBadge = {
     description: "Equicord Contributor",
     infoLabel: "Equicord",
     rarity: BadgeRarity.MYTHIC,
+    iconSrc: "https://cdn.discordapp.com/emojis/1563740725726683167.webp?size=128",
+    largeIconSrc: "https://cdn.discordapp.com/emojis/1563740725726683167.webp?size=512",
+    position: BadgePosition.START,
+    shouldShow: ({ userId }) => shouldShowEquicordContributorBadge(userId),
+    onClick: (_, { userId }) => openContributorModal(UserStore.getUser(userId)),
+    props: {
+        style: {
+            borderRadius: "50%",
+            transform: "scale(0.9)"
+        }
+    },
+};
+
+const PawsomeContributorBadge: ProfileBadge = {
+    id: "pawsome_contributor_badge",
+    description: "PawsomeVencord Contributor",
+    infoLabel: "PawsomeVencord",
+    rarity: BadgeRarity.MYTHIC,
     iconSrc: "https://raw.githubusercontent.com/enzomtpYT/PawsomeVencord/refs/heads/main/browser/icon.png",
     largeIconSrc: "https://raw.githubusercontent.com/enzomtpYT/PawsomeVencord/refs/heads/main/browser/icon.png",
     position: BadgePosition.START,
-    shouldShow: ({ userId }) => shouldShowEquicordContributorBadge(userId),
+    shouldShow: ({ userId }) => shouldShowPawsomeContributorBadge(userId),
     onClick: (_, { userId }) => openContributorModal(UserStore.getUser(userId)),
     props: {
         style: {
@@ -255,7 +273,7 @@ export default definePlugin({
         }
     },
 
-    userProfileBadges: [ContributorBadge, EquicordContributorBadge, UserPluginContributorBadge],
+    userProfileBadges: [ContributorBadge, EquicordContributorBadge, PawsomeContributorBadge, UserPluginContributorBadge],
 
     async start() {
         await loadAllBadges();

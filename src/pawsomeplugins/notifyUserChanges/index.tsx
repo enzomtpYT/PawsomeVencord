@@ -5,7 +5,7 @@
  */
 
 import { findGroupChildrenByChildId, NavContextMenuPatchCallback } from "@api/ContextMenu";
-import { Devs, EquicordDevs } from "@utils/constants";
+import { Devs, PawsomeDevs } from "@utils/constants";
 import definePlugin from "@utils/types";
 import type { PresenceUpdate, User, VoiceState } from "@vencord/discord-types";
 import { Menu, React, UserStore } from "@webpack/common";
@@ -49,7 +49,7 @@ const UserContext: NavContextMenuPatchCallback = (children, { user }: { user?: U
 export default definePlugin({
     name: "NotifyUserChanges",
     description: "Notifies you when watched users update their status, custom status, activity, avatar, or voice channels.",
-    authors: [Devs.D3SOX, EquicordDevs.enzomtp],
+    authors: [Devs.D3SOX, PawsomeDevs.enzomtp],
     dependencies: ["ContextMenuAPI"],
 
     settings,

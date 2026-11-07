@@ -18,7 +18,7 @@
 
 import { definePluginSettings } from "@api/Settings";
 import { UserAreaButton, UserAreaRenderProps } from "@api/UserArea";
-import { Devs, EquicordDevs } from "@utils/constants";
+import { Devs, PawsomeDevs } from "@utils/constants";
 import definePlugin, { OptionType } from "@utils/types";
 
 import { Emitter, MicrophoneSettingsIcon } from "../philsPluginLibrary";
@@ -56,7 +56,7 @@ const settings = definePluginSettings({
 export default definePlugin({
     name: "BetterMicrophone",
     description: "This plugin allows you to further customize your microphone.",
-    authors: [Devs.philhk, EquicordDevs.enzomtp],
+    authors: [Devs.philhk, PawsomeDevs.enzomtp],
     dependencies: ["PhilsPluginLibrary"],
 
     userAreaButton: {

@@ -16,13 +16,13 @@
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
 */
 
-import { Devs, EquicordDevs } from "@utils/constants";
+import { Devs, PawsomeDevs } from "@utils/constants";
 import definePlugin from "@utils/types";
 
 export default definePlugin({
     name: "PhilsPluginLibrary",
     description: "A library for phil's plugins",
-    authors: [Devs.philhk, EquicordDevs.enzomtp],
+    authors: [Devs.philhk, PawsomeDevs.enzomtp],
     patches: [
         {
             find: "Unknown frame rate",

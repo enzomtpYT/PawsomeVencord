@@ -5,7 +5,7 @@
  */
 
 import { definePluginSettings } from "@api/Settings";
-import { Devs, EquicordDevs } from "@utils/constants";
+import { Devs, PawsomeDevs } from "@utils/constants";
 import definePlugin, { OptionType } from "@utils/types";
 import { SelectOption } from "@vencord/discord-types";
 
@@ -35,7 +35,7 @@ export default definePlugin({
     authors: [
         Devs.Loukious,
         Devs.niko,
-        EquicordDevs.enzomtp
+        PawsomeDevs.enzomtp
     ],
     description: "Enables extra clipping options for streams.",
     settings,

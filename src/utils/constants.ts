@@ -1311,10 +1311,6 @@ export const EquicordDevs = Object.freeze({
         name: "mja00",
         id: 108698087769260032n
     },
-    enzomtp: {
-        name: "enzomtpYT",
-        id: 221273966457782283n
-    },
     vei: {
         name: "Vei",
         id: 239414094799699968n
@@ -1537,6 +1533,25 @@ export const VencordDevsById = /* #__PURE__*/ (() =>
 export const EquicordDevsById = /* #__PURE__*/ (() =>
     Object.freeze(Object.fromEntries(
         Object.entries(EquicordDevs)
+            .filter(d => d[1].id !== 0n)
+            .map(([_, v]) => [v.id, v] as const)
+    ))
+)() as Record<string, Dev>;
+
+export const PawsomeDevs = Object.freeze({
+    enzomtp: {
+        name: "enzomtpYT",
+        id: 221273966457782283n
+    },
+    astralfennex: {
+        name: "astralfennex",
+        id: 270717743706144789n
+    }
+} satisfies Record<string, Dev>);
+
+export const PawsomeDevsById = /* #__PURE__*/ (() =>
+    Object.freeze(Object.fromEntries(
+        Object.entries(PawsomeDevs)
             .filter(d => d[1].id !== 0n)
             .map(([_, v]) => [v.id, v] as const)
     ))

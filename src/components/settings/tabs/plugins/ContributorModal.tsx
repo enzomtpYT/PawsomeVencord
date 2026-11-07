@@ -10,7 +10,7 @@ import { useSettings } from "@api/Settings";
 import { Heading } from "@components/Heading";
 import { Link } from "@components/Link";
 import { Paragraph } from "@components/Paragraph";
-import { EquicordDevsById, VencordDevsById } from "@utils/constants";
+import { EquicordDevsById, PawsomeDevsById, VencordDevsById } from "@utils/constants";
 import { classNameFactory } from "@utils/css";
 import { fetchUserProfile } from "@utils/discord";
 import { pluralize } from "@utils/misc";
@@ -43,8 +43,9 @@ function ContributorModal({ user, modalProps }: { user: User; modalProps: Render
 
     const plugins = useMemo(() => {
         const allPlugins = Object.values(Plugins);
-        const pluginsByAuthor = (VencordDevsById[user.id] || EquicordDevsById[user.id])
-            ? allPlugins.filter(p => p.authors.includes(VencordDevsById[user.id] || EquicordDevsById[user.id]))
+        const authorDev = VencordDevsById[user.id] || EquicordDevsById[user.id] || PawsomeDevsById[user.id];
+        const pluginsByAuthor = authorDev
+            ? allPlugins.filter(p => p.authors.includes(authorDev))
             : allPlugins.filter(p =>
                 PluginMeta[p.name]?.userPlugin && p.authors.some(a => a.id.toString() === user.id)
                 || p.authors.some(a => a.name === user.username)

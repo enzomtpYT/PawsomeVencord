@@ -22,6 +22,18 @@ const settings = definePluginSettings({
         hidden: true,
         default: -1
     },
+    showPawsomeContributor: {
+        type: OptionType.BOOLEAN,
+        description: "Enable to show PawsomeVencord Contributor badges in chat.",
+        hidden: true,
+        default: true
+    },
+    PawsomeContributorPosition: {
+        type: OptionType.NUMBER,
+        description: "The position of the PawsomeVencord Contributor badge.",
+        hidden: true,
+        default: 0
+    },
     showEquicordDonor: {
         type: OptionType.BOOLEAN,
         description: "Enable to show Equicord Donor badges in chat.",
@@ -106,8 +118,9 @@ export default settings;
 const BadgeSettings = () => {
     const [images, setImages] = useState([
         { src: "https://raw.githubusercontent.com/enzomtpYT/PawsomeVencord/refs/heads/main/browser/icon.png", shown: settings.store.showPawsomeDonor, title: "Pawsome donor badges", key: "PawsomeDonor", position: settings.store.PawsomeDonorPosition },
+        { src: "https://raw.githubusercontent.com/enzomtpYT/PawsomeVencord/refs/heads/main/browser/icon.png", shown: settings.store.showPawsomeContributor, title: "PawsomeVencord contributor badge", key: "PawsomeContributer", position: settings.store.PawsomeContributorPosition },
         { src: "https://badge.equicord.org/donor.webp", shown: settings.store.showEquicordDonor, title: "Equicord donor badges", key: "EquicordDonor", position: settings.store.EquicordDonorPosition },
-        { src: "https://raw.githubusercontent.com/enzomtpYT/PawsomeVencord/refs/heads/main/browser/icon.png", shown: settings.store.showEquicordContributor, title: "Equicord contributor badge", key: "EquicordContributer", position: settings.store.EquicordContributorPosition },
+        { src: "https://cdn.discordapp.com/emojis/1563740725726683167.webp?size=128", shown: settings.store.showEquicordContributor, title: "Equicord contributor badge", key: "EquicordContributer", position: settings.store.EquicordContributorPosition },
         { src: "https://cdn.discordapp.com/emojis/1026533070955872337.png", shown: settings.store.showVencordDonor, title: "Vencord donor badges", key: "VencordDonor", position: settings.store.VencordDonorPosition },
         { src: "https://cdn.discordapp.com/emojis/1092089799109775453.png", shown: settings.store.showVencordContributor, title: "Vencord contributor badge", key: "VencordContributer", position: settings.store.VencordContributorPosition },
         { src: "https://cdn.discordapp.com/badge-icons/bf01d1073931f921909045f3a39fd264.png", shown: settings.store.showDiscordProfile, title: "Discord profile badges (HypeSquad, Discord Staff, Early Supporter, etc.)", key: "DiscordProfile", position: settings.store.DiscordProfilePosition },
@@ -120,6 +133,10 @@ const BadgeSettings = () => {
                 case "PawsomeDonor":
                     settings.store.PawsomeDonorPosition = image.position;
                     settings.store.showPawsomeDonor = image.shown;
+                    break;
+                case "PawsomeContributer":
+                    settings.store.PawsomeContributorPosition = image.position;
+                    settings.store.showPawsomeContributor = image.shown;
                     break;
                 case "EquicordDonor":
                     settings.store.EquicordDonorPosition = image.position;

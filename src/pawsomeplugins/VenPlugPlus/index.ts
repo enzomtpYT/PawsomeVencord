@@ -4,7 +4,7 @@
  * SPDX-License-Identifier: GPL-3.0-or-later
  */
 
-import { Devs, EquicordDevs } from "@utils/constants";
+import { Devs, EquicordDevs, PawsomeDevs } from "@utils/constants";
 import definePlugin from "@utils/types";
 
 import { handleConnection, handleDisconnection } from "./client";
@@ -17,7 +17,7 @@ import { ActivityType, FluxMessageCreate } from "./types";
 export default definePlugin({
     name: "VenPlugPlus",
     description: "Detects words in messages and uses them to control a buttplug device",
-    authors: [EquicordDevs.KaydaFox, EquicordDevs.danthebitshifter, Devs.Mopi, EquicordDevs.enzomtp],
+    authors: [EquicordDevs.KaydaFox, EquicordDevs.danthebitshifter, Devs.Mopi, PawsomeDevs.enzomtp],
     settings,
     dependencies: ["CommandsAPI"],
 

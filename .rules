@@ -63,7 +63,7 @@ Does NOT get merged:
 - Folder per plugin. `src/plugins/<name>/index.tsx` or `src/equicordplugins/<name>/index.tsx`. Single-file plugins still get a folder.
 - Folder suffixes the build filters on: `.desktop`, `.web`, `.dev`, `.discordDesktop`, `.vesktop`, `.equibop`.
 - `export default definePlugin({ ... })`. Never named.
-- Required fields: `name`, `description`, `authors`. Use `Devs` or `EquicordDevs`, never inline.
+- Required fields: `name`, `description`, `authors`. Use `Devs`, `EquicordDevs`, or `PawsomeDevs`, never inline.
 - List `dependencies` for every API plugin used.
 - Lock environment via folder suffix. Per-setting platform gating via `target?: "WEB" | "DESKTOP" | "BOTH"` on the setting def (not the plugin). Code-path gating via build constants.
 - `requiresRestart` defaults true when `patches` exist. Set only to override.
@@ -454,7 +454,7 @@ Deprecated: `@api/Themes`. `classNameFactory` re-export from `@api/Styles`.
 - `margins`. `Margins` (`top4/8/16/20`, `bottom4/8/16/20`, `left8/16`, `right8/16`).
 - `guards`. `isTruthy`, `isNonNullish`.
 - `web`. `saveFile`, `chooseFile`.
-- `constants`. `Devs`, `EquicordDevs`, `EquicordDevsById`, `IS_WINDOWS`, `IS_MAC`, `IS_LINUX`, `IS_MOBILE`, support channel/guild/role IDs.
+- `constants`. `Devs`, `EquicordDevs`, `PawsomeDevs`, `EquicordDevsById`, `PawsomeDevsById`, `IS_WINDOWS`, `IS_MAC`, `IS_LINUX`, `IS_MOBILE`, support channel/guild/role IDs.
 - `types`. `OptionType`, `StartAt`, `ReporterTestable`, `definePlugin`.
 
 ### `@components/*`

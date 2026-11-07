@@ -20,7 +20,7 @@ import { loadLazyChunks } from "@debug/loadLazyChunks";
 import { User } from "@vencord/discord-types";
 import { ChannelStore, GuildMemberStore, IconUtils } from "@webpack/common";
 
-import { EQUICORD_HELPERS, EquicordDevsById, GUILD_ID, KNOWN_ISSUES_CHANNEL_ID, KNOWN_ISSUES_CHANNEL_IDS, SUPPORT_CHANNEL_ID, SUPPORT_CHANNEL_IDS, VencordDevsById } from "./constants";
+import { EQUICORD_HELPERS, EquicordDevsById, GUILD_ID, KNOWN_ISSUES_CHANNEL_ID, KNOWN_ISSUES_CHANNEL_IDS, PawsomeDevsById, SUPPORT_CHANNEL_ID, SUPPORT_CHANNEL_IDS, VencordDevsById } from "./constants";
 
 /**
  * Calls .join(" ") on the arguments
@@ -85,7 +85,10 @@ export const shouldShowContributorBadge = (id: string) => isPluginDev(id) && Ven
 export const isEquicordPluginDev = (id: string) => Object.hasOwn(EquicordDevsById, id);
 export const shouldShowEquicordContributorBadge = (id: string) => isEquicordPluginDev(id) && EquicordDevsById[id].badge !== false;
 
-export const isAnyPluginDev = (id: string) => Object.hasOwn(VencordDevsById, id) || Object.hasOwn(EquicordDevsById, id);
+export const isPawsomePluginDev = (id: string) => Object.hasOwn(PawsomeDevsById, id);
+export const shouldShowPawsomeContributorBadge = (id: string) => isPawsomePluginDev(id) && PawsomeDevsById[id].badge !== false;
+
+export const isAnyPluginDev = (id: string) => Object.hasOwn(VencordDevsById, id) || Object.hasOwn(EquicordDevsById, id) || Object.hasOwn(PawsomeDevsById, id);
 
 export function pluralise(amount: number, singular: string, plural = singular + "s") {
     return amount === 1 ? `${amount} ${singular}` : `${amount} ${plural}`;
