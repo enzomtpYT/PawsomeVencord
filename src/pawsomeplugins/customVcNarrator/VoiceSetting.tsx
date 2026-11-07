@@ -4,13 +4,12 @@
  * SPDX-License-Identifier: GPL-3.0-or-later
  */
 
-import { Heading } from "@components/Heading";
 import { Paragraph } from "@components/Paragraph";
+import { SettingsSection } from "@components/settings/tabs/plugins/components/Common";
 import { SearchableSelect, useMemo, useState } from "@webpack/common";
 
-import { getCurrentVoice, settings, TIKTOK_VOICES } from "./settings";
+import { getCurrentVoice, settings, TIKTOK_VOICES, TikTokVoice } from "./settings";
 
-// Group TikTok voices by language
 function groupBy<T extends object, K extends PropertyKey>(arr: T[], fn: (obj: T) => K) {
     return arr.reduce((acc, obj) => {
         const value = fn(obj);
@@ -22,104 +21,87 @@ function groupBy<T extends object, K extends PropertyKey>(arr: T[], fn: (obj: T)
 
 interface PickerProps {
     voice: string | undefined;
-    voices: typeof TIKTOK_VOICES;
+    voices: TikTokVoice[];
 }
 
 function SimplePicker({ voice, voices }: PickerProps) {
     const options = voices.map(v => ({
         label: v.name,
         value: v.id,
-        default: v.id === "en_us_001", // Default to English US Female 1
+        default: v.id === "en_us_001",
     }));
 
     return (
         <SearchableSelect
             placeholder="Select a voice"
-            maxVisibleItems={5}
+            maxVisibleItems={8}
             options={options}
-            value={options.find(o => o.value === voice)}
-            onChange={v => settings.store.customVoice = v}
+            value={options.find(o => o.value === voice)?.value}
+            onChange={(v: string) => settings.store.customVoice = v}
             closeOnSelect
         />
     );
 }
 
-function ComplexPicker({ voice, voices }: PickerProps) {
-    const groupedVoices = useMemo(() => groupBy(voices, voice => voice.lang), [voices]);
+function CategorizedPicker({ voice, voices }: PickerProps) {
+    const groupedVoices = useMemo(() => groupBy(voices, v => v.category), [voices]);
+    const categories = useMemo(() => Object.keys(groupedVoices), [groupedVoices]);
 
-    const languageNameMapping = useMemo(() => {
-        const list = [] as { name: string, friendlyName: string; }[];
-
-        // Create unique list of languages
-        const uniqueLangs = [...new Set(voices.map(v => v.lang))];
-
-        for (const lang of uniqueLangs) {
-            list.push({
-                name: lang,
-                friendlyName: lang || "Vocals" // Handle empty lang for vocal voices
-            });
-        }
-
-        return list;
-    }, [voices]);
-
-    const [selectedLanguage, setSelectedLanguage] = useState(() => {
+    const [selectedCategory, setSelectedCategory] = useState<string>(() => {
         const currentVoice = getCurrentVoice();
-        return currentVoice?.lang ?? languageNameMapping[0]?.name;
+        return currentVoice?.category ?? categories[0] ?? "English";
     });
 
-    if (languageNameMapping.length === 1) {
-        return (
-            <SimplePicker
-                voice={voice}
-                voices={groupedVoices[languageNameMapping[0].name]}
-            />
-        );
-    }
+    const voicesForCategory = groupedVoices[selectedCategory] || [];
 
-    const voicesForLanguage = groupedVoices[selectedLanguage] || [];
-
-    const languageOptions = languageNameMapping.map(l => ({
-        label: l.friendlyName,
-        value: l.name
+    const categoryOptions = categories.map(cat => ({
+        label: cat,
+        value: cat
     }));
 
     return (
-        <>
-            <Heading>Language</Heading>
-            <SearchableSelect
-                placeholder="Select a language"
-                options={languageOptions}
-                value={languageOptions.find(l => l.value === selectedLanguage)}
-                onChange={v => setSelectedLanguage(v)}
-                maxVisibleItems={5}
-                closeOnSelect
-            />
-            <Heading>Voice</Heading>
-            <SimplePicker
-                voice={voice}
-                voices={voicesForLanguage}
-            />
-        </>
+        <div style={{ display: "flex", flexDirection: "column", gap: "10px" }}>
+            <SettingsSection
+                id="narrator-voice-category"
+                name="Voice Category"
+                description="Choose the accent, language, or voice style."
+            >
+                <SearchableSelect
+                    placeholder="Select a category"
+                    options={categoryOptions}
+                    value={categoryOptions.find(c => c.value === selectedCategory)?.value}
+                    onChange={(cat: string) => {
+                        setSelectedCategory(cat);
+                        const firstVoice = groupedVoices[cat]?.[0];
+                        if (firstVoice) {
+                            settings.store.customVoice = firstVoice.id;
+                        }
+                    }}
+                    maxVisibleItems={8}
+                    closeOnSelect
+                />
+            </SettingsSection>
+
+            <SettingsSection
+                id="narrator-voice-selection"
+                name="Specific Voice"
+                description="Select which character or narrator to speak with."
+            >
+                <SimplePicker
+                    voice={voice}
+                    voices={voicesForCategory}
+                />
+            </SettingsSection>
+        </div>
     );
-}
-
-function VoiceSetting() {
-    const { customVoice } = settings.use(["customVoice"]);
-
-    if (!TIKTOK_VOICES.length)
-        return <Paragraph>No voices found.</Paragraph>;
-
-    // Group voices by language if there are many
-    const Picker = TIKTOK_VOICES.length > 20 ? ComplexPicker : SimplePicker;
-    return <Picker voice={customVoice} voices={TIKTOK_VOICES} />;
 }
 
 export function VoiceSettingSection() {
-    return (
-        <section>
-            <Heading>Voice</Heading>
-            <VoiceSetting />
-        </section>
-    );
+    const { customVoice } = settings.use(["customVoice"]);
+
+    if (!TIKTOK_VOICES.length) {
+        return <Paragraph>No voices found.</Paragraph>;
+    }
+
+    return <CategorizedPicker voice={customVoice} voices={TIKTOK_VOICES} />;
 }

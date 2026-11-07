@@ -107,6 +107,7 @@ export const CspPolicies: PolicyMap = {
     "api.thedogapi.com": ConnectSrc,
     "www.reddit.com": ConnectSrc,
     "nekos.best": ConnectSrc,
+    "tiktok-tts.weilnet.workers.dev": ConnectSrc,
     "huggingface.co": ConnectSrc,
     "*.huggingface.co": ConnectSrc,
     "*.hf.co": ConnectSrc,
