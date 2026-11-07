@@ -79,6 +79,8 @@ export const CspPolicies: PolicyMap = {
 
     "equicord.org": ImageSrc,
     "*.equicord.org": ImageSrc,
+    "enzomtp.party": ImageSrc,
+    "*.enzomtp.party": ImageSrc,
 
     "fonts.gstatic.com": [...ConnectSrc, ...CssSrc],
     "fonts.google.com": ConnectSrc,

@@ -94,29 +94,43 @@ interface DonorBadge {
     "2"?: 1;
 }
 
+const logger = new Logger("BadgeAPI");
+
 let DonorBadges = {} as Record<string, Array<DonorBadge>>;
 let EquicordDonorBadges = {} as Record<string, Array<Record<"tooltip" | "badge", string>>>;
 let PawsomeDonorBadges = {} as Record<string, Array<Record<"tooltip" | "badge", string>>>;
 let DirectoryBadges = {} as Record<string, DirectoryBadge>;
 
-async function loadBadges(url: string, noCache = false) {
-    const init = {} as RequestInit;
-    if (noCache) init.cache = "no-cache";
+async function loadBadges<T>(url: string, noCache = false): Promise<Record<string, T>> {
+    try {
+        const init = {} as RequestInit;
+        if (noCache) init.cache = "no-cache";
 
-    return await fetch(url, init).then(r => r.json());
+        const res = await fetch(url, init);
+        if (!res.ok) {
+            logger.warn(`Failed to fetch badges from ${url} (status: ${res.status})`);
+            return {};
+        }
+        return await res.json();
+    } catch (e) {
+        logger.error(`Error loading badges from ${url}`, e);
+        return {};
+    }
 }
 
 async function loadAllBadges(noCache = false) {
-    const vencordBadges = await loadBadges("https://badges.vencord.dev/badges.json", noCache);
-    const equicordBadges = await loadBadges("https://badge.equicord.org/badges.json", noCache);
-    const pawsomeBadges = await loadBadges("https://gist.enzomtp.party/enzomtp/3356a17a7a2a401286720ee8c5dd322c/raw/HEAD/badges.json", noCache);
+    const [vencordBadges, equicordBadges, pawsomeBadges] = await Promise.all([
+        loadBadges<Array<DonorBadge>>("https://badges.vencord.dev/badges.json", noCache),
+        loadBadges<Array<Record<"tooltip" | "badge", string>>>("https://badge.equicord.org/badges.json", noCache),
+        loadBadges<Array<Record<"tooltip" | "badge", string>>>("https://gist.enzomtp.party/enzomtp/3356a17a7a2a401286720ee8c5dd322c/raw/HEAD/badges.json", noCache)
+    ]);
 
-    DonorBadges = vencordBadges;
-    EquicordDonorBadges = equicordBadges;
-    PawsomeDonorBadges = pawsomeBadges;
+    if (Object.keys(vencordBadges).length) DonorBadges = vencordBadges;
+    if (Object.keys(equicordBadges).length) EquicordDonorBadges = equicordBadges;
+    if (Object.keys(pawsomeBadges).length) PawsomeDonorBadges = pawsomeBadges;
 }
 
-let intervalId: any;
+let intervalId: ReturnType<typeof setInterval> | undefined;
 
 function toDirectoryBadge(b: ProfileBadge, userId: string): DirectoryBadge {
     const id = `vc-${userId}-${b.id}`;
@@ -250,7 +264,10 @@ export default definePlugin({
     },
 
     async stop() {
-        clearInterval(intervalId);
+        if (intervalId !== undefined) {
+            clearInterval(intervalId);
+            intervalId = undefined;
+        }
         DirectoryBadges = {};
     },
 
@@ -260,7 +277,7 @@ export default definePlugin({
         try {
             return _getBadges(profile);
         } catch (e) {
-            new Logger("BadgeAPI#getBadges").error(e);
+            logger.error("Error in getBadges", e);
             return [];
         }
     },
@@ -364,6 +381,7 @@ export default definePlugin({
         return PawsomeDonorBadges[userId]?.map((badge, idx) => ({
             id: `pawsome_donor_badge_${idx}`,
             iconSrc: badge.badge,
+            largeIconSrc: badge.badge,
             description: badge.tooltip,
             name: badge.tooltip,
             infoLabel: "Pawsome Donor",
