@@ -1,21 +1,26 @@
 /*
  * Vencord, a Discord client mod
- * Copyright (c) 2024 Vendicated and contributors
+ * Copyright (c) 2026 Vendicated and contributors
  * SPDX-License-Identifier: GPL-3.0-or-later
  */
 
 import { definePluginSettings } from "@api/Settings";
-import { Devs } from "@utils/constants";
+import { Devs, EquicordDevs } from "@utils/constants";
 import definePlugin, { OptionType } from "@utils/types";
-import { ChannelStore, SelectedChannelStore } from "@webpack/common";
+import { ChannelStore, SelectedChannelStore, UserStore } from "@webpack/common";
 
-const startSound = "https://raw.githubusercontent.com/redbaron2k7/videoStartNotifier/117738bff76699a89531a067e321b6406bffbc88/start.mp3";
-const stopSound = "https://raw.githubusercontent.com/redbaron2k7/videoStartNotifier/117738bff76699a89531a067e321b6406bffbc88/stop.mp3";
+import { START_SOUND, STOP_SOUND } from "./sounds";
 
 const videoStates = new Map<string, boolean>();
 
 function playNotification(isVideoOn: boolean) {
-    new Audio(isVideoOn ? startSound : stopSound).play();
+    try {
+        const audio = new Audio(isVideoOn ? START_SOUND : STOP_SOUND);
+        audio.volume = Math.max(0, Math.min(100, settings.store.volume ?? 100)) / 100;
+        audio.play().catch(() => {});
+    } catch {
+        // Audio playback error handling
+    }
 }
 
 const settings = definePluginSettings({
@@ -28,41 +33,55 @@ const settings = definePluginSettings({
         type: OptionType.BOOLEAN,
         description: "Play notification sound in server voice channels",
         default: true
+    },
+    volume: {
+        type: OptionType.SLIDER,
+        description: "Notification sound volume",
+        markers: [10, 25, 50, 75, 100],
+        default: 100,
+        stickToMarkers: false
     }
 });
 
 export default definePlugin({
     name: "WebcamStartNotifier",
     description: "Plays a sound when someone starts/stops their webcam in a voice channel",
-    authors: [Devs.redbaron2k7],
+    authors: [Devs.redbaron2k7, EquicordDevs.enzomtp],
     settings,
 
-    flux: (() => {
-        return {
-            VOICE_STATE_UPDATES: ({ voiceStates }: { voiceStates: Array<{ userId: string, channelId: string, selfVideo?: boolean; }>; }) => {
-                const currentChannelId = SelectedChannelStore.getVoiceChannelId();
-                if (!currentChannelId) return;
+    stop() {
+        videoStates.clear();
+    },
 
-                const currentChannel = ChannelStore.getChannel(currentChannelId);
-                if (!currentChannel) return;
+    flux: {
+        VOICE_STATE_UPDATES({ voiceStates }: { voiceStates: Array<{ userId: string; channelId: string; selfVideo?: boolean; }>; }) {
+            const currentChannelId = SelectedChannelStore.getVoiceChannelId();
+            if (!currentChannelId) return;
 
-                const isPrivateChannel = currentChannel.type === 1 || currentChannel.type === 3;
+            const currentChannel = ChannelStore.getChannel(currentChannelId);
+            if (!currentChannel) return;
 
-                if ((isPrivateChannel && !settings.store.playInPrivate) ||
-                    (!isPrivateChannel && !settings.store.playInServer)) {
-                    return;
-                }
+            const isPrivateChannel = currentChannel.type === 1 || currentChannel.type === 3;
 
-                voiceStates.forEach(state => {
-                    if (state.channelId !== currentChannelId) return;
-
-                    const prevVideoState = videoStates.get(state.userId);
-                    if (state.selfVideo !== undefined && prevVideoState !== undefined && prevVideoState !== state.selfVideo) {
-                        playNotification(state.selfVideo);
-                    }
-                    videoStates.set(state.userId, state.selfVideo ?? false);
-                });
+            if ((isPrivateChannel && !settings.store.playInPrivate) ||
+                (!isPrivateChannel && !settings.store.playInServer)) {
+                return;
             }
-        };
-    })(),
+
+            const currentUserId = UserStore.getCurrentUser()?.id;
+
+            voiceStates.forEach(state => {
+                if (state.channelId !== currentChannelId || state.userId === currentUserId) return;
+
+                const prevVideoState = videoStates.get(state.userId);
+                if (state.selfVideo !== undefined && prevVideoState !== undefined && prevVideoState !== state.selfVideo) {
+                    playNotification(state.selfVideo);
+                }
+                videoStates.set(state.userId, state.selfVideo ?? false);
+            });
+        },
+        VOICE_CHANNEL_SELECT() {
+            videoStates.clear();
+        }
+    }
 });
