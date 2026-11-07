@@ -1,178 +1,113 @@
 /*
  * Vencord, a Discord client mod
- * Copyright (c) 2024 Vendicated and contributors
+ * Copyright (c) 2026 Vendicated and contributors
  * SPDX-License-Identifier: GPL-3.0-or-later
  */
 
+import { findGroupChildrenByChildId } from "@api/ContextMenu";
 import { Button } from "@components/Button";
-import { Text } from "@components/Text";
-import { copyToClipboard } from "@utils/clipboard";
-import { Devs } from "@utils/constants";
+import { Card } from "@components/Card";
+import ErrorBoundary from "@components/ErrorBoundary";
+import { Heading } from "@components/Heading";
+import { Paragraph } from "@components/Paragraph";
+import { Devs, EquicordDevs } from "@utils/constants";
 import definePlugin from "@utils/types";
-import { GuildMember } from "@vencord/discord-types";
-import { findByPropsLazy, findComponentByCodeLazy } from "@webpack";
-import {
-    GuildMemberStore,
-    showToast,
-    UserProfileStore,
-    UserStore
-} from "@webpack/common";
+import type { Guild, User } from "@vencord/discord-types";
+import { Menu, NewCustomizationSection, UserStore } from "@webpack/common";
 
-const SummaryItem = findComponentByCodeLazy("borderType", "showBorder", "hideDivider");
-
-interface SavedProfile {
-    nick: string | null;
-    pronouns: string | null;
-    bio: string | null;
-    themeColors: number[] | undefined;
-    banner: string | undefined;
-    avatar: string | undefined;
-    profileEffectId: string | undefined;
-    avatarDecoration: string | undefined;
-}
-
-const savedProfile: SavedProfile = {
-    nick: null,
-    pronouns: null,
-    bio: null,
-    themeColors: undefined,
-    banner: undefined,
-    avatar: undefined,
-    profileEffectId: undefined,
-    avatarDecoration: undefined,
-};
-
-const {
-    setPendingAvatar,
-    setPendingBanner,
-    setPendingBio,
-    setPendingNickname,
-    setPendingPronouns,
-    setPendingThemeColors,
-    setPendingProfileEffectId,
-    setPendingAvatarDecoration,
-}: {
-    setPendingAvatar: (a: string | undefined) => void;
-    setPendingBanner: (a: string | undefined) => void;
-    setPendingBio: (a: string | null) => void;
-    setPendingNickname: (a: string | null) => void;
-    setPendingPronouns: (a: string | null) => void;
-    setPendingThemeColors: (a: number[] | undefined) => void;
-    setPendingProfileEffectId: (a: string | undefined) => void;
-    setPendingAvatarDecoration: (a: string | undefined) => void;
-} = findByPropsLazy("setPendingNickname", "setPendingPronouns");
+import { openServerProfilesModal } from "./components/ServerProfilesModal";
 
 export default definePlugin({
     name: "ServerProfilesToolbox",
-    authors: [Devs.D3SOX],
-    description: "Adds a copy/paste/reset button to the server profiles editor",
+    authors: [Devs.D3SOX, EquicordDevs.enzomtp],
+    description: "Manage, copy, paste, and switch server profile presets (nicknames, pronouns, bios, banners, avatars) with presets and JSON import/export.",
 
-    patchServerProfiles({ guildId }: { guildId: string; }) {
-        const currentUser = UserStore.getCurrentUser();
-        const premiumType = currentUser.premiumType ?? 0;
+    toolboxActions: {
+        "Server Profiles Toolbox": () => openServerProfilesModal()
+    },
 
-        const copy = () => {
-            const profile = UserProfileStore.getGuildMemberProfile(currentUser.id, guildId);
-            const nick = GuildMemberStore.getNick(guildId, currentUser.id);
-            const selfMember = GuildMemberStore.getMember(guildId, currentUser.id) as GuildMember & { avatarDecoration: string | undefined; };
-            savedProfile.nick = nick ?? "";
-            savedProfile.pronouns = profile?.pronouns ?? null;
-            savedProfile.bio = profile?.bio ?? null;
-            savedProfile.themeColors = profile?.themeColors;
-            savedProfile.banner = profile?.banner ?? undefined;
-            savedProfile.avatar = selfMember.avatar ?? undefined;
-            savedProfile.profileEffectId = profile?.profileEffectId;
-            savedProfile.avatarDecoration = selfMember.avatarDecoration;
-        };
-
-        const paste = () => {
-            setPendingNickname(savedProfile.nick);
-            setPendingPronouns(savedProfile.pronouns);
-            if (premiumType === 2) {
-                setPendingBio(savedProfile.bio);
-                setPendingThemeColors(savedProfile.themeColors);
-                setPendingBanner(savedProfile.banner);
-                setPendingAvatar(savedProfile.avatar);
-                setPendingProfileEffectId(savedProfile.profileEffectId);
-                setPendingAvatarDecoration(savedProfile.avatarDecoration);
-            }
-        };
-
-        const reset = () => {
-            setPendingNickname(null);
-            setPendingPronouns("");
-            if (premiumType === 2) {
-                setPendingBio(null);
-                setPendingThemeColors([]);
-                setPendingBanner(undefined);
-                setPendingAvatar(undefined);
-                setPendingProfileEffectId(undefined);
-                setPendingAvatarDecoration(undefined);
-            }
-        };
-
-        const copyToClipboardB = () => {
-            copy();
-            copyToClipboard(JSON.stringify(savedProfile));
-        };
-
-        const pasteFromClipboard = async () => {
-            try {
-                const clip = await navigator.clipboard.readText();
-                if (!clip) {
-                    showToast({ text: "Clipboard is empty", variant: "critical" });
-                    return;
-                }
-                const clipboardProfile: SavedProfile = JSON.parse(clip);
-
-                if (!("nick" in clipboardProfile)) {
-                    showToast({ text: "Data is not in correct format", variant: "critical" });
-                    return;
-                }
-
-                Object.assign(savedProfile, JSON.parse(clip));
-                paste();
-            } catch (e) {
-                showToast({ text: `Failed to read clipboard data: ${e}`, variant: "critical" });
-            }
-        };
-
-        return <SummaryItem title="Server Profiles Toolbox" hideDivider={false} forcedDivider>
-            <div style={{ display: "flex", alignItems: "center", flexDirection: "column", gap: "5px" }}>
-                <Text size="md" weight="normal">
-                    Use the following buttons to mange the currently selected server
-                </Text>
-                <div style={{ display: "flex", gap: "5px" }}>
-                    <Button onClick={copy}>
-                        Copy profile
-                    </Button>
-                    <Button onClick={paste}>
-                        Paste profile
-                    </Button>
-                    <Button onClick={reset}>
-                        Reset profile
-                    </Button>
-                </div>
-                <div style={{ display: "flex", gap: "5px" }}>
-                    <Button onClick={copyToClipboardB}>
-                        Copy to clipboard
-                    </Button>
-                    <Button onClick={pasteFromClipboard}>
-                        Paste from clipboard
-                    </Button>
-                </div>
+    settingsAboutComponent: () => (
+        <Card style={{ padding: "16px", display: "flex", flexDirection: "column", gap: "10px", marginBottom: "16px" }}>
+            <Heading tag="h3">Server Profiles Toolbox</Heading>
+            <Paragraph>
+                Easily manage, copy, paste, and switch server profile presets (nicknames, pronouns, bios, banners, avatars, and profile effects) across any server.
+            </Paragraph>
+            <div style={{ display: "flex", gap: "8px" }}>
+                <Button
+                    variant="primary"
+                    size="small"
+                    onClick={() => openServerProfilesModal()}
+                >
+                    Open Server Profiles Toolbox
+                </Button>
             </div>
-        </SummaryItem>;
+        </Card>
+    ),
+
+    contextMenus: {
+        "guild-context"(children, { guild }: { guild: Guild; }) {
+            if (!guild?.id) return;
+            const group = findGroupChildrenByChildId("privacy", children) ?? children;
+            group.push(
+                <Menu.MenuItem
+                    id="vc-server-profiles-toolbox"
+                    label="Server Profiles Toolbox"
+                    action={() => openServerProfilesModal(guild.id)}
+                />
+            );
+        },
+        "guild-header-popout"(children, { guild }: { guild: Guild; }) {
+            if (!guild?.id) return;
+            const group = findGroupChildrenByChildId("privacy", children) ?? children;
+            group.push(
+                <Menu.MenuItem
+                    id="vc-server-profiles-toolbox"
+                    label="Server Profiles Toolbox"
+                    action={() => openServerProfilesModal(guild.id)}
+                />
+            );
+        },
+        "user-context"(children, { user, guildId }: { user: User; guildId?: string; }) {
+            if (user?.id === UserStore.getCurrentUser().id && guildId) {
+                const group = findGroupChildrenByChildId("user-profile", children) ?? children;
+                group.push(
+                    <Menu.MenuItem
+                        id="vc-server-profiles-toolbox"
+                        label="Server Profiles Toolbox"
+                        action={() => openServerProfilesModal(guildId)}
+                    />
+                );
+            }
+        }
     },
 
     patches: [
         {
-            find: "#{intl::GUILD_TITLE}",
-            replacement: {
-                match: /return\(0(.{10,350})\}\)\}\)\}/,
-                replace: "return [(0$1})}),$self.patchServerProfiles(e)]}"
-            }
+            find: "UserProfileModalV2EditingPanel",
+            replacement: [
+                {
+                    match: /disabled:(\i\|\|\i),avatarErrorMessage:\i,avatarDecorationErrorMessage:\i\}\),/,
+                    replace: "$&$self.renderSidebarSection({disabled:$1}),"
+                }
+            ]
         }
     ],
 
+    renderSidebarSection: ErrorBoundary.wrap(({ disabled }: { disabled?: boolean; }) => {
+        if (!NewCustomizationSection) return null;
+
+        return (
+            <NewCustomizationSection heading="Server Profiles Toolbox" disabled={disabled}>
+                <div style={{ display: "flex", gap: "8px", padding: "4px 0" }}>
+                    <Button
+                        size="small"
+                        variant="primary"
+                        onClick={() => openServerProfilesModal()}
+                    >
+                        Open Toolbox
+                    </Button>
+                </div>
+            </NewCustomizationSection>
+        );
+    }, { noop: true })
 });
