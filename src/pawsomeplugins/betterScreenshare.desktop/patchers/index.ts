@@ -18,3 +18,4 @@
 
 export * from "./screenshare";
 export * from "./screenshareAudio";
+export * from "./videoTransport";

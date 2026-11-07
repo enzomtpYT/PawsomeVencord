@@ -45,7 +45,6 @@ export * from "./discordModules";
 export * from "./emitter";
 export * from "./icons";
 export * from "./patchers";
-export * from "./patches";
 export * from "./store";
 export * as types from "./types";
 export * from "./utils";

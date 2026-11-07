@@ -18,7 +18,8 @@
 
 import { UserStore } from "@webpack/common";
 
-import { Emitter, MediaEngineStore, patchConnectionAudioTransportOptions, Patcher, types } from "../../philsPluginLibrary";
+import { patchConnectionAudioTransportOptions } from "../../betterMicrophone.desktop/patchers/audioTransport";
+import { Emitter, MediaEngineStore, Patcher, types } from "../../philsPluginLibrary";
 import { PluginInfo } from "../constants";
 import { logger } from "../logger";
 import { screenshareAudioStore } from "../stores/screenshareAudioStore";

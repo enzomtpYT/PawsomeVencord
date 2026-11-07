@@ -17,10 +17,10 @@
 */
 
 import { Emitter, MediaEngineStore, Patcher, types } from "../../philsPluginLibrary";
-import { patchConnectionAudioTransportOptions } from "../../philsPluginLibrary/patches/audio";
 import { PluginInfo } from "../constants";
 import { logger } from "../logger";
 import { microphoneStore } from "../stores";
+import { patchConnectionAudioTransportOptions } from "./audioTransport";
 
 export class MicrophonePatcher extends Patcher {
     private mediaEngineStore: types.MediaEngineStore;

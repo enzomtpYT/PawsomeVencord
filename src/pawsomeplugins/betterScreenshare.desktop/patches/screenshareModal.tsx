@@ -1,20 +1,8 @@
 /*
- * Vencord, a modification for Discord's desktop app
- * Copyright (c) 2023 Vendicated and contributors
- *
- * This program is free software: you can redistribute it and/or modify
- * it under the terms of the GNU General Public License as published by
- * the Free Software Foundation, either version 3 of the License, or
- * (at your option) any later version.
- *
- * This program is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU General Public License for more details.
- *
- * You should have received a copy of the GNU General Public License
- * along with this program.  If not, see <https://www.gnu.org/licenses/>.
-*/
+ * Vencord, a Discord client mod
+ * Copyright (c) 2026 Vendicated and contributors
+ * SPDX-License-Identifier: GPL-3.0-or-later
+ */
 
 import { Settings } from "@api/Settings";
 import { Flex } from "@components/Flex";
@@ -31,7 +19,7 @@ const ReplacedStreamSettings = () => {
 
     const { audioSourceEnabled, setAudioSourceEnabled } = use();
 
-    const cardProps = { style: { border: "1px solid var(--primary-800)" } };
+    const cardProps = { style: { border: "1px solid var(--border-subtle, var(--background-secondary))" } };
 
     return (
         <div style={{ margin: "1em", display: "flex", flexDirection: "column", gap: "1em" }}>
@@ -47,9 +35,10 @@ const ReplacedStreamSettings = () => {
                 switchEnabled
                 switchProps={{
                     checked: audioSourceEnabled ?? false,
-                    onChange: status => setAudioSourceEnabled(status)
+                    onChange: (status: boolean) => setAudioSourceEnabled(status)
                 }}
-                title="Audio Source">
+                title="Audio Source"
+            >
                 <SettingsModalCardItem>
                     <AudioSourceSelect isDisabled={!audioSourceEnabled} />
                 </SettingsModalCardItem>
@@ -58,32 +47,43 @@ const ReplacedStreamSettings = () => {
     );
 };
 
-export function replacedSubmitFunction(fn) { // This is used to hook over the new OnSubmit function instead of implementing an OnClick function
-    return (...args) => {
-        const { screensharePatcher, screenshareAudioPatcher } = Plugin;
+export function replacedSubmitFunction(fn: (...args: any[]) => any) {
+    return (...args: any[]) => {
+        const { screensharePatcher, screenshareAudioPatcher } = Plugin as any;
 
         if (screensharePatcher) {
             screensharePatcher.forceUpdateTransportationOptions();
-            if (screensharePatcher.connection?.connectionState === "CONNECTED")
+            if (screensharePatcher.connection?.connectionState === "CONNECTED") {
                 screensharePatcher.forceUpdateDesktopSourceOptions();
+            }
         }
 
-        if (screenshareAudioPatcher)
+        if (screenshareAudioPatcher) {
             screenshareAudioPatcher.forceUpdateTransportationOptions();
+        }
         return fn(...args);
     };
 }
 
-export function GoLivePanelWrapper({ children }: { children: React.JSX.Element; }) {
-    if (!children)
-        return;
-
-    const { hideDefaultSettings } = Settings.plugins[PluginInfo.PLUGIN_NAME];
-    if (hideDefaultSettings)
+export function GoLivePanelWrapper({ children }: { children?: React.ReactNode; [key: string]: any; }) {
+    const { hideDefaultSettings } = (Settings.plugins as any)[PluginInfo.PLUGIN_NAME] ?? {};
+    if (hideDefaultSettings) {
         return <ReplacedStreamSettings />;
+    }
 
-    children.props.children.push(<ReplacedStreamSettings />);
+    if (React.isValidElement(children) && Array.isArray((children.props as any)?.children)) {
+        try {
+            (children.props as any).children.push(<ReplacedStreamSettings key="vc-bs-stream-settings" />);
+            return children;
+        } catch {
+            // If immutable/frozen, fallback to JSX fragment
+        }
+    }
 
-    return children;
-
+    return (
+        <>
+            {children}
+            <ReplacedStreamSettings key="vc-bs-stream-settings" />
+        </>
+    );
 }

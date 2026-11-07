@@ -19,10 +19,10 @@
 import { UserStore } from "@webpack/common";
 
 import { Emitter, MediaEngineStore, Patcher, types } from "../../philsPluginLibrary";
-import { patchConnectionVideoSetDesktopSourceWithOptions, patchConnectionVideoTransportOptions } from "../../philsPluginLibrary/patches/video";
 import { PluginInfo } from "../constants";
 import { logger } from "../logger";
 import { screenshareStore } from "../stores";
+import { patchConnectionVideoSetDesktopSourceWithOptions, patchConnectionVideoTransportOptions } from "./videoTransport";
 
 export class ScreensharePatcher extends Patcher {
     private mediaEngineStore: types.MediaEngineStore;

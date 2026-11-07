@@ -59,7 +59,7 @@ export default definePlugin({
         {
             find: "GoLiveModal: user cannot be undefined", // Module: 60594; canaryRelease: 364525; L431
             replacement: {
-                match: /onSubmit:(\w+)/,
+                match: /onSubmit:(\i)/,
                 replace: "onSubmit:$self.replacedSubmitFunction($1)"
             }
         },
