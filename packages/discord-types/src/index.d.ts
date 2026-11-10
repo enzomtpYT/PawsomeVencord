@@ -7,7 +7,7 @@ export * from "./flux";
 export * from "./fluxEvents";
 export * from "./menu";
 export * from "./modules";
+export * from "./presenceupdate";
 export * from "./stores";
 export * from "./toasts";
 export * from "./utils";
-export * from "./presenceupdate";

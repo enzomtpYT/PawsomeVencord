@@ -1,0 +1,94 @@
+/*
+ * Vencord, a Discord client mod
+ * Copyright (c) 2026 Vendicated and contributors
+ * SPDX-License-Identifier: GPL-3.0-or-later
+ */
+
+.vc-tf-button {
+    position: absolute;
+    top: 12px;
+    right: 12px;
+    width: 32px;
+    height: 32px;
+    border-radius: 4px;
+    background: rgba(0, 0, 0, 0.65);
+    color: #fff;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    z-index: 1000;
+    opacity: 0;
+    transition:
+        opacity 0.2s ease,
+        background-color 0.15s ease,
+        transform 0.15s ease;
+    border: none;
+    outline: none;
+    padding: 0;
+}
+
+div[data-selenium-video-tile]:hover .vc-tf-button,
+.vc-tf-active:hover .vc-tf-button {
+    opacity: 1;
+}
+
+.vc-tf-button:hover {
+    background: rgba(0, 0, 0, 0.9);
+    transform: scale(1.08);
+}
+
+.vc-tf-active {
+    position: fixed !important;
+    inset: 0 !important;
+    width: 100vw !important;
+    height: 100vh !important;
+    max-width: 100vw !important;
+    max-height: 100vh !important;
+    margin: 0 !important;
+    padding: 0 !important;
+    border-radius: 0 !important;
+    background: #000 !important;
+    z-index: 99999 !important;
+}
+
+.vc-tf-active *,
+:fullscreen * {
+    border-radius: 0 !important;
+}
+
+.vc-tf-active video,
+:fullscreen video {
+    width: 100% !important;
+    height: 100% !important;
+    max-width: none !important;
+    max-height: none !important;
+}
+
+.vc-tf-zoom-cover video {
+    object-fit: cover !important;
+}
+
+.vc-tf-zoom-contain video {
+    object-fit: contain !important;
+}
+
+.vc-tf-hide-live [class*="liveIndicator"],
+.vc-tf-hide-live [class*="liveShape"],
+.vc-tf-hide-live [class*="liveBadge"],
+.vc-tf-hide-live [class*="live_"] {
+    display: none !important;
+}
+
+.vc-tf-idle {
+    cursor: none !important;
+}
+
+.vc-tf-idle .vc-tf-button,
+.vc-tf-idle [class*="controls"],
+.vc-tf-idle [class*="overlay_"],
+.vc-tf-idle [class*="header"] {
+    opacity: 0 !important;
+    pointer-events: none !important;
+    transition: opacity 0.25s ease-in-out !important;
+}
