@@ -7,7 +7,14 @@
 import { definePluginSettings } from "@api/Settings";
 import { PawsomeDevs } from "@utils/constants";
 import definePlugin, { OptionType } from "@utils/types";
-import { PopoutWindowStore } from "@webpack/common";
+import {
+    ApplicationStreamingStore,
+    ChannelRTCStore,
+    PopoutWindowStore,
+    RTCConnectionStore,
+    SelectedChannelStore,
+    UserStore
+} from "@webpack/common";
 
 import style from "./style.css?managed";
 
@@ -22,25 +29,32 @@ const settings = definePluginSettings({
         type: OptionType.STRING,
         default: "KeyF",
     },
-    hideLiveBadge: {
-        description: "Hide the LIVE badge overlay",
-        type: OptionType.BOOLEAN,
-        default: true,
-    },
     zoomToFill: {
-        description: "Zoom to fill screen (Cover) instead of containing",
+        description: "Default to Zoom to Fill screen (Cover) instead of Fit (Contain)",
         type: OptionType.BOOLEAN,
         default: false,
     },
     autoHideControls: {
-        description: "Auto-hide controls and cursor after inactivity",
+        description: "Auto-hide controls and cursor after 2 seconds of inactivity",
         type: OptionType.BOOLEAN,
         default: true,
     },
 });
 
-let activeTile: HTMLElement | null = null;
-let idleTimeout: ReturnType<typeof setTimeout> | undefined;
+interface ActivePlayerSession {
+    portal: HTMLElement;
+    targetDoc: Document;
+    sourceVideo: HTMLVideoElement;
+    clonedVideo?: HTMLVideoElement;
+    reparentedPlaceholder?: Comment;
+    idleTimeout?: ReturnType<typeof setTimeout>;
+    isCover: boolean;
+}
+
+let currentSession: ActivePlayerSession | null = null;
+let lastHoveredTarget: HTMLElement | null = null;
+let lastClickTime = 0;
+let lastClickTile: HTMLElement | null = null;
 const attachedWindows = new Set<Window>();
 
 const FULLSCREEN_SVG = `
@@ -49,150 +63,313 @@ const FULLSCREEN_SVG = `
 </svg>
 `;
 
-const EXIT_FULLSCREEN_SVG = `
+const EXIT_SVG = `
 <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
     <path d="M8 3v3a2 2 0 0 1-2 2H3m18 0h-3a2 2 0 0 1-2-2V3m0 18v-3a2 2 0 0 1 2-2h3M3 16h3a2 2 0 0 1 2 2v3"/>
 </svg>
 `;
 
-function resetIdleTimer() {
-    if (idleTimeout) {
-        clearTimeout(idleTimeout);
-        idleTimeout = undefined;
+const FIT_SVG = `
+<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+    <rect x="2" y="5" width="20" height="14" rx="2"/>
+    <line x1="2" y1="10" x2="22" y2="10"/>
+</svg>
+`;
+
+const CROP_SVG = `
+<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+    <path d="M6 2v14a2 2 0 0 0 2 2h14"/>
+    <path d="M18 22V8a2 2 0 0 0-2-2H2"/>
+</svg>
+`;
+
+function resetPlayerIdleTimer() {
+    if (!currentSession) return;
+
+    if (currentSession.idleTimeout) {
+        clearTimeout(currentSession.idleTimeout);
+        currentSession.idleTimeout = undefined;
     }
-    if (activeTile) {
-        activeTile.classList.remove("vc-tf-idle");
-        if (settings.store.autoHideControls) {
-            idleTimeout = setTimeout(() => {
-                if (activeTile) {
-                    activeTile.classList.add("vc-tf-idle");
-                }
-            }, 2000);
-        }
+
+    currentSession.portal.classList.remove("vc-tf-idle");
+
+    if (settings.store.autoHideControls) {
+        currentSession.idleTimeout = setTimeout(() => {
+            if (currentSession) {
+                currentSession.portal.classList.add("vc-tf-idle");
+            }
+        }, 2000);
     }
 }
 
-function onMouseMove() {
-    resetIdleTimer();
+function onPlayerMouseMove() {
+    resetPlayerIdleTimer();
 }
 
-function updateButtonIcon(btn: HTMLElement, isFullscreen: boolean) {
-    btn.innerHTML = isFullscreen ? EXIT_FULLSCREEN_SVG : FULLSCREEN_SVG;
-    btn.title = isFullscreen ? "Exit True Fullscreen (Esc / F)" : "Enter True Fullscreen (F)";
-}
+function updateAspectRatio(btn: HTMLButtonElement, isCover: boolean) {
+    if (!currentSession) return;
+    currentSession.isCover = isCover;
 
-function applyTileClasses(tile: HTMLElement) {
-    tile.classList.add("vc-tf-active");
-    if (settings.store.hideLiveBadge) {
-        tile.classList.add("vc-tf-hide-live");
+    if (isCover) {
+        currentSession.portal.classList.add("vc-tf-fit-cover");
+        currentSession.portal.classList.remove("vc-tf-fit-contain");
+        btn.innerHTML = `${FIT_SVG} Fit to Screen`;
+        btn.title = "Switch to Letterboxed (Fit)";
     } else {
-        tile.classList.remove("vc-tf-hide-live");
+        currentSession.portal.classList.add("vc-tf-fit-contain");
+        currentSession.portal.classList.remove("vc-tf-fit-cover");
+        btn.innerHTML = `${CROP_SVG} Fill Screen`;
+        btn.title = "Switch to Zoom to Fill (Cover)";
     }
-
-    if (settings.store.zoomToFill) {
-        tile.classList.add("vc-tf-zoom-cover");
-        tile.classList.remove("vc-tf-zoom-contain");
-    } else {
-        tile.classList.add("vc-tf-zoom-contain");
-        tile.classList.remove("vc-tf-zoom-cover");
-    }
-
-    const btn = tile.querySelector<HTMLElement>(".vc-tf-button");
-    if (btn) updateButtonIcon(btn, true);
 }
 
-function removeTileClasses(tile: HTMLElement) {
-    tile.classList.remove(
-        "vc-tf-active",
-        "vc-tf-hide-live",
-        "vc-tf-zoom-cover",
-        "vc-tf-zoom-contain",
-        "vc-tf-idle"
+function getStreamerTitle(tile: HTMLElement, doc: Document): string {
+    const textNode = tile.querySelector<HTMLElement>(
+        "[class*='overlayTitle_'], [class*='userName_'], [class*='overlay_'] [class*='text_'], [class*='headerText_']"
     );
-    const btn = tile.querySelector<HTMLElement>(".vc-tf-button");
-    if (btn) updateButtonIcon(btn, false);
-}
-
-async function enterTrueFullscreen(tile: HTMLElement) {
-    if (activeTile && activeTile !== tile) {
-        await exitTrueFullscreen();
+    if (textNode?.textContent?.trim()) {
+        return textNode.textContent.trim();
     }
 
-    activeTile = tile;
-    applyTileClasses(tile);
-    tile.addEventListener("mousemove", onMouseMove);
-    resetIdleTimer();
-
-    const doc = tile.ownerDocument;
-    try {
-        if (tile.requestFullscreen && !doc.fullscreenElement) {
-            await tile.requestFullscreen();
+    const channelId = SelectedChannelStore?.getVoiceChannelId?.();
+    if (channelId && ApplicationStreamingStore && UserStore) {
+        const streams = ApplicationStreamingStore.getAllActiveStreamsForChannel?.(channelId) || [];
+        if (streams.length > 0 && streams[0]?.ownerId) {
+            const user = UserStore.getUser?.(streams[0].ownerId);
+            if (user?.globalName || user?.username) {
+                const name = user.globalName || user.username;
+                return `${name}'s Stream`;
+            }
         }
-    } catch {
-        // Fallback to CSS fullscreen (.vc-tf-active)
     }
+
+    const titleEl = doc.querySelector<HTMLElement>("[class*='title_'] [class*='text_']");
+    if (titleEl?.textContent?.trim()) {
+        return titleEl.textContent.trim();
+    }
+
+    return "Screenshare";
 }
 
-async function exitTrueFullscreen() {
-    if (!activeTile) return;
+function exitTrueFullscreen() {
+    if (!currentSession) return;
 
-    const tile = activeTile;
-    const doc = tile.ownerDocument;
-    removeTileClasses(tile);
-    tile.removeEventListener("mousemove", onMouseMove);
-    activeTile = null;
+    const session = currentSession;
+    currentSession = null;
 
-    if (idleTimeout) {
-        clearTimeout(idleTimeout);
-        idleTimeout = undefined;
+    if (session.idleTimeout) {
+        clearTimeout(session.idleTimeout);
+        session.idleTimeout = undefined;
     }
 
-    if (doc.fullscreenElement) {
+    session.portal.removeEventListener("mousemove", onPlayerMouseMove);
+
+    if (session.reparentedPlaceholder && session.sourceVideo) {
+        session.reparentedPlaceholder.parentElement?.insertBefore(
+            session.sourceVideo,
+            session.reparentedPlaceholder
+        );
+        session.reparentedPlaceholder.remove();
+    }
+
+    if (session.clonedVideo) {
+        session.clonedVideo.srcObject = null;
+        session.clonedVideo.remove();
+    }
+
+    if (session.targetDoc.fullscreenElement) {
         try {
-            await doc.exitFullscreen();
+            void session.targetDoc.exitFullscreen();
         } catch {
             // Ignored
         }
     }
+
+    session.portal.remove();
 }
 
-function toggleTrueFullscreen(tile: HTMLElement) {
-    if (activeTile === tile) {
-        void exitTrueFullscreen();
+function enterTrueFullscreen(tile: HTMLElement) {
+    if (currentSession) {
+        exitTrueFullscreen();
+    }
+
+    const sourceVideo = tile.querySelector<HTMLVideoElement>("video");
+    if (!sourceVideo) return;
+
+    const targetDoc = sourceVideo.ownerDocument || tile.ownerDocument || document;
+
+    const portal = targetDoc.createElement("div");
+    portal.id = "vc-tf-player-portal";
+
+    const initialCover = settings.store.zoomToFill;
+    portal.className = initialCover ? "vc-tf-fit-cover" : "vc-tf-fit-contain";
+
+    let clonedVideo: HTMLVideoElement | undefined;
+    let reparentedPlaceholder: Comment | undefined;
+
+    const mediaStream = sourceVideo.srcObject as MediaStream | null;
+    if (mediaStream && mediaStream.active) {
+        clonedVideo = targetDoc.createElement("video");
+        clonedVideo.srcObject = mediaStream;
+        clonedVideo.autoplay = true;
+        clonedVideo.playsInline = true;
+        clonedVideo.muted = true; // Audio is already played by original Discord WebRTC audio
+        portal.appendChild(clonedVideo);
+        clonedVideo.play().catch(() => {});
     } else {
-        void enterTrueFullscreen(tile);
+        reparentedPlaceholder = targetDoc.createComment("vc-tf-video-placeholder");
+        sourceVideo.parentElement?.insertBefore(reparentedPlaceholder, sourceVideo);
+        portal.appendChild(sourceVideo);
+    }
+
+    // Top Bar
+    const topBar = targetDoc.createElement("div");
+    topBar.className = "vc-tf-player-topbar";
+
+    const streamerInfo = targetDoc.createElement("div");
+    streamerInfo.className = "vc-tf-streamer-info";
+
+    const streamerTitle = targetDoc.createElement("div");
+    streamerTitle.className = "vc-tf-streamer-title";
+    streamerTitle.textContent = getStreamerTitle(tile, targetDoc);
+    streamerInfo.appendChild(streamerTitle);
+
+    const actions = targetDoc.createElement("div");
+    actions.className = "vc-tf-player-actions";
+
+    const aspectBtn = targetDoc.createElement("button");
+    aspectBtn.className = "vc-tf-action-btn";
+    aspectBtn.addEventListener("click", e => {
+        e.stopPropagation();
+        if (currentSession) {
+            updateAspectRatio(aspectBtn, !currentSession.isCover);
+        }
+    });
+
+    const exitBtn = targetDoc.createElement("button");
+    exitBtn.className = "vc-tf-action-btn vc-tf-action-exit";
+    exitBtn.innerHTML = `${EXIT_SVG} Exit (Esc)`;
+    exitBtn.title = "Exit True Fullscreen (Esc or F)";
+    exitBtn.addEventListener("click", e => {
+        e.stopPropagation();
+        exitTrueFullscreen();
+    });
+
+    actions.appendChild(aspectBtn);
+    actions.appendChild(exitBtn);
+
+    topBar.appendChild(streamerInfo);
+    topBar.appendChild(actions);
+    portal.appendChild(topBar);
+
+    currentSession = {
+        portal,
+        targetDoc,
+        sourceVideo,
+        clonedVideo,
+        reparentedPlaceholder,
+        isCover: initialCover,
+    };
+
+    updateAspectRatio(aspectBtn, initialCover);
+
+    portal.addEventListener("mousemove", onPlayerMouseMove);
+
+    portal.addEventListener("dblclick", e => {
+        e.preventDefault();
+        e.stopPropagation();
+        exitTrueFullscreen();
+    });
+
+    targetDoc.body.appendChild(portal);
+    resetPlayerIdleTimer();
+
+    if (portal.requestFullscreen) {
+        portal.requestFullscreen().catch(() => {});
     }
 }
 
-function findVideoTile(target: EventTarget | null): HTMLElement | null {
+function isCallActive(doc: Document): boolean {
+    const win = doc.defaultView || window;
+    if (win !== window) {
+        return true;
+    }
+    try {
+        return Boolean(
+            RTCConnectionStore?.isConnected?.() ||
+            SelectedChannelStore?.getVoiceChannelId?.()
+        );
+    } catch {
+        return false;
+    }
+}
+
+function isScreenshareTile(tile: HTMLElement, doc: Document): boolean {
+    const win = doc.defaultView || window;
+
+    if (win !== window) {
+        return Boolean(tile.querySelector("video"));
+    }
+
+    if (!tile.closest("[class*='callContainer_'], [class*='videoGrid_'], div[data-selenium-video-tile]")) {
+        return false;
+    }
+
+    if (!tile.querySelector("video")) {
+        return false;
+    }
+
+    const channelId = SelectedChannelStore?.getVoiceChannelId?.();
+    if (!channelId) {
+        return false;
+    }
+
+    const streams =
+        ApplicationStreamingStore?.getAllActiveStreamsForChannel?.(channelId) ||
+        ChannelRTCStore?.getStreamParticipants?.(channelId) ||
+        [];
+
+    if (streams.length === 0) {
+        return false;
+    }
+
+    const hasLiveBadge = Boolean(
+        tile.querySelector(
+            "[class*='liveIndicator'], [class*='liveShape'], [class*='liveBadge'], [class*='live_'], [aria-label*='Live'], [aria-label*='LIVE']"
+        )
+    );
+
+    return hasLiveBadge || streams.length === 1;
+}
+
+function findScreenshareTile(target: EventTarget | null): HTMLElement | null {
     if (!(target instanceof HTMLElement)) return null;
 
-    const tile = target.closest<HTMLElement>(
-        "div[data-selenium-video-tile], [class*='videoWrapper_'], [class*='tile_'], [class*='callContainer_']"
-    );
-    if (tile && tile.querySelector("video")) return tile;
-
-    const video =
-        target instanceof HTMLVideoElement
-            ? target
-            : target.querySelector("video") || target.closest("div")?.querySelector("video");
-    if (video) {
-        return (
-            video.closest<HTMLElement>(
-                "div[data-selenium-video-tile], [class*='videoWrapper_'], [class*='wrapper_'], [class*='tile_'], [class*='video_']"
-            ) || video.parentElement
-        );
+    if (
+        target.closest(
+            "[class*='message_'], [class*='chatContent_'], [class*='userProfile_'], [class*='banner_'], [class*='avatar_'], [class*='profile_'], [class*='members_'], [class*='sidebar_'], [class*='guilds_']"
+        )
+    ) {
+        return null;
     }
 
-    const doc = target.ownerDocument;
-    const docVideos = doc.querySelectorAll("video");
-    if (docVideos.length === 1) {
-        const singleVideo = docVideos[0];
-        return (
-            singleVideo.closest<HTMLElement>(
-                "div[data-selenium-video-tile], [class*='videoWrapper_'], [class*='wrapper_'], [class*='tile_']"
-            ) || singleVideo.parentElement
-        );
+    const doc = target.ownerDocument || document;
+    if (!isCallActive(doc)) {
+        return null;
+    }
+
+    const tile = target.closest<HTMLElement>(
+        "div[data-selenium-video-tile], [class*='videoWrapper_'], [class*='tile_']"
+    );
+
+    if (tile && isScreenshareTile(tile, doc)) {
+        return tile;
+    }
+
+    if (target instanceof HTMLVideoElement && target.parentElement) {
+        if (isScreenshareTile(target.parentElement, doc)) {
+            return target.parentElement;
+        }
     }
 
     return null;
@@ -203,24 +380,59 @@ function ensureButton(tile: HTMLElement) {
 
     const btn = tile.ownerDocument.createElement("button");
     btn.className = "vc-tf-button";
-    updateButtonIcon(btn, activeTile === tile);
+    btn.innerHTML = FULLSCREEN_SVG;
+    btn.title = "True Fullscreen (F)";
 
     btn.addEventListener("click", e => {
         e.preventDefault();
         e.stopPropagation();
-        toggleTrueFullscreen(tile);
+        enterTrueFullscreen(tile);
     });
 
     tile.appendChild(btn);
 }
 
-function onDoubleClick(e: MouseEvent) {
+function onWindowClick(e: MouseEvent) {
     if (!settings.store.enableDoubleClick) return;
-    const tile = findVideoTile(e.target);
-    if (tile) {
+
+    const target = e.target as HTMLElement | null;
+    if (!target) return;
+
+    if (target.closest("#vc-tf-player-portal")) {
+        return;
+    }
+
+    if (
+        target.closest(
+            "button, a, input, textarea, select, [role='button'], [role='slider'], [role='menuitem'], [class*='button_']"
+        )
+    ) {
+        return;
+    }
+
+    const tile = findScreenshareTile(target);
+    if (!tile) return;
+
+    const now = Date.now();
+    if (now - lastClickTime <= 350 && lastClickTile === tile) {
         e.preventDefault();
         e.stopPropagation();
-        toggleTrueFullscreen(tile);
+        e.stopImmediatePropagation();
+        lastClickTime = 0;
+        lastClickTile = null;
+        enterTrueFullscreen(tile);
+        return;
+    }
+
+    lastClickTime = now;
+    lastClickTile = tile;
+}
+
+function onDoubleClick(e: MouseEvent) {
+    const target = e.target as HTMLElement | null;
+    if (target && findScreenshareTile(target)) {
+        e.preventDefault();
+        e.stopPropagation();
     }
 }
 
@@ -233,37 +445,68 @@ function onKeyDown(e: KeyboardEvent) {
         return;
     }
 
-    const doc = (e.target as HTMLElement | null)?.ownerDocument || document;
-
-    if (e.code === settings.store.keybind) {
-        const tile =
-            activeTile ||
-            findVideoTile(e.target) ||
-            doc.querySelector<HTMLElement>(
-                "div[data-selenium-video-tile], [class*='videoWrapper_'], [class*='tile_']"
-            ) ||
-            doc.querySelector("video")?.parentElement;
-        if (tile) {
+    if (currentSession) {
+        if (e.code === "Escape" || e.code === settings.store.keybind) {
             e.preventDefault();
-            toggleTrueFullscreen(tile);
+            exitTrueFullscreen();
         }
-    } else if (e.code === "Escape" && activeTile) {
+        return;
+    }
+
+    if (e.code !== settings.store.keybind) {
+        return;
+    }
+
+    const doc = (e.target as HTMLElement | null)?.ownerDocument || document;
+    if (!isCallActive(doc)) {
+        return;
+    }
+
+    let tile: HTMLElement | null = null;
+    if (lastHoveredTarget) {
+        tile = findScreenshareTile(lastHoveredTarget);
+    }
+
+    if (!tile) {
+        const candidates = doc.querySelectorAll<HTMLElement>(
+            "div[data-selenium-video-tile], [class*='videoWrapper_'], [class*='tile_']"
+        );
+        for (const candidate of candidates) {
+            if (isScreenshareTile(candidate, doc)) {
+                tile = candidate;
+                break;
+            }
+        }
+    }
+
+    if (!tile) {
+        const video = doc.querySelector<HTMLVideoElement>("video");
+        if (video?.parentElement && isScreenshareTile(video.parentElement, doc)) {
+            tile = video.parentElement;
+        }
+    }
+
+    if (tile) {
         e.preventDefault();
-        void exitTrueFullscreen();
+        enterTrueFullscreen(tile);
     }
 }
 
 function onFullscreenChange(e: Event) {
     const doc =
         (e.target as Document | null) ||
-        (activeTile ? activeTile.ownerDocument : document);
-    if (!doc.fullscreenElement && activeTile && activeTile.ownerDocument === doc) {
-        void exitTrueFullscreen();
+        (currentSession ? currentSession.targetDoc : document);
+
+    if (currentSession && currentSession.targetDoc === doc && !doc.fullscreenElement) {
+        exitTrueFullscreen();
     }
 }
 
 function onMouseOver(e: MouseEvent) {
-    const tile = findVideoTile(e.target);
+    const target = e.target as HTMLElement | null;
+    lastHoveredTarget = target;
+
+    const tile = findScreenshareTile(target);
     if (tile) {
         ensureButton(tile);
     }
@@ -298,6 +541,7 @@ function attachWindow(win: Window) {
 
     attachedWindows.add(win);
 
+    win.addEventListener("click", onWindowClick, true);
     win.addEventListener("keydown", onKeyDown, true);
     win.document.addEventListener("dblclick", onDoubleClick, true);
     win.document.addEventListener("mouseover", onMouseOver, true);
@@ -311,15 +555,12 @@ function detachWindow(win: Window) {
     if (!attachedWindows.has(win)) return;
     attachedWindows.delete(win);
 
-    if (activeTile && activeTile.ownerDocument === win.document) {
-        activeTile = null;
-        if (idleTimeout) {
-            clearTimeout(idleTimeout);
-            idleTimeout = undefined;
-        }
+    if (currentSession && currentSession.targetDoc === win.document) {
+        exitTrueFullscreen();
     }
 
     try {
+        win.removeEventListener("click", onWindowClick, true);
         win.removeEventListener("keydown", onKeyDown, true);
         win.document.removeEventListener("dblclick", onDoubleClick, true);
         win.document.removeEventListener("mouseover", onMouseOver, true);
@@ -378,6 +619,16 @@ export default definePlugin({
         POPOUT_WINDOW_CLOSE() {
             cleanupClosedPopouts();
         },
+        RTC_CONNECTION_STATE(e: { state: string }) {
+            if (e.state === "DISCONNECTED" && currentSession) {
+                exitTrueFullscreen();
+            }
+        },
+        VOICE_CHANNEL_SELECT() {
+            if (currentSession) {
+                exitTrueFullscreen();
+            }
+        },
     },
 
     start() {
@@ -389,8 +640,8 @@ export default definePlugin({
     },
 
     stop() {
-        if (activeTile) {
-            void exitTrueFullscreen();
+        if (currentSession) {
+            exitTrueFullscreen();
         }
 
         window.removeEventListener("message", onWindowMessage);
