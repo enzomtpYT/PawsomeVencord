@@ -14,7 +14,7 @@ You can join our [discord server](https://discord.gg/w9jVtzNx4c) for commits, ch
 
 Standard Equicord and Vencord plugins can be browsed [here](https://equicord.org/plugins).
 
-Additionally, PawsomeVencord includes 14 exclusive or customized plugins (located in `src/pawsomeplugins/`), badged with the Pawsome logo in the client settings and filterable via the **Show PawsomeVencord** filter:
+Additionally, PawsomeVencord includes 16 exclusive or customized plugins (located in `src/pawsomeplugins/`), badged with the Pawsome logo in the client settings and filterable via the **Show PawsomeVencord** filter:
 
 - **alwaysPing**: Always ping users when replying.
 - **bark**: Adds a chatbar button to bark in chat.
@@ -27,7 +27,9 @@ Additionally, PawsomeVencord includes 14 exclusive or customized plugins (locate
 - **meow**: Adds a chatbar button with random meow sounds and messages.
 - **notifyUserChanges**: Context menu option to receive notifications on voice channel or status changes.
 - **philsPluginLibrary**: Shared helper library for Phil's plugins.
+- **platformSpoofer**: Spoof what platform or device you're on.
 - **serverProfilesToolbox**: Adds copy, paste, and reset buttons to the server profiles editor.
+- **trueFullscreen**: Enables an immersive true fullscreen mode for streams and screenshares.
 - **VenPlugPlus**: Enhanced plugin management utilities.
 - **webcamStartNotifier**: Alerts when cameras turn on in voice channels.
 
