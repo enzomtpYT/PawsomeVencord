@@ -152,6 +152,7 @@ async function loadAllBadges(noCache = false) {
     if (Object.keys(vencordBadges).length) DonorBadges = vencordBadges;
     if (Object.keys(equicordBadges).length) EquicordDonorBadges = equicordBadges;
     if (Object.keys(pawsomeBadges).length) PawsomeDonorBadges = pawsomeBadges;
+    DirectoryBadges = {};
 }
 
 let intervalId: ReturnType<typeof setInterval> | undefined;
